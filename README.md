@@ -1,5 +1,9 @@
 # c\_colon
+
+
 ![Logo](https://github.com/Mjz86/c_colon/blob/main/icon/c_colon.png)
+
+
 a new programming language frontend for c++ made by mjz86
 
 
