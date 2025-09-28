@@ -10,7 +10,7 @@ a new programming language frontend for c++ made by mjz86
 
 
 
-currently this is still experimental, but i aim to make  the "C:" language in hopes of a fully bi-directional interop language for c++ with backwards compatibility.
+currently this is still experimental, but i aim to make  the "C:" language in hopes of a fully bi-directional interop language for c++ .
 
 i first wanted to make a rust to c++ transpiler but i think that i cannot cooperate with the rust trademark.
 
