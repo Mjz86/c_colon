@@ -39,11 +39,20 @@ the c colon spec aims to use way more compike time code .
  and , each independent code that stayed unchanged didn't need duplications , a dream for the cpp committee, and a possibility in mcc , the c colon abi,
  the hashes although not cryptographically secure are big enough to be unique , basically like a uuid ( because its just a name mangling scheme)
 7. type qualifier deriven optimizations:
-the qualifiers change throughout the code ,
-if two code paths to
-
-the same expression have lead to diffrent qualifiers, its ill-formed , but, this , makes uninitilized variables truly safe to use ,
+the qualifiers change throughout the code ,the same expression have lead to diffrent qualifiers, its ill-formed , but, this , makes uninitilized variables truly safe to use ,
 because the function either throws or initilizes them , if not initilized it is an error , ( this will be clarifed more in next revisions, but basically, something mutable in the past may be constant now , or something restricted may be unrestricted, its like automatic shadowing of variable names but without allowing shadowing )
+if two code paths to
+8. reflection the verbosity away:
+rach namespace  has an special function,  implemented defaultly , it  addes context objects to functions,  and automates many of the verbose writing, 
+for example  a var is stable const restricted safe and ect by deafult,  no need to opt in , 
+the reflection functions work on the ast , after all the de reflection Operations are completed,  the ast can fully turn into IR,
+these operations can happen in parallel,  if they are located in separate dependancy chains .
+similarly the abi hashing is also done in parallel  and cashed once completed based on dependancy chain, although the abiof operator might make it happen sooner than usual. 
+9. why AST walk in the constexpr runtime when theres assembly and JIT:
+each function  even in its template form can be turned into IR , because mcc IR is different,  it has two types , constexpr IR and mutexpr IR ,
+constexpr IR is necceceraly  ran in the compiler , so , even if the template types are unknown,  the IR is generated to  reterive the template type then de-reflect the type away in just-in-time generated IR.
+
+
 
 - considrations :
 with these goals in mind , i aim to improve this spec , to make it practical, i often start with over engineering things , then chop unnecessary additions, to make it more practical, as of rn , were in over engineering phase.
