@@ -1,72 +1,506 @@
-# c\_colon
+# the mcc abi , c colon's calling conventions and its implications:
 
+> intruduction:
+
+in this document, we specify the application binary interface (abi) for c colon programs: that is, the object code interfaces between different user-provided c colon program fragments and between those fragments and the implementation-provided runtime and libraries. this includes the memory layout for c colon data objects, including both predefined and user-defined data types, as well as internal compiler generated objects such as virtual tables. it also includes function calling interfaces, exception handling interfaces, global naming, and various object code conventions.
+
+in general, this document is meant to serve as a generic specification which can be used by c colon implementations on a variety of platforms. it does this by layering on top of a platform's base c abi. this is inspiered by the famous itanium abi , there are somtimes assumbions of 64-bit tragets , it is usually straightforward to recognize these unportable assumptions and translate them appropriately, e.g. by replacing a 64-bit pointer with a 32-bit pointer.
+
+this document is not an authoritative definition of the c colon abi for any particular platform. platform vendors retain the ultimate power to define the c colon abi for their platform. platforms using this abi for c colon should declare that they do so, either unmodified or with a certain set of changes.
+
+also , this is generally incomplete, the c colon spec and mcc abi of that spec will be more refined in rach revisions .
+
+the formatting of this document is currently not very well, under scors are not ment for italic.
+
+> whats c colon :
 
 ![Logo](https://github.com/Mjz86/c_colon/blob/main/icon/c_colon.png)
 
+a language inspired by c++ and rust , and some functional principles.
 
-a new programming language frontend for c++ made by mjz86
+- this languages goals include:
+1. performance at the cost of verbosity:
+ the mcc toolchain needs as much information as it can about the program,
+ this information helps immensely in optimizations and it also makes the intention of the developers clear .
+2. zero cost abstractions :
+ each operation that can be optimized at compile time will be optimized at compile time,
+ the link times in mcc may increase from the calling conventions burden , but it's for the runtime.
+3. lack of memory safety as an option and safety as the deafult:
+ the rust language, although very fast , still lacks the option of non trivial moves , the option of elegant linked lists , the option of self referential sso ,
+ these aren't dangerous, they are just unrestricted in c colon, unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev ,
+ although, at the cost of safety and maybe performance ( for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage)
+4. compile time code:
+the c colon spec aims to use way more compike time code .
+5. multi paradigm language:
+ its like c++ but the legacy has been striped away.
+6. abi stability with ever changing libraries:
+ the recursive hash abi aims to tag each component with all the dependancies with a hash , without the need for inline namespaces , and it even propagates ,this property of propagation through every type , function and qualifier, makes us able to link everything old with everything new without odr violations , and new components can just use a middle api to interface to new code ,
+ imagine a world were the old std::regex was used for old code and the same std regex was 10 times faster when used new code both coexisting, this , truly makes it paying for what we used , the old programer payed for old slow usage , but new code didn't have to pay for the burdens in old code ,
+ and , each independent code that stayed unchanged didn't need duplications , a dream for the cpp committee, and a possibility in mcc , the c colon abi,
+ the hashes although not cryptographically secure are big enough to be unique , basically like a uuid ( because its just a name mangling scheme)
+7. type qualifier deriven optimizations:
+the qualifiers change throughout the code ,
+if two code paths to
 
+the same expression have lead to diffrent qualifiers, its ill-formed , but, this , makes uninitilized variables truly safe to use ,
+because the function either throws or initilizes them , if not initilized it is an error , ( this will be clarifed more in next revisions, but basically, something mutable in the past may be constant now , or something restricted may be unrestricted, its like automatic shadowing of variable names but without allowing shadowing )
 
+- considrations :
+with these goals in mind , i aim to improve this spec , to make it practical, i often start with over engineering things , then chop unnecessary additions, to make it more practical, as of rn , were in over engineering phase.
 
+> considrations :
+ this abi aims to have minimal compatibility with the itanium abi , such that an extern "c++" statement can make most code usable in a c++ platform,
+ some concepts may be excluded from such inclutions , for instance , a c++ type's dclaration must be expressable in c colon and vise versa .
 
+> definitions:
 
-currently this is still experimental, but i aim to make  the "C:" language in hopes of a fully bi-directional interop language for c++ .
+> value qualifiers:
 
-i first wanted to make a rust to c++ transpiler but i think that i cannot cooperate with the rust trademark.
+> volatile/nonvolatile :
+ a change, read or write in a volatile-ly used region of memory may not be optimized out.
+ volatile often has to come with the unstable+unrestricted qualifiers so thet need explicit mention.
 
-so i will make my own language. 
+> mut/const :
+ a change, read or write in a mutable region of memory is allowed
 
+> unstable/stable:
+ for a pointer p declared within a code block b to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of b , the expression std::memcmp(std::addressof(v),a,sizeof(v))==0 must be true , otherwise the behaviour is undefined.
 
+ for a pointer p declared within a code block b to an stable mut region of memory r, if a stable byte const v stored to address a originating from p is used , then until the end of b , the expression v== (byte)a must be true , if not , a value has been stored to address a originating from p in b or by a function called in b who is given a non const-stable pointer originating from p , otherwise the behaviour is undefined.
 
-this respository currently has no source code forthe transpiler ,
+ note:
 
-but i will develop the standard c colon draft here and eventually when i make a conforming implementation, i will publish the code as open source 
+ 1- mut-stable is like restrict in c, but a const-stable is like a rust constant
+ 2- its dangerous for stable values to be declared unrestricted, it is as if a c restrict aliases
 
+> uninitilized/initilized:
+ a read from uninitilized valued is undefined, but an store is valid.
 
+> unrestricted/restricted:
+ unrestricted disables the exclusive mutibility borrow rule in the compiler.
+ unrestricted often has to come with the unstable qualifier so explicit stable xor unstable qualification is required.
 
+> noaliastype/aliastype:
+ aliastype means that any store/load/modification throgh this type can influence types outside the alias set.
 
+> mutexpr/constexpr:
+ a value dcalared constexpr is known at compile time.
 
-the file extensions would be:
+> static/thread_local/automatic/dynamic/register/opaque/external/nostorage, storage :
+- external storage:
+the storage semantic is unknown.
+- static storage:
+this value is valid for the entier program.
+- thread_local storage:
+this value is valid while the currunt thread of execution is alive.
+- automatic storage:
+value is in stack , automatically destroyed.
+- dynamic storage:
+value is in heap, manually destroyed.
+- register storage:
+value's storage is valid in the currant expression, but the address may change at any time with rellocation, but for a given uniqe owning refrence to the register its the same
+- opaque storage:
+value's storage is somewhere , but its valid at least till the current block ends
+- nostorage storage:
+no address is given for the value
 
-".mjc" for the souce files
+> refexpr/valexpr:
+the address of a valexpr value may not be uniqe, the state may be used to represent other objects as well ,
+its like no_unique_address in c++:
+makes this member subobject pote
 
-".mjcpm" for the intermidite abstract syntax tree object files
+ntially-overlapping, i.e., allows this member to be overlapped with other non-static data members or base class subobjects of its class. this means that if the member has an empty class type (e.g. stateless allocator), the compiler may optimise it to occupy no space, just like if it were an empty base. if the member is not empty, any tail padding in it may be also reused to store other data members.
+also if reorder is possible , any padding bytes or invalid state may be used to represent such object,
+if its a bitset , even more possibilities are made , as long as other dclared object's are preserved
 
-".mjc.cpp" and or ".mjc.hpp" for the generated c++ code
+> not_reorderable/reorderable ( struct/class qualifier ):
+we can do rust-like reorder optimization if this enabled
+> offset_dependant/not_offset_dependant/member_offset_dependant/member_not_offset_dependant(struct/class qualifier,and type qualifier):
+ a not_offset_dependant type is a type whoes inner structs can be scattered in memory when accessed,
+ specifically ,a pointer to a sub object cannot be used to reliably get to the main object by a subtraction of the offset (other than a base class to drived class cast).
+ but offset_dependant objects can use the offset to gain a pointer to the main object.
 
+ member_offset_dependant objects are the ones that specifically can be used for casts by offset , base classes are member_offset_dependant by deafult.
 
+> forceref/unforceref:
+forceref makes the refrence a pointer-like type that hold the address of the refrenced type ,
+unforceref allows the refrence to be a custom type , for example a const str& is more appropriate as a string-view like type than a refrence to a string.
 
+> unaligned/aligned:
+ the alignment of this type might be neglected
 
+> unsafe/safe:
+ a value modifier that makes usage of this value an unsafe operation.
 
+> interface/final/virtual/nonvirtual:
+- virtual:
+ a virtual type is
+ a type pointer + virtual table pointer.
+ any virtual inheritance , polymorphism and ect, has an owner , but every other refrence to it's sub types is virtually qualified.
+ beacuse there are no virtual table/base pointers in the type, but offsets and function pointers in the table.
+- nonvirtual:
+ a type with no v-table
+- interface:
+ an empty type with a vtable and/or virtual bases
+- final:
+ a type with a v-table who's dynamic refrence type maches the static type.
 
+> noaliasset/usealiasset:
+noaliasset means the alias set of the type cannot alias the type,
+for example intn_t can alias the uintn_t and mintn_t types , but noaliasset intn_t cannot.
 
-this language aims to:
+> inexpr/outexpr/inoutexpr:
+ determines the general usage and call convention in a function argument.
 
-1. free the burnden of ABI compatibility from c++
-2. introduce  borrow checker , contracts and more 
+- inexpr:
+a stable const value.
+- outexpr:
+a stable uninitilized mutable value that will initilize the caller argument after a succsesfful call.
+- inoutexpr:
+a stable mutable value.
 
-3\. compile to fully constexpr friendly c++20 code
+> borrowed/refrenced/owned:
 
-4\. make most easily checkable undefined behavior a contract violation defined by violated behavior 
+- borrowed:
+object cannot be used.
+- refrenced:
+can be used but does not drop.
+- owned:
+an owned object can use and must drop after use.
 
-5\. make some changes to what is considered a violation.
+> function qualifiers:
+- effectless:
+an evaluation of a function call is effectless if any store operation that is sequenced during the call is the modification of an object that synchronizes with the call; if additionally the operation is observable, all access to the object must be based on a unique pointer parameter of the function.
+- idempotent:
+an evaluation e is idempotent if a second evaluation of e can be sequenced immediately after the original one without changing the resulting value, if any, or the observable state of the execution.
+- stateless:
+a function f is stateless if any definition of an object of static or thread storage duration in f or in a function that is called by f is const+stable but not volatile qualified.
+- independent:
+a function f is independent if for any object x that is observed by a call to f through an lvalue that is not based on a parameter of the call, all accesses to x in all calls to f d
 
-6\. if possible have most or all the flexibility of c++
+uring the same program execution observe the same value; otherwise if the access is based on a pointer parameter, there shall be a unique such pointer parameter p such that any access to x shall be to an lvalue that is based on p.
 
-7\. make code that is not constexpr friendly unsafe.
+an object x is observed by a function call if both synchronize, if x is not local to the call, if x has a lifetime that starts before the function call, and if an access of x is sequenced during the call; the last value of x, if any, that is stored before the call is said to be the value of x that is observed by the call.
 
+- unsequenced:
+indicates that a function is effectless, idempotent, stateless, and independent.
+- reproducible :
+indicates that a function is effectless and idempotent.
 
+- noexcept/throws:
+noexcept means the behaviour is undefined if the function returns to the caller using the catching return register.
+- noreturn/mayreturn:
+noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
 
+> itanium-like definitions:
 
+the descriptions below make use of the following definitions:
 
-what this language is not aiming for:
+- alignment of a type t (or object x): a value a such that any object x of type t has an address satisfying the constraint that &x modulo a == 0.
 
-1. replacement of c++ ( because the generated code would need to binf through c++)
-2. replace rust 
-3. unconditionally pay for safety ( contract violations can be ignored)
-4. support legacy code  
+- base class of a class t: when this document refers to base classes of a class t, unless otherwise specified, it means t itself as well as all of the classes from which it is derived, directly or indirectly, virtually or non-virtually. we use the term proper base class to exclude t itself from the list.
 
+- base object destructor of a class t: a function that runs the destructors for non-static data members of t and non-virtual direct base classes of t.
 
+- basic abi properties of a type t: the basic representational properties of a type decided by the base mcc abi, including its size, its alignment, its treatment by calling conventions, and the representation of pointers to it.
+
+- complete object destructor of a class t: a function that, in addition to the actions required of a base object destructor, runs the destructors for the virtual base classes of t.
+
+- deleting destructor of a class t: a function that, in addition to the actions required of a complete object destructor, calls the appropriate deallocation function (i.e,. operator delete) for t.
+
+- direct base class order ( if not_reorderable): when the direct base classes of a class are viewed as an ordered set, the order assumed is the order declared, left-to-right.
+
+- diamond-shaped inheritance: a class has diamond-shaped inheritance iff it has a virtual base class that can be reached by distinct inheritance graph paths through more than one direct base.
+
+- dynamic class: a class requiring a virtual table pointer (because it or its bases have one or more virtual member functions or virtual base classes).
+
+- empty class: a class with no non-static data members other than empty data members, no unnamed bit-fields other than zero-width bit-fields, no virtual functions, no virtual base classes, and no non-empty non-virtual proper base classes. such type can be dclarared with no-strorage qualifier.
+
+- empty data member: a potentially-overlapping non-static data member of empty class type. such type can be dclarared with no-strorage qualifier.
+
+- inheritance graph: a graph with nodes representing a class and all of its subobjects, and arcs connecting each node with its direct bases.
+
+- inheritance graph order: the ordering on a class object and all its subobjects obtained by a depth-first traversal of its inheritance graph, from the most-derived class object to base objects, where:
+    - no node is visited more than once. (so, a virtual base subobject, and all of its base subobjects, w
+
+ill be visited only once.)
+    - the subobjects of a node are visited in the order in which they were declared. (so, given class a : public b, public c, a is walked first, then b and its subobjects, and then c and its subobjects.)
+    - note that the traversal may be preorder or postorder. unless otherwise specified, preorder (derived classes before their bases) is intended.
+
+- instantiation-dependent: an expression is instantiation-dependent if it is type-dependent or value-dependent, or it has a subexpression that is type-dependent or value-dependent. for example, if p is a type-dependent identifier, the expression sizeof(sizeof(p)) is neither type-dependent, nor value-dependent, but it is instantiation-dependent (and could turn out to be invalid if after substitution of template arguments p turns out to have an incomplete type). similarly, a type expressed in source code is instantiation-dependent if the source form includes an instantiation-dependent expression. for example, the type form double[sizeof(sizeof(p))] (with p a type dependent identifier) is instantiation-dependent.
+
+- morally virtual: a subobject x is a morally virtual base of y if x is either a virtual base of y, or the direct or indirect base of a virtual base of y.
+
+- nearly empty class: a class that contains a virtual pointer, but no other data except (possibly) virtual bases. in particular, it:
+    - has no non-static data members and no non-zero-width unnamed bit-fields,
+    - has no direct base classes that are not either empty, nearly empty, or virtual,
+    - has at most one non-virtual, nearly empty direct base class, and
+    - has no proper base class that is empty, not morally virtual, and at an offset other than zero.
+    - such classes may be primary base classes even if virtual, sharing a virtual pointer with the derived class.
+
+- non-trivial for the purposes of calls: a type is considered non-trivial for the purposes of calls if:
+    - it has a non-trivial realloc-constructor , or if its realloc constructors are deleted.
+    - this definition, as applied to class types, a type which is trivial for the purposes of the abi will be passed and returned according to the rules of the base mcc abi, e.g. in registers; often this has the effect of performing a trivial reallocation of the type.
+    - otherwise it is passed as if it had a stable forceref&&& qualifier
+
+- potentially-overlapping subobject: a base class subobject or a non-static data member declared with the valexpr qualifier.
+- primary base class: for a dynamic class, the unique base class (if any) with which it shares the virtual pointer at offset 0.
+- secondary virtual table: the instance of a virtual table for a base class that is embedded in the virtual table of a class derived from it.
+- templated entity:
+    - an entity that is defined or created within a template, such as:
+        1. an instantiation of a class, function, or variable template, including from a partial specialization, but not including an explicit specialization;
+        2. a member or friend function definition of a templated class;
+        3. an enumerator of a templated enum;
+        4. a local entity in a templated function;
+        5. an entity within a templated namespace or
+        6. a lambda in a templated entity.
+- thunk: a segment of code associated (in this abi) with a target function, which is called instead of the target function for the purpose of modifying parameters (e.g. this) or other parts of the environment before transferring control to the target function, and possibly making further modifications after its return. a thunk may contain as little as an instruction to be executed prior to falling through to an immediately following target function, or it may be a full function with its own stack frame that does a full call to
+
+the target function.
+
+- vague linkage: the treatment of entities -- e.g. inline functions, templates, virtual tables -- with external linkage that can be defined in multiple translation units, while the odr requires that the program behave as if there were only a single definition.
+
+- virtual table (or vtable): a dynamic class has an associated table (often several instances, but not one per object) which contains information about its dynamic attributes, e.g. virtual function pointers, virtual base class offsets, etc.
+- virtual table group: the primary virtual table for a class along with all of the associated secondary virtual tables for its proper base classes.
+
+> calling convention:
+a mcc signature has:
+return-type function-mangled-name ( arg-type-(in/out/inout) args... ) context-type (noexcept/throws) (noreturn/mayreturn) ( other-function-qualifiers);
+
+- note:
+the context type is as if its an inout argument.
+the return type is as if its an out argument.
+
+there are special registers:
+1. the stack pointer and the base pointer (callee saved):
+stack pointer is like itanum , except the base pointer is a register, the caller can assume its value is the same after the call, usually some optimizations might use other stratch registers as base pointer as well ,but this one is special because it isnt used through a dynamic call.
+2. the instruction pointer (caller passed, no save):
+like itanum
+3. the normal return address (caller passed, no save):
+the return adress to the happy path section in the caller.
+4. the catching return address (caller passed, no save):
+the return address to the unwind/sad path code section in the caller
+
+( only 5 pointer sized registers, 2 of which are already used in all architectures for that purpose)
+( the other 3 can be pushed before general purpose use and poped/re assigned when needed at the call boundaries to reduce register pressure when register utilization is too much)
+
+a function's manipulated registers come in 4 categories ( aside from special ones):
+1. in:
+cannot be written to by callee, only read from
+2. out:
+cannot be read from by callee( before the initialization),
+and must be written to at some point in callee
+
+3. inout:
+free to read or write.
+
+4. used ( scratch registers),(caller saved):
+may be read from or written to , but its undefined if the caller reads these after the call , except when initialized again.
+
+important note: any registers not used or not in any signature is unused ,
+any register not needed after a call , or a dynamic call doesn't need to be saved ,unless proven better by compiler.
+for example if i do a call to a dynamic function in an almost empty function, no registers are saved , only the function will have many used registers.
+
+a function signature , or a function pointer type will determine the :
+in , out, and inout registers.
+
+the used registers set is :
+
+for a dynamic function call ( through a function pointer or a dll call) : all the registers not used in the signature ( except for the base pointer register and other special registers)
+
+for a static call:
+
+all registers used in the callee and through the function call .
+
+a used registers is a registers whose value is potentially modified, but the initial value is not restored in the function call to be used after the call.
+
+for example, a push of r and a pop of r at the end in return means r is restored so r is not a used register, even though it might be modified.
+
+a formal description might be:
+a registers who's observed values before the call might be different after the call , in at least one code path.
+
+- more explanation:
+
+this set grows linearly until the registers load is too high , then for these registers , the caller stores them to stack and pops back after return from calle, this makes sure there is minimal stack usage,
+
+( because the register assigner is used after the main optimization passes and in the linker, any recursive graph can be known to store the registers in stack)
+
+however because dynamic/external calls don't have the luxury of known assembly, so ,
+
+every register might be used , so , the intermediate registers need storing before the dynamic call and re storing afterwards, just like how the call and ret instructions work via stack push and jumps, or how the c++ async resume and suspend is defined via jumps,
+this is just more explicit, because we have no control over what call instruction saves but we do for ret.
+
+there are also 2 return paths ,
+instead of a branch after a call like most std::expected, we do an optimization, not valid in c, that isn't try catch with cold paths , but ,
+the caller happy paths have no need for a branch because a throw will return to the catch path in the caller from the catch register address, this is also very fast , like a single return statement, and the only cost is that a register is occupied , not bad compared to throw , or even the if statement in my opinion
+
+this is also possible because of the radical exception handling mechanism ( a statically known context type specified in the function signature, to be the vessel for the allocators,exception handling, debugging and stack trace information in debug builds , and maybe other information, this means that the exception type is statically known , unless abstracted away by a std::any-like object in the context type, also the debugging could be more information rich , for example skipping unnecessary name mangles or helper functions , because the debugger is just code with some trap brake points),
+basically i don't need to tell about all of it , but every function has any catch statements or raii clean up codes in the catch path , this doesn't need any extra unwinder, because there is no data structure for the unwinder, it's just code , and the return is directly to the unwind code instead of calling many cxx throw functions and using thread local or dynamic storage
+
+this also makes reverse engineering way more difficult, which is a good thing for those who want a program with no debug info to be uncrackable, although not a goal , this is a side effect of using registers in unconventional ways.
+
+note that this abi is fully abstractable under itanium , basically, only the outer functions needs itanum for compatibility,
+at most the catching return points to a cxx throw for compatibility.
+
+note that , as far as i know, the call and ret instructions already store much unnecessary registers in the stack, so i dont think the dynamic overhead is much different from a normal dynamic call ,
+also , i believe that allowing the return , arguments and more be able to expand , be even simd registers is far more beneficial than a restricted set of registers as function arguments and a single return registers, let alone the catch register
+
+there might also be optimizations:
+f:
+init:...
+code:...
+if ... jump to happy
+(throw code ...)
+move catch ret register to normal ret .
+( this will make the return at the end a throwing return)
+happy:
+....
+clean:
+....
+
+end and ret:....
+
+ret to normal ret
+instead of duplicated cleanup code in happy and sad paths in the c++ throw conversions, or returning to an unnecessary brach that is known to be happy or sad in the calle.
+
+in x86 specifically ,some things to note is that , while x86 has like 1024 bytes of zmm registers, its all caller saved in itanum , so... the compiler often wont use their full potential even in static calls, it is already not used ,
+and with the movement towards less virtual calls and more compike time polymorphism, the gains might be very beneficial.
+
+also, even at worse cases of using all 1024 registers , at most we do 16x2 simd zmm load and stores , although, i still believe that with the amount of avoidance of the people from dynamic calls, the overall optimization will be worth it , even if it costs 32 simd instructions in the virtual call site.
+
+an important consideration is comparing the dynamic call to the call instruction,
+any register necess
+
+ary after the call is either:
+special( like sp,ip)
+pushed in the call sub instructions,
+or
+pushed before the call instruction.
+
+even tho the call instruction is faster than pushing them manually, the registers are still being spilled to the stack , so in every case , a dynamic call necessarily has to store the registers necessary in the stack .
+all we did was , for static calls, reduce the burden of the runtime to the link time analysis.
+
+> limits:
+various representations specified by this abi impose limitations on conforming user programs. these include, for the 64-bit itanium abi:
+
+the offset of a non-virtual base subobject in the full object containing it must be representable by a 56-bit signed integer (due to rtti implementation). this implies a practical limit of 255 bytes on the size of a class.
+
+> namespace and header:
+this abi specifies a number of type and function apis supplemental to those required by the c colon standard. a header file named mccabi.h will be provided by implementations that declares these apis. the reference header file included with this abi definition shall be the authoritative definition of the apis.
+
+these apis will be placed in a namespace __mccabiv1. the header file will also declare a namespace alias abi for __mccabiv1. it is expected that users will use the alias, and the remainder of the abi specification will use it as well.
+
+in general, api objects defined as part of this abi are assumed to be extern "c:". however, some (many?) are specified to be extern "c" or extern "c++" if they:
+
+- are expected to be called by users from c/c++ code, e.g. longjmp_unwind/throw/...; or
+- are expected to be called only implicitly by compiled code, and are likely to be implemented in c/c++.
+
+> compatibility:
+
+- extern "c:" :
+ the function has c colon abi , no restrictions.
+- extern "c++" :
+ the function signature, should have types that are not reorderable , templates that are valid in c++ , and structures consistent of only fundemental cxx types , this will be more exactly specified in next revisions.
+- extern "c" :
+ very bare bones , only fundemental types, trivial structures and pointers .
+
+- others:
+ next revisions.
+
+> layout:
+in what follows, we define the memory layout for c colon data objects. specifically, for each type, we specify the following information about an object o of that type:
+
+- the size of an object, sizeof(o);
+- the alignment of an object, align(o); and
+- the offset within o, offset(c), of each data component c, i.e. base or member.
+for purposes internal to the specification, we also specify:
+
+- dsize(o): the data size of an object, which is the size of o without tail padding.
+- nvsize(o): the non-virtual size of an object, which is the size of o without virtual bases.
+- nvalign(o): the non-virtual alignment of an object, which is the alignment of o without virtual bases.
+
+> virtual table layout contains:
+- cast table:
+  1. number of bases
+  2. cast-table-pointers-to-baes.
+  3. type-table-pointers
+- type-table:
+  1. offset-of-type
+  2. cast-table-pointer
+  3. virtual-base-objects-offsets
+  4. function-pointers
+
+> a virtual refrence is :
+virtual table pointer
+and
+type pointer
+
+> context object has:
+
+- operator throw(self,...) noexcept->void:
+this operator is used when the contexts scope uses the throw operator.
+
+its mandatory that this function is noexcept beacuse, only the void context object can be in the throw signature, although, the throw has access to its context object by a function pram.
+
+- operator catch(self,...) context-type:
+
+this operator is used when the contexts scope has an expression resulting in a call that might unwind by exception.
+
+it is usual for this operation to throw an exception to the outer context object , note that , if a destru
+
+(b)floatn_t:
+floating point types with n bits.
+- charn_t:
+charechter types with n bits.
+- nullptr_t:
+type of a nullptr.
+- abi_t:
+ the hash type that the abiof operator gives.
+
+- cxx_(wchar/...)_t:
+ cxx compat types.
+
+# abi , and compatibility:
+- the abi@() operators:
+1. abi+(t/abi_t):
+adds the hash as a sult to the abi hash of the apllied expression.
+2. abi=(t/abi_t):
+sets the has as the abi hash of the apllied expression.
+3. abiof(type/id):
+gets the abi hash off the inner expression.
+- the abi hash of a type:
+1. is based on its definition and declaration order.
+2. name mangle of expressions
+3. abi hash of sub expressions.
+4. non static member abi hash and dclaration order
+5. virtual function abi hash and declaration order
+6. virtual bases abi hash and declaration order
+7. bases abi hash and dclaration order
+8. abi+(...) es abi hash and dclaration order
+9. qualifiers of a type , but order independant
+
+- note :
+the c colon linker only uses the abi hashes as signaturs for linkage.
+
+## runtime libraries and compilation:
+the objective of a full abi is to allow arbitrary mixing of object files produced by conforming implementations, by fully specifying the binary interface of application programs.
+
+- there are 8 main steps( might ):
+ 1. determine the dependancy graph of the mcc files, irs and modules ( to help realize parallelization opertonities, and determine if some steps are not neccecery if the result is cached and valid).
+ 2. compile to the ast object/modules.
+ 3. compile the asts to mcc ir-0 .
+ 4. for every constexpr ir-0 path , evaluate all constexpr code and generate mcc ir-1 files.
+ 5. for every ir-1 file , optimize the code to ir-2 files.
+ 6. link all ir-2 files in the mcc linker to an ir-3 file.
+ 7. map ir-3 the code to the target assembly, while optimizing unnececery register usage , for example by register allocation optimizations and generate an object file.
+ 8. link the object files to an executable.
+
+## refrences:
+Mjz C colon or mjz C: compiler (mcc):
+<https://github.com/Mjz86/c_colon>
+
+itanium abi:
+<https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro>
 
 
 
