@@ -74,7 +74,7 @@ with these goals in mind , i aim to improve this spec , to make it practical, i 
  2- its dangerous for stable values to be declared unrestricted, it is as if a c restrict aliases
 
 > uninitilized/initilized:
- a read from uninitilized valued is undefined, but an store is valid.
+ a read from uninitilized valued via unsafe pointer  is undefined and without it  ill formed, but an store is valid, and will make  the qualifier go away.
 
 > unrestricted/restricted:
  unrestricted disables the exclusive mutibility borrow rule in the compiler.
