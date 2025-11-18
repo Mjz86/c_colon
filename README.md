@@ -1,4 +1,4 @@
-# the mcc abi , c colon's calling conventions and its implications:
+# c colon's mcc abi and its implications:
 
 > intruduction:
 
