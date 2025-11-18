@@ -1,4 +1,4 @@
-# c colon's mcc abi and its implications:
+# c colon lang  and the mcc abi:
 
 > intruduction:
 
