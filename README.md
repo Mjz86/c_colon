@@ -265,6 +265,12 @@ noreturn means the behaviour is undefined if the function returns to the caller 
     set both return pointers to &RN and &RC.
     static F:
     F's code...
+    
+    
+    
+   
+   a call to dynamic F is made through the function pointer.
+   
 ```
 if F's adress isnt stored or used , then the transformation code  is optimized away.
 
@@ -408,9 +414,8 @@ in , out, and inout registers.
 
 the used registers set is :
 
-for a fastdyncallee dynamic function call ( through a function pointer or a dll call) : all the registers not used in the signature ( except for the base pointer register and other special registers)
-for a fastdyncaller dynamic function call  ( through a function pointer or a dll call) : mo registers are in the used set .
-
+for a fastdyncallee dynamic function call ( through a function pointer or a dll call) : all the registers not used in the signature ( except for the base pointer register and other special registers), so the callee's function pointer  is as if it was to its static call , but ,all the callers who use this function have the burden of saving intermediate values into the stack.
+for a fastdyncaller dynamic function call  ( through a function pointer or a dll call) : no registers are in the used set , this means that the callee  saved all registers in the dynamic transformation code,  so the caller is free to assume that all  registers not in the function signature are preserved,  making the caller more performant and reducing caller code size.
 for a static call:
 
 all registers used in the callee and through the function call .
