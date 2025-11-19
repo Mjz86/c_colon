@@ -19,17 +19,17 @@ the formatting of this document is currently not very well, under scors are not 
 a language inspired by c++ and rust , and some functional principles.
 
 - this languages goals include:
-1. performance at the cost of verbosity:
+1.  the option of performance at the cost of verbosity :
  the mcc toolchain needs as much information as it can about the program,
  this information helps immensely in optimizations and it also makes the intention of the developers clear .
 2. zero cost abstractions :
  each operation that can be optimized at compile time will be optimized at compile time,
  the link times in mcc may increase from the calling conventions burden , but it's for the runtime.
 3. lack of memory safety as an option and safety as the deafult:
- the rust language, although very fast , still lacks the option of non trivial moves , the option of elegant linked lists , the option of self referential sso ,
- these aren't dangerous, they are just unrestricted in c colon, unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev ,
+ the rust language, although very fast , still lacks the option of non trivial moves , the option of elegant linked lists , the option of self referential sso , it can be achieved with pointers , but it won't look good ,  although like rust these are unsafe in c: ,  these aren't dangerous, they are just unrestricted in c colon, unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev ,
  although, at the cost of safety and maybe performance ( for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage)
-4. compile time code:
+ , note that some qualifier are unsafe to add or remove , for example the no alias qualifiers may lead to ub if removed  so it has to be unsafe.
+ 4. compile time code:
 the c colon spec aims to use way more compike time code .
 5. multi paradigm language:
  its like c++ but the legacy has been striped away.
@@ -51,6 +51,40 @@ similarly the abi hashing is also done in parallel  and cashed once completed ba
 9. why AST walk in the constexpr runtime when theres assembly and JIT:
 each function  even in its template form can be turned into IR , because mcc IR is different,  it has two types , constexpr IR and mutexpr IR ,
 constexpr IR is necceceraly  ran in the compiler , so , even if the template types are unknown,  the IR is generated to  reterive the template type then de-reflect the type away in just-in-time generated IR.
+10. unique programming and debugging experience :
+The debugging would be in the context types ,
+Async debugging is hard in other languages,  but seemless in c colon because the stack trace is automatically build in the context functions for debugability when we unwind,
+the explicit allocator problem in c++ is also eliminated , making using debug alloctors easier, 
+the contract violations are captured in the context object,  vs the static global violation handler function 
+async destructors work with the `co_value` keyword  and much more.
+
+
+
+what i think will be the strategy in this language to make it easy:
+- begginners: 
+avoiding most qualifiers and completely, sticking to using mut when necessary, 
+sticking to value semantics, for functions,  inout , in , out  and non reference,  reference-like alternative that dont cause much confusion, 
+and coping most things , occasionally using more complex code.
+avoiding any borrowing and  unsafe.
+- developers who use libraries:
+writing value oriented,  functional-like mutibility avoiding code , knowing how to design easy to use apis , with OOP and more to use 
+- library authors:
+writing complex performant code that can be used easily using value oriented designs
+-  low level library  authors:
+using the language  to its fullest,  writing effective and efficient code without worrying much about abi braking, 
+using the latest technologies and theories to develop code that can be understood well by the optimizer, 
+writing utilities that help automate rust, c++ and other language bindings and more.
+
+- a note from  mjz , on what to do in `c:` : 
+try not to get boggled down with ways to make it faster,
+it is rewarding,  but its hard, the easiest way to write safe code in both rust and c: is to do more functional programming,
+try only focusing on what needs to be optimized before making it hard for yourself, 
+the compiler isnt there to demand the best code ,  it's not bad to mostly write value oriented code,
+those who get boggled down in mcc or rust lifetimes want speed , but c: isnt just about speed,
+its about speed if you want it , yes, but its about easier libraries , and not needing to link everything statically like rust,
+its about writing embedded code knowning that your const declared variable wont change or be casted to mutable ,
+and about moving away from the burden of abi legacy , from killing the standard library's networking preposal because its not gonna be abi stable,
+its about using a regex without saying that php's regex is faster.
 
 
 
