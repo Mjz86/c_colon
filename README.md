@@ -241,20 +241,20 @@ indicates that a function is effectless, idempotent, stateless, and independent.
 indicates that a function is effectless and idempotent.
 
 - mostly_functional: 
- a function f is mostly_functional if The    returned or outputed value ( via inout or out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
+ a function f is mostly_functional if The    returned or outputed value ( via  out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
   f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and inout argument's value. 
   and f performs no write accesses to volatile-qualified objects.
- and f is reproducible.
-( basically gnu::pure) 
+  viewstate and idempotent .
+( basically gnu::pure if no inout is used) 
 
 - purely_functional: 
- a function f is purelyfunctional if The  returned or outputed value ( via inout or out) by a call to f depends exclusively on The values of its direct function arguments , and   The values of any non-volatile stable constant  global or static objects observed
+ a function f is purelyfunctional if The  returned or outputed value ( via  out) by a call to f depends exclusively on The values of its direct function arguments , and   The values of any non-volatile stable constant  global or static objects observed
  and   f performs no read operations from non-volatile global, static, or thread-local memory that is mutable
  and f performs no write operations to any memory location visible outside its own activation record, including Global, static, or thread-local objects and Memory pointed to by its arguments ,even if the arguments are non-const pointers, 
  only the inout and out arguments are modifiable reference like arguments.
  and f and its callees performs no accesses to volatile-qualified objects.
- and f is unsequenced.
- ( basically gnu::const) 
+ and f is unsequenced  .
+ ( basically gnu::const if no inout is used) 
 
  
  
@@ -431,7 +431,10 @@ free to read or write.
 4. used ( scratch registers),(caller saved):
 may be read from or written to , but its undefined if the caller reads these after the call , except when initialized again.
 
-important note: any registers not used or not in any signature is unused ,
+important note: 
+ in and out registers may overlap in the calling convention , this doesn't mean that they will be inout , only that the registers who are used for input purposes, will have output purposes after the call,  because its faster as an inout amd has less register pressure.
+
+any registers not used or not in any signature is unused ,
 any register not needed after a call , or a fastdyncallee dynamic call doesn't need to be saved ,unless proven better by compiler.
 for example if i do a call to a fastdyncallee dynamic function in an almost empty function, no registers are saved , only the function will have many used registers.
 
