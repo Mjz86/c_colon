@@ -45,7 +45,7 @@ the qualifiers change throughout the code ,the same expression have lead to diff
 because the function either throws or initilizes them , if not initilized it is an error , ( this will be clarifed more in next revisions, but basically, something mutable in the past may be constant now , or something restricted may be unrestricted, its like automatic shadowing of variable names but without allowing shadowing )
 if two code paths to
 8. reflection the verbosity away:
-rach namespace  has an special function,  implemented defaultly , it  addes context objects to functions,  and automates many of the verbose writing, 
+each namespace  has an special function,  implemented defaultly , it  addes context objects to functions,  and automates many of the verbose writing, 
 for example  a var is stable const restricted safe and ect by deafult,  no need to opt in , 
 the reflection functions work on the ast , after all the de reflection Operations are completed,  the ast can fully turn into IR,
 these operations can happen in parallel,  if they are located in separate dependancy chains .
