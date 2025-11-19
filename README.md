@@ -657,7 +657,8 @@ Mjz C colon or mjz C: compiler (mcc):
 itanium abi:
 <https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro>
 
-
+xxhash128:
+<https://xxhash.com>
 
 
 
