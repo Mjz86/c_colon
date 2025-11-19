@@ -223,8 +223,12 @@ an owned object can use and must drop after use.
 an evaluation of a function call is effectless if any store operation that is sequenced during the call is the modification of an object that synchronizes with the call; if additionally the operation is observable, all access to the object must be based on a unique pointer parameter of the function.
 - idempotent:
 an evaluation e is idempotent if a second evaluation of e can be sequenced immediately after the original one without changing the resulting value, if any, or the observable state of the execution.
+- viewstate:
+a function f is stateless if any definition of an object of static or thread storage duration in f or in a function that is called by f is stable but not volatile qualified, 
+no modifications to these values are allowed. 
 - stateless:
 a function f is stateless if any definition of an object of static or thread storage duration in f or in a function that is called by f is const+stable but not volatile qualified.
+ and is viewstate.
 - independent:
 a function f is independent if for any object x that is observed by a call to f through an lvalue that is not based on a parameter of the call, all accesses to x in all calls to f during the same program execution observe the same value; otherwise if the access is based on a pointer parameter, there shall be a unique such pointer parameter p such that any access to x shall be to an lvalue that is based on p.
 an object x is observed by a function call if both synchronize, if x is not local to the call, if x has a lifetime that starts before the function call, and if an access of x is sequenced during the call; the last value of x, if any, that is stored before the call is said to be the value of x that is observed by the call.
@@ -254,7 +258,7 @@ indicates that a function is effectless and idempotent.
 
  
  
-* these qualifiers have restrictions, for example a stateless function can only call other stateless functions a stateless function can only call other stateless functions in safe code, and cannot modify `thread_local` or `static` variables, many  of these qualified functions can only call functions that have these qualities. 
+* these qualifiers have restrictions, for example a stateless function can only call other stateless functions a stateless function can only call other stateless functions in safe code, and cannot modify `thread_local` or `static` variables or access global non-stable mutable variables , many  of these qualified functions can only call functions that have these qualities. 
 
 
 - noexcept/throws:
