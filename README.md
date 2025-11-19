@@ -26,7 +26,7 @@ a language inspired by c++ and rust , and some functional principles.
  each operation that can be optimized at compile time will be optimized at compile time,
  the link times in mcc may increase from the calling conventions burden , but it's for the runtime.
 3. safety as the deafult, with unsafe(...) as escape hatch:
-similar to rust , c: has a borrow checker , a more powerful one , the local safety and borrow rules prevent global uninitialized access, use after free and more , 
+similar to rust , c: has a borrow checker , a powerful one , the local safety and borrow rules prevent global uninitialized access, use after free and more , 
 similar to rust , c: has unsafe blocks , these unsafe blocks are  specified with their safety control,  for example unsafe(pointer-use) or unsafe(pointer-cast), unsafe(unrestricted) , unsafe(variable) and more,
  the rust language, although very fast , still lacks the option of non trivial moves , the option of elegant linked lists , the option of self referential sso , it can be achieved with pointers , but it won't look good ,  although like rust these are unsafe in c: ,  these aren't dangerous, they are just unrestricted in c colon, unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev ,
  although, at the cost of safety and maybe performance ( for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage)
@@ -240,6 +240,39 @@ indicates that a function is effectless and idempotent.
 noexcept means the behaviour is undefined if the function returns to the caller using the catching return register.
 - noreturn/mayreturn:
 noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
+- fastdyncaller/fastdyncallee:
+  functions are fastdyncallee by default, 
+  a fastdyncaller qualifier makes the dynamic call,  have no variables in the used set,
+   it makes functions have 2 parts:
+   
+   
+ >  the fastdyncaller transformation :
+ this is intended  for functions that want minimal register usage in the functions who use the dynamic call,
+ usually smaller functions with less used  registers benefit from the fastdyncaller specification, but those with many moving parts who already have large register usage are better used with the fastdyncallee qualifier. 
+``` 
+    RC:
+    restore the catching return  to the return pointer.
+    jump to ret.
+    RN:
+    restore the normal return  to the return pointer
+    ret:
+    restore all registers specified as used in F in stack.
+    jump to the return pointer.
+    
+    dynamic F( where the dynamic pointer will point):
+    save all  registers specified as used in F in stack.
+    save both return pointers.
+    set both return pointers to &RN and &RC.
+    static F:
+    F's code...
+```
+if F's adress isnt stored or used , then the transformation code  is optimized away.
+
+the fastdyncallee , on the other hand  doesn't have a transformation in the function's assembly.
+
+
+ 
+
 
 > refrences:
 - out/in/inout T:
