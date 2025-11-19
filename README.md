@@ -36,7 +36,7 @@ the c colon spec aims to use way more compike time code .
 5. multi paradigm language:
  its like c++ but the legacy has been striped away.
 6. abi stability with ever changing libraries:
- the recursive hash abi aims to tag each component with all the dependancies with a hash , without the need for inline namespaces , and it even propagates ,this property of propagation through every type , function and qualifier, makes us able to link everything old with everything new without odr violations , and new components can just use a middle api to interface to new code ,
+ the recursive hash abi aims to tag each component with all the dependancies with a hash , without the need for inline namespaces , and it even propagates ,this property of propagation through every type , function and namespace, makes us able to link everything old with everything new without odr violations , and new components can just use a middle api to interface to new code ,
  imagine a world were the old std::regex was used for old code and the same std regex was 10 times faster when used new code both coexisting, this , truly makes it paying for what we used , the old programer payed for old slow usage , but new code didn't have to pay for the burdens in old code ,
  and , each independent code that stayed unchanged didn't need duplications , a dream for the cpp committee, and a possibility in mcc , the c colon abi,
  the hashes although not cryptographically secure are big enough to be unique , basically like a uuid ( because its just a name mangling scheme)
