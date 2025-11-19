@@ -50,8 +50,9 @@ for example  a var is stable const restricted safe and ect by deafult,  no need 
 the reflection functions work on the ast , after all the de reflection Operations are completed,  the ast can fully turn into IR,
 these operations can happen in parallel,  if they are located in separate dependancy chains .
 similarly the abi hashing is also done in parallel  and cashed once completed based on dependancy chain, although the abiof operator might make it happen sooner than usual. 
-9. why AST walk in the constexpr runtime when theres assembly and JIT:
+9.   JIT constexpr code execution:
 each function  even in its template form can be turned into IR , because mcc IR is different,  it has two types , constexpr IR and mutexpr IR ,
+the borrow checking and lifetime management itself is constexpr IR with assertions.
 constexpr IR is necceceraly  ran in the compiler , so , even if the template types are unknown,  the IR is generated to  reterive the template type then de-reflect the type away in just-in-time generated IR.
 10. unique programming and debugging experience :
 The debugging would be in the context types ,
@@ -225,16 +226,36 @@ an evaluation e is idempotent if a second evaluation of e can be sequenced immed
 - stateless:
 a function f is stateless if any definition of an object of static or thread storage duration in f or in a function that is called by f is const+stable but not volatile qualified.
 - independent:
-a function f is independent if for any object x that is observed by a call to f through an lvalue that is not based on a parameter of the call, all accesses to x in all calls to f d
-
-uring the same program execution observe the same value; otherwise if the access is based on a pointer parameter, there shall be a unique such pointer parameter p such that any access to x shall be to an lvalue that is based on p.
-
+a function f is independent if for any object x that is observed by a call to f through an lvalue that is not based on a parameter of the call, all accesses to x in all calls to f during the same program execution observe the same value; otherwise if the access is based on a pointer parameter, there shall be a unique such pointer parameter p such that any access to x shall be to an lvalue that is based on p.
 an object x is observed by a function call if both synchronize, if x is not local to the call, if x has a lifetime that starts before the function call, and if an access of x is sequenced during the call; the last value of x, if any, that is stored before the call is said to be the value of x that is observed by the call.
+
+
 
 - unsequenced:
 indicates that a function is effectless, idempotent, stateless, and independent.
 - reproducible :
 indicates that a function is effectless and idempotent.
+
+- mostly_functional: 
+ a function f is mostly_functional if The    returned or outputed value ( via inout or out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
+  f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and inout argument's value. 
+  and f performs no write accesses to volatile-qualified objects.
+ and f is reproducible.
+( basically gnu::pure) 
+
+- purely_functional: 
+ a function f is purelyfunctional if The  returned or outputed value ( via inout or out) by a call to f depends exclusively on The values of its direct function arguments , and   The values of any non-volatile stable constant  global or static objects observed
+ and   f performs no read operations from non-volatile global, static, or thread-local memory that is mutable
+ and f performs no write operations to any memory location visible outside its own activation record, including Global, static, or thread-local objects and Memory pointed to by its arguments ,even if the arguments are non-const pointers, 
+ only the inout and out arguments are modifiable reference like arguments.
+ and f and its callees performs no accesses to volatile-qualified objects.
+ and f is unsequenced.
+ ( basically gnu::const) 
+
+ 
+ 
+* these qualifiers have restrictions, for example a stateless function can only call other stateless functions a stateless function can only call other stateless functions in safe code, and cannot modify `thread_local` or `static` variables, many  of these qualified functions can only call functions that have these qualities. 
+
 
 - noexcept/throws:
 noexcept means the behaviour is undefined if the function returns to the caller using the catching return register.
@@ -277,6 +298,7 @@ if F's adress isnt stored or used , then the transformation code  is optimized a
 the fastdyncallee , on the other hand  doesn't have a transformation in the function's assembly.
 
 
+ 
  
 
 
