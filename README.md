@@ -115,7 +115,7 @@ with these goals in mind , i aim to improve this spec , to make it practical, i 
 > unstable/stable:
  for a pointer p declared within a code block b to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of b , the expression std::memcmp(std::addressof(v),a,sizeof(v))==0 must be true , otherwise the behaviour is undefined.
 
- for a pointer p declared within a code block b to an stable mut region of memory r, if a stable byte const v stored to address a originating from p is used , then until the end of b , the expression v== (byte)a must be true , if not , a value has been stored to address a originating from p in b or by a function called in b who is given a non const-stable pointer originating from p , otherwise the behaviour is undefined.
+ for a pointer p declared within a code block b to an stable mut region of memory r, if a stable byte const v stored to address a originating from p is used , then until the end of b , the expression `v== (byte)*a` must be true , if not , a value has been stored to address a originating from p in b or by a function called in b who is given a non const-stable pointer originating from p , otherwise the behaviour is undefined.
 
  note:
 
