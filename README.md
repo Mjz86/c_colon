@@ -241,7 +241,7 @@ noexcept means the behaviour is undefined if the function returns to the caller 
 - noreturn/mayreturn:
 noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
 - fastdyncaller/fastdyncallee:
-  functions are fastdyncallee by default, 
+  functions are fastdyncaller by default, 
   a fastdyncaller qualifier makes the dynamic call,  have no variables in the used set,
    it makes functions have 2 parts:
    
@@ -375,7 +375,7 @@ the return type is as if its an out argument.
 
 there are special registers:
 1. the stack pointer and the base pointer (callee saved):
-stack pointer is like itanum , except the base pointer is a register, the caller can assume its value is the same after the call, usually some optimizations might use other stratch registers as base pointer as well ,but this one is special because it isnt used through a dynamic call.
+stack pointer is like itanum , except the base pointer is a register, the caller can assume its value is the same after the call, usually some optimizations might use other stratch registers as base pointer as well ,but this one is special because it isnt used through a fastdyncallee dynamic call.
 2. the instruction pointer (caller passed, no save):
 like itanum
 3. the normal return address (caller passed, no save):
@@ -400,15 +400,16 @@ free to read or write.
 may be read from or written to , but its undefined if the caller reads these after the call , except when initialized again.
 
 important note: any registers not used or not in any signature is unused ,
-any register not needed after a call , or a dynamic call doesn't need to be saved ,unless proven better by compiler.
-for example if i do a call to a dynamic function in an almost empty function, no registers are saved , only the function will have many used registers.
+any register not needed after a call , or a fastdyncallee dynamic call doesn't need to be saved ,unless proven better by compiler.
+for example if i do a call to a fastdyncallee dynamic function in an almost empty function, no registers are saved , only the function will have many used registers.
 
 a function signature , or a function pointer type will determine the :
 in , out, and inout registers.
 
 the used registers set is :
 
-for a dynamic function call ( through a function pointer or a dll call) : all the registers not used in the signature ( except for the base pointer register and other special registers)
+for a fastdyncallee dynamic function call ( through a function pointer or a dll call) : all the registers not used in the signature ( except for the base pointer register and other special registers)
+for a fastdyncaller dynamic function call  ( through a function pointer or a dll call) : mo registers are in the used set .
 
 for a static call:
 
@@ -426,10 +427,9 @@ a registers who's observed values before the call might be different after the c
 this set grows linearly until the registers load is too high , then for these registers , the caller stores them to stack and pops back after return from calle, this makes sure there is minimal stack usage,
 
 ( because the register assigner is used after the main optimization passes and in the linker, any recursive graph can be known to store the registers in stack)
-
-however because dynamic/external calls don't have the luxury of known assembly, so ,
-
-every register might be used , so , the intermediate registers need storing before the dynamic call and re storing afterwards, just like how the call and ret instructions work via stack push and jumps, or how the c++ async resume and suspend is defined via jumps,
+ 
+however because fastdyncallee dynamic/external calls don't have the luxury of known assembly, so ,
+every register might be used , so , the intermediate registers need storing before the fastdyncallee dynamic call and re storing afterwards, just like how the call and ret instructions work via stack push and jumps, or how the c++ async resume and suspend is defined via jumps,
 this is just more explicit, because we have no control over what call instruction saves but we do for ret.
 
 there are also 2 return paths ,
