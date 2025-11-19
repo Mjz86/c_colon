@@ -8,7 +8,7 @@ in general, this document is meant to serve as a generic specification which can
 
 this document is not an authoritative definition of the c colon abi for any particular platform. platform vendors retain the ultimate power to define the c colon abi for their platform. platforms using this abi for c colon should declare that they do so, either unmodified or with a certain set of changes.
 
-also , this is generally incomplete, the c colon spec and mcc abi of that spec will be more refined in rach revisions .
+also , this is generally incomplete, the c colon spec and mcc abi of that spec will be more refined in each revisions .
 
 the formatting of this document is currently not very well, under scors are not ment for italic.
 
@@ -64,7 +64,7 @@ like cargo , c colon has a package management system integrated in the tool chai
 unlike hedaer files and cpp files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
 each module has hashes of its dependent modules, to help cashing and compile times ,
 because the ast can be converted to IR via JIT , the compiler can  use many cashing schemes for templated entities and namespaces 
-
+, each component and modules in the package management system have precompiled some IR and AST steps , that make it easier for compilers to use them if more download speeds result in faster compilations , if not the compiler can do it by hand without IRs.
 
 what i think will be the strategy in this language to make it easy:
 - begginners: 
