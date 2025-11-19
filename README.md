@@ -483,9 +483,7 @@ even tho the call instruction is faster than pushing them manually, the register
 all we did was , for static calls, reduce the burden of the runtime to the link time analysis.
 
 > limits:
-various representations specified by this abi impose limitations on conforming user programs. these include, for the 64-bit itanium abi:
-
-the offset of a non-virtual base subobject in the full object containing it must be representable by a 56-bit signed integer (due to rtti implementation). this implies a practical limit of 255 bytes on the size of a class.
+the architecture  must have at least 5 pointer sized registers.
 
 > namespace and header:
 this abi specifies a number of type and function apis supplemental to those required by the c colon standard. a header file named mccabi.h will be provided by implementations that declares these apis. the reference header file included with this abi definition shall be the authoritative definition of the apis.
@@ -606,6 +604,10 @@ charechter types with N bits.
 type of a nullptr.
 - abi_t:
  the hash type that the abiof operator gives.
+ its a 128 bit uuid , it doesn't support any operations outside of the abi operators,  other than the usual load and store or casts.
+ for example,  the hash given by xxhash128. 
+  this is good enough,  because the linker already has to append the cxx-style name mangle to the hash .
+   `namenangle__hexed-hash`. 
 
 - cxx_(wchar/...)_t:
  cxx compat types.
