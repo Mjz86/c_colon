@@ -25,7 +25,9 @@ a language inspired by c++ and rust , and some functional principles.
 2. zero cost abstractions :
  each operation that can be optimized at compile time will be optimized at compile time,
  the link times in mcc may increase from the calling conventions burden , but it's for the runtime.
-3. lack of memory safety as an option and safety as the deafult:
+3. safety as the deafult, with unsafe(...) as escape hatch:
+similar to rust , c: has a borrow checker , a more powerful one , the local safety and borrow rules prevent global uninitialized access, use after free and more , 
+similar to rust , c: has unsafe blocks , these unsafe blocks are  specified with their safety control,  for example unsafe(pointer-use) or unsafe(pointer-cast), unsafe(unrestricted) , unsafe(variable) and more,
  the rust language, although very fast , still lacks the option of non trivial moves , the option of elegant linked lists , the option of self referential sso , it can be achieved with pointers , but it won't look good ,  although like rust these are unsafe in c: ,  these aren't dangerous, they are just unrestricted in c colon, unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev ,
  although, at the cost of safety and maybe performance ( for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage)
  , note that some qualifier are unsafe to add or remove , for example the no alias qualifiers may lead to ub if removed  so it has to be unsafe.
@@ -57,7 +59,11 @@ Async debugging is hard in other languages,  but seemless in c colon because the
 the explicit allocator problem in c++ is also eliminated , making using debug alloctors easier, 
 the contract violations are captured in the context object,  vs the static global violation handler function 
 async destructors work with the `co_value` keyword  and much more.
-
+11. easy to use package management with cpp like compile times:
+like cargo , c colon has a package management system integrated in the tool chain ,
+unlike hedaer files and cpp files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
+each module has hashes of its dependent modules, to help cashing and compile times ,
+because the ast can be converted to IR via JIT , the compiler can  use many cashing schemes for templated entities and namespaces 
 
 
 what i think will be the strategy in this language to make it easy:
@@ -234,6 +240,26 @@ indicates that a function is effectless and idempotent.
 noexcept means the behaviour is undefined if the function returns to the caller using the catching return register.
 - noreturn/mayreturn:
 noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
+
+> refrences:
+- out/in/inout T:
+a value oriented reference-like type ,
+for function arguments,  these don't necessarily mean that T will have the same address,  unless T isnt triviality relocatable, which will make T relocate into the stack in the caller.
+
+- T&:
+a typical l-value reference like rust , and if unrestricted , like c++.
+its like inout,for passing around T without potentially changing the adresss of T , unlike inout.
+-T&&:
+a typical r-value reference like c++ but borrow  checked like T&, and if unrestricted , like c++.
+its mut is used in the move constructors. 
+its const is used in the copy constructors.
+( unlike c++ ,T&& cant bind to  const T&, but T& can bind to const T&&)
+-T&&&:
+a dropping reference,  meaning that after the lifetime  of the `T&&&` the entity will be dropped.
+used in the relocation constructors.
+
+- non forceref user defined refrences:
+are user defined types who's purpose is refrencing variables. 
 
 > itanium-like definitions:
 
@@ -489,12 +515,60 @@ its mandatory that this function is noexcept beacuse, only the void context obje
 
 this operator is used when the contexts scope has an expression resulting in a call that might unwind by exception.
 
-it is usual for this operation to throw an exception to the outer context object , note that , if a destru
+it is usual for this operation to throw an exception to the outer context object , note that , if a destructor throws in an unwind , the context-type may have been already filled with exception information , it is rare that this happens but often implementors terminate in such cases.
 
-(b)floatn_t:
-floating point types with n bits.
-- charn_t:
-charechter types with n bits.
+uaually specified noreturn, if not the user might struggle writing code.
+
+
+
+> operator contract_assert(...)  context-type :
+- gets called when a contract violation occurs 
+
+
+- uaually specified noreturn , if not theres a chance that it ignores the violation.
+
+
+- diffrent types of contract_assert:
+1. pre :
+ in a pre expression of function
+2. post:
+ in a post expression of function
+3. explicit:
+ in a contract_assert expression of function
+4. implicit:
+in a  operation that might result in assertion like  a/0,a<<-1,a+maxint
+
+
+
+- what diffrent types of contract violation semantics do , when violation happens:
+1. enforce :
+results in calling the operator contract_assert.
+2. quick enforce :
+results in calling the terminate function.
+3. ignore:
+does nothing.
+4. observe:
+results in calling the operator contract_assert.
+5. assume:
+results in undefined behaviour.
+
+
+
+
+> fundemental types:
+
+- (m/u)intN_t:
+ 1. nothing:
+ overflow is violation, is a signed integral.
+ 2. u :
+ overflow is violation, is an unsigned integral.
+ 3. m :
+ any overflow is well-defined, only devision by 0 is violation,is unsigned modular arethmatic type.
+
+- (b)floatN_t:
+floating point types with N bits.
+- charN_t:
+charechter types with N bits.
 - nullptr_t:
 type of a nullptr.
 - abi_t:
@@ -502,6 +576,9 @@ type of a nullptr.
 
 - cxx_(wchar/...)_t:
  cxx compat types.
+
+
+
 
 # abi , and compatibility:
 - the abi@() operators:
