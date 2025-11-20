@@ -1039,6 +1039,13 @@ users don't need to worry about using old or vulnerable code , or complex buildi
 theres no traditional borrowing in express colon , because refrences aren't allowed,  only value oriented reference-like alternatives are, this is because most simple objectives can be achieved soly via containers, dynamic refrencing containers and value types,
 the express colon language also tends to look more functional than its c colon counterparts,  many changes to heap variables happening in monadic like fashion if they are garded via a mutex, or value based of they are easily movable and copyable, while the underlying c colon has borrowing rules,  express colon programs still dont need lifetime anotations ( the c colon libraries however probably do)
 
+8. fast enough application logic:
+ 
+ the function argument flow specifiers ( like a refrence  but without stable adress on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitilized& ) and inout (akin to mutable& ) prameters are all trivial reallocation and register passed, 
+ however because of the ABI nature they will remain valid for the duration of the function call so they are inheritly safe. 
+ the in val ( no specifier) does a copy or a drop/relocation  on most occasions .
+ these are ideal for register usage ,  but they introduce more copying and occasionally the need for refrence counting if dynamic  refrencing is necessary, 
+although this is fast enough so its good enough,  if not , c colon can be used to optimize  it more.
 
 
 i pridict that the worst common error is an easy "must initialized an out prameter" , which is , simple and far better than lifetimes or memory bugs.
