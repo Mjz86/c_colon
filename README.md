@@ -977,6 +977,22 @@ the objective of a full abi is to allow arbitrary mixing of object files produce
 
 
 
+--- 
+the mcc toolchain and abi outside of c colon:
+
+ with the absolute expressive power of the c colon IR and abi ,  there might be languages or toochsins who soly focus on a language with c colon like abi,
+ for example :
+ 
+  1. the mcc-cpp transpiler: 
+      a rust compiler that compiles c++ into mcc-ir.
+  2. mcc-rust:
+      a rust compiler that compiles rust into mcc-ir.
+  3.  functional colon :
+     a functional language that compiles into c colon  or mcc-ir which most functions are implicitly purely functional in thr c colon code.
+  4.   express colon :
+    a simple  language , a subset if c colon ,where only safe c colon code is valid ,most  qualifiers are invisible-implicit and inaccessibile.
+    this is a more begginners friendly language that has the same abi and type system as c colon , but without many of its complexities, so the unsafe parts can be written in libraries in c colon.    
+      
 ---
 
 refrences
