@@ -1,5 +1,5 @@
 
-c colon lang and the mcc abi
+c colon lang , its brothers and the mcc abi
 
 > introduction
 
@@ -990,9 +990,47 @@ the mcc toolchain and abi outside of c colon:
   3.  functional colon :
      a functional language that compiles into c colon  or mcc-ir which most functions are implicitly purely functional in thr c colon code.
   4.   express colon :
-    a simple  language , a subset if c colon ,where only safe c colon code is valid ,most  qualifiers are invisible-implicit and inaccessibile.
+    a simple  language , a subset of c colon ,where only safe c colon code is valid ,most  qualifiers are invisible-implicit and inaccessibile.
     this is a more begginners friendly language that has the same abi and type system as c colon , but without many of its complexities, so the unsafe parts can be written in libraries in c colon.    
       
+---
+express colon :
+
+a language  for those who like simplicity while writing c colon.
+
+this language aims to be in the simple systems languages category.
+
+this languages goals include:
+
+1. deep integration with c colon:
+
+ the language is an abstraction built on top of c colon,
+ the c colon standard and libraries often focus on low level design while express colon is more friendly for newcomers. 
+ 
+ 
+ 2. simplicity:
+ 
+  most complex code are implicit ,
+  for example instead of references , developers use in/inout/out and values , 
+  this makes this code readable and object oriented while being very safe and optimizable.
+   containers are represented by value oriented objects and no poiner or reference semantics is required. 
+ 
+3.  safety :
+    any unsafe code is delt with in the internal c colon libraries,  freeing the burden of safety concers from the developers.
+
+4. speed :
+ even in value oriented code,  functions can throw errors with ease and speed 
+
+5. rich set of libraries:
+the standard library aims to have many of the widely used utilities,  for example networking libraries,  asynchronous frameworks and web like UI development utilities. 
+this is because the standard can change the abi of these components at later versions so it doesn't need to worry about backwards compatibility. 
+
+6. easy to use package management with abi stability:
+users don't need to worry about using old or vulnerable code , or complex building process. 
+
+
+
+
 ---
 
 refrences
