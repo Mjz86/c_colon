@@ -7,7 +7,7 @@ c colon lang and the mcc abi
 
 in this document, we specify the application binary interface (abi) for c colon programs: that is, the object code interfaces between different user-provided c colon program fragments and between those fragments and the implementation-provided runtime and libraries. this includes the memory layout for c colon data objects, including both predefined and user-defined data types, as well as internal compiler generated objects such as virtual tables. it also includes function calling interfaces, exception handling interfaces, global naming, and various object code conventions.
 
-in general, this document is meant to serve as a generic specification which can be used by c colon implementations on a variety of platforms. it does this by layering on top of a platform's base c abi. this is inspiered by the famous itanium abi, there are somtimes assumbions of 64-bit tragets, it is usually straightforward to recognize these unportable assumptions and translate them appropriately, e.g. by replacing a 64-bit pointer with a 32-bit pointer.
+in general, this document is meant to serve as a generic specification which can be used by c colon implementations on a variety of platforms. this is inspiered by the famous itanium abi, there are somtimes assumbions of 64-bit tragets, it is usually straightforward to recognize these unportable assumptions and translate them appropriately, e.g. by replacing a 64-bit pointer with a 32-bit pointer.
 
 this document is not an authoritative definition of the c colon abi for any particular platform. platform vendors retain the ultimate power to define the c colon abi for their platform. platforms using this abi for c colon should declare that they do so, either unmodified or with a certain set of changes.
 
@@ -46,8 +46,8 @@ the link times in mcc may increase from the calling conventions burden, but it's
 similar to rust, c: has a borrow checker, a powerful one, the local safety and borrow rules prevent global uninitialized access, use after free and more.
 similar to rust, c: has unsafe blocks, these unsafe blocks are specified with their safety control, for example unsafe(pointer-use) or unsafe(pointer-cast), unsafe(unrestricted), unsafe(variable) and more unsafe specifiers.
 the rust language, although very fast, still lacks the option of non trivial moves, the option of elegant linked lists, the option of self referential sso. it can be achieved with pointers, but it will not look good.
-although like rust these are unsafe in c:, these are not dangerous, they are just unrestricted in c colon. unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev,
-although, at the cost of safety and maybe performance (for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage).
+although like rust these are unsafe in c:, these are not totally disallowed, they are just unrestricted in c colon. unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev,
+although, at the cost of safety (using unsafe(unrestricted) ) and maybe performance (for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage).
 note that some qualifier are unsafe to add or remove, for example the no alias qualifiers may lead to ub if removed so it has to be unsafe.
 
 
@@ -297,9 +297,9 @@ a stable mutable value.
 
 borrowed / refrenced / owned
 
-- borrowed:
-object cannot be used.
 - refrenced:
+object is borrowed elsewhere,object cannot be used.
+-  borrowed:
 can be used but does not drop.
 - owned:
 an owned object can use and must drop after use.
