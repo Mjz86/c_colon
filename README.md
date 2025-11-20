@@ -1028,7 +1028,9 @@ this is because the standard can change the abi of these components at later ver
 6. easy to use package management with abi stability:
 users don't need to worry about using old or vulnerable code , or complex building process. 
 
-
+7. safe with rare  borrowing errors:
+theres no traditional borrowing in express colon , because refrences aren't allowed,  only value oriented reference-like alternatives are, this is because most simple objectives can be achieved soly via containers, dynamic refrencing containers and value types,
+while the underlying c colon has borrowing rules,  express colon programs still dont need lifetime anotations ( the c colon libraries however probably do)
 
 
 ---
