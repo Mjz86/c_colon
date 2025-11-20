@@ -361,8 +361,10 @@ noreturn means the behaviour is undefined if the function returns to the caller 
   a fastdyncaller qualifier makes the dynamic call,  have no variables in the used set.
   a fastdyncallee doesn't do much to the function's dynamic signature,  but  the registers in the used set increase a lot.
  
- 
- * the fastdyncaller transformation :
+ - nodyncontract/ dyncontract:
+ dyncontract ( deafult) allows a function's contract to execute in the call site based on the callers contract evaluation requirements. 
+
+  * the fastdyncaller transformation :
  this is intended  for functions that want minimal register usage in the functions who use the dynamic call,
  usually smaller functions with less used  registers benefit from the fastdyncaller specification, but those with many moving parts who already have large register usage are better used with the fastdyncallee qualifier. 
  if F's adress isnt stored or used , then the transformation code  is optimized away.
@@ -385,7 +387,10 @@ noreturn means the behaviour is undefined if the function returns to the caller 
   restore all registers specified as used in F in stack.
     jump to the return pointer.
     
-    dynamic F( where the dynamic pointer will point):
+    
+     
+     absolute value of (&contact_checked_F)
+     dynamic F( where the dynamic pointer will point):
 
     save all  registers specified as used in F in stack.
     save both return pointers.
@@ -395,12 +400,37 @@ noreturn means the behaviour is undefined if the function returns to the caller 
     
     F's code...
     
+    contact_checked_F: 
+    contract's code...    
     
     
    
    a call to &(dynamic F) is made through the function pointer.
    
 ```
+
+the difference to fastdyncallee is :
+```txt
+
+
+
+
+absolute value of (&contact_checked_F)
+dynamic F( where the dynamic pointer will point):
+static F:
+    
+    F's code...
+    
+
+
+contact_checked_F: 
+contract's code...    
+
+```
+
+
+
+
 
 ---
  refrences
@@ -658,6 +688,14 @@ a formal description might be:
 
 a registers who's observed values before the call might be different after the call , in at least one code path.
 
+
+- dynamic function contract tracking:
+any dyncontract function who's adresss is captured for dynamic calls must have a pointer-sized function pointer before the function's code itself. 
+this function pointer is the contract checked F pointer , it points to the contract handler,
+the contact handler checkes the pre or post conditions of a function, based on an implicit  in argument  that contains:
+0. check the pre vs check the post bit.
+1. expected contact violation semantic of caller.
+
 - more explanation:
 
 this set grows linearly until the registers load is too high , then for these registers , the caller stores them to stack and pops back after return from calle, this makes sure there is minimal stack usage,
@@ -790,7 +828,24 @@ uaually specified noreturn, if not the user might struggle writing code.
 ---
  contracts :
  
+- a contract is an idempotent expression that is used as a way to show validity of the current environment state.
 
+-  there are different types of contract executions:
+
+1. dynamic execution:
+  
+   a nodyncontract has no contact checked version. 
+ 
+  a  dyncontract   function itself  has a  mandatory requirement  for a contract check in the `contact_checked` section of its assembly 
+
+   the dynamic  callee may already have contract checks as a requirement, so , the two versions might be identical (  the function  pointer being the same or at most using a signle jump to the signature)if the callee is checked. 
+   
+   the caller uses either the checked version or the optimized version based on its contact requirement environment.
+   
+   
+2. static execution:
+
+usually the contract calling code is only repeated once in  the call site if any of the callee or caller contact requirement environments mandates it.
 
 - diffrent types of contract_assert:
 1. pre :
