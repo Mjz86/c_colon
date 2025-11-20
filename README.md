@@ -1,7 +1,7 @@
-
+---
 c colon lang and the mcc abi
 
- introduction
+> introduction
 
 
 
@@ -27,7 +27,7 @@ a language inspired by c++ and rust, and some functional principles.
 
 this language aims to be in the "c++ successor" language  categories, 
 having c++ like syntax but with memory safety ,
-aiming to be able to express c++'s full power while  freeing the language from the abi stability nightmare  that the wg21 standard committee made and the stack consuming windows API.
+aiming to be able to express c++'s full power while  freeing the language from the abi stability nightmare  that the wg21 standard committee made and the stack consuming windows calling convention ABI.
 
 this languages goals include:
 
