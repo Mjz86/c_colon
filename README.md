@@ -1041,7 +1041,7 @@ while the underlying c colon has borrowing rules,  express colon programs still 
 
 
 
-i pridict that the worst error is an easy "must initialized an out prameter" , which is , simple and far better than lifetimes or memory bugs.
+i pridict that the worst common error is an easy "must initialized an out prameter" , which is , simple and far better than lifetimes or memory bugs.
  
 
 ---
