@@ -1,65 +1,104 @@
-# c colon lang  and the mcc abi:
+---
+c colon lang and the mcc abi
 
-> intruduction:
+> introduction
+
+
 
 in this document, we specify the application binary interface (abi) for c colon programs: that is, the object code interfaces between different user-provided c colon program fragments and between those fragments and the implementation-provided runtime and libraries. this includes the memory layout for c colon data objects, including both predefined and user-defined data types, as well as internal compiler generated objects such as virtual tables. it also includes function calling interfaces, exception handling interfaces, global naming, and various object code conventions.
 
-in general, this document is meant to serve as a generic specification which can be used by c colon implementations on a variety of platforms. it does this by layering on top of a platform's base c abi. this is inspiered by the famous itanium abi , there are somtimes assumbions of 64-bit tragets , it is usually straightforward to recognize these unportable assumptions and translate them appropriately, e.g. by replacing a 64-bit pointer with a 32-bit pointer.
+in general, this document is meant to serve as a generic specification which can be used by c colon implementations on a variety of platforms. it does this by layering on top of a platform's base c abi. this is inspiered by the famous itanium abi, there are somtimes assumbions of 64-bit tragets, it is usually straightforward to recognize these unportable assumptions and translate them appropriately, e.g. by replacing a 64-bit pointer with a 32-bit pointer.
 
 this document is not an authoritative definition of the c colon abi for any particular platform. platform vendors retain the ultimate power to define the c colon abi for their platform. platforms using this abi for c colon should declare that they do so, either unmodified or with a certain set of changes.
 
-also , this is generally incomplete, the c colon spec and mcc abi of that spec will be more refined in each revisions .
+also, this is generally incomplete, the c colon spec and mcc abi of that spec will be more refined in each revisions.
 
-the formatting of this document is currently not very well, under scors are not ment for italic.
+the formatting of this document is currently not very well, under scores are not ment for italic.
 
-> whats c colon :
+
+---
+
+whats c colon
 
 ![Logo](https://github.com/Mjz86/c_colon/blob/main/icon/c_colon.png)
 
-a language inspired by c++ and rust , and some functional principles.
 
-- this languages goals include:
-1.  the option of performance at the cost of verbosity :
- the mcc toolchain needs as much information as it can about the program,
- this information helps immensely in optimizations and it also makes the intention of the developers clear .
-2. zero cost abstractions :
- each operation that can be optimized at compile time will be optimized at compile time,
- the link times in mcc may increase from the calling conventions burden , but it's for the runtime.
-3. safety as the deafult, with unsafe(...) as escape hatch:
-similar to rust , c: has a borrow checker , a powerful one , the local safety and borrow rules prevent global uninitialized access, use after free and more , 
-similar to rust , c: has unsafe blocks , these unsafe blocks are  specified with their safety control,  for example unsafe(pointer-use) or unsafe(pointer-cast), unsafe(unrestricted) , unsafe(variable) and more,
- the rust language, although very fast , still lacks the option of non trivial moves , the option of elegant linked lists , the option of self referential sso , it can be achieved with pointers , but it won't look good ,  although like rust these are unsafe in c: ,  these aren't dangerous, they are just unrestricted in c colon, unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev ,
- although, at the cost of safety and maybe performance ( for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage)
- , note that some qualifier are unsafe to add or remove , for example the no alias qualifiers may lead to ub if removed  so it has to be unsafe.
- 4. compile time code:
-the c colon spec aims to use way more compike time code .
+a language inspired by c++ and rust, and some functional principles.
+
+this language aims to be in the "c++ successor" language  categories, 
+having c++ like syntax but with memory safety ,
+aiming to be able to express c++'s full power while  freeing the language from the abi stability nightmare  that the wg21 standard committee made and the stack consuming windows API.
+
+this languages goals include:
+
+
+1. the option of performance at the cost of verbosity:
+the mcc toolchain needs as much information as it can about the program,
+this information helps immensely in optimizations and it also makes the intention of the developers clear.
+
+
+2. striving for zero cost abstractions:
+each operation that can be optimized at compile time will be optimized at compile time,
+the link times in mcc may increase from the calling conventions burden, but it's for the runtime.
+
+
+3. safety as the default, with unsafe(...) as escape hatch:
+similar to rust, c: has a borrow checker, a powerful one, the local safety and borrow rules prevent global uninitialized access, use after free and more.
+similar to rust, c: has unsafe blocks, these unsafe blocks are specified with their safety control, for example unsafe(pointer-use) or unsafe(pointer-cast), unsafe(unrestricted), unsafe(variable) and more unsafe specifiers.
+the rust language, although very fast, still lacks the option of non trivial moves, the option of elegant linked lists, the option of self referential sso. it can be achieved with pointers, but it will not look good.
+although like rust these are unsafe in c:, these are not dangerous, they are just unrestricted in c colon. unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev,
+although, at the cost of safety and maybe performance (for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage).
+note that some qualifier are unsafe to add or remove, for example the no alias qualifiers may lead to ub if removed so it has to be unsafe.
+
+
+4. compile time code:
+the c colon spec aims to use way more compike time code.
+
+
 5. multi paradigm language:
- its like c++ but the legacy has been striped away.
+its like c++ but the legacy has been striped away.
+
+
 6. abi stability with ever changing libraries:
- the recursive hash abi aims to tag each component with all the dependancies with a hash , without the need for inline namespaces , and it even propagates ,this property of propagation through every type , function and namespace, makes us able to link everything old with everything new without odr violations , and new components can just use a middle api to interface to new code ,
- imagine a world were the old std::regex was used for old code and the same std regex was 10 times faster when used new code both coexisting, this , truly makes it paying for what we used , the old programer payed for old slow usage , but new code didn't have to pay for the burdens in old code ,
- and , each independent code that stayed unchanged didn't need duplications , a dream for the cpp committee, and a possibility in mcc , the c colon abi,
- the hashes although not cryptographically secure are big enough to be unique , basically like a uuid ( because its just a name mangling scheme)
+the recursive hash abi aims to tag each component with all the dependancies with a hash, without the need for inline namespaces, and it even propagates.
+this property of propagation through every type, function and namespace, makes us able to link everything old with everything new without odr violations, and new components can just use a middle api to interface to new code.
+imagine a world were the old std::regex was used for old code and the same std regex was 10 times faster when used new code both coexisting.
+this truly makes it paying for what we used. the old programer payed for old slow usage, but new code did not have to pay for the burdens in old code.
+and each independent code that stayed unchanged did not need duplications, a dream for the cpp committee, and a possibility in mcc, the c colon abi.
+the hashes although not cryptographically secure are big enough to be unique, basically like a uuid (because its just a name mangling scheme).
+
+
 7. type qualifier deriven optimizations:
-the qualifiers change throughout the code ,the same expression have lead to diffrent qualifiers, its ill-formed , but, this , makes uninitilized variables truly safe to use ,
-because the function either throws or initilizes them , if not initilized it is an error , ( this will be clarifed more in next revisions, but basically, something mutable in the past may be constant now , or something restricted may be unrestricted, its like automatic shadowing of variable names but without allowing shadowing )
-if two code paths to
+the qualifiers change throughout the code, the same expression have lead to diffrent qualifiers, its ill-formed, but this makes uninitilized variables truly safe to use.
+because the function either throws or initilizes them, if not initilized it is an error.
+(this will be clarifed more in next revisions...)
+
+
 8. reflection the verbosity away:
-each namespace  has an special function,  implemented defaultly , it  addes context objects to functions,  and automates many of the verbose writing, 
+each namespace has an special function, implemented defaultly, it addes context objects to functions, and automates many of the verbose writing
 for example  a var is stable const restricted safe and ect by deafult,  no need to opt in , 
 the reflection functions work on the ast , after all the de reflection Operations are completed,  the ast can fully turn into IR,
 these operations can happen in parallel,  if they are located in separate dependancy chains .
 similarly the abi hashing is also done in parallel  and cashed once completed based on dependancy chain, although the abiof operator might make it happen sooner than usual. 
-9.   JIT constexpr code execution:
+
+
+
+9. JIT constexpr code execution:
 each function  even in its template form can be turned into IR , because mcc IR is different,  it has two types , constexpr IR and mutexpr IR ,
 the borrow checking and lifetime management itself is constexpr IR with assertions.
 constexpr IR is necceceraly  ran in the compiler , so , even if the template types are unknown,  the IR is generated to  reterive the template type then de-reflect the type away in just-in-time generated IR.
-10. unique programming and debugging experience :
+
+
+
+10. unique programming and debugging experience:
 The debugging would be in the context types ,
 Async debugging is hard in other languages,  but seemless in c colon because the stack trace is automatically build in the context functions for debugability when we unwind,
 the explicit allocator problem in c++ is also eliminated , making using debug alloctors easier, 
 the contract violations are captured in the context object,  vs the static global violation handler function 
 async destructors work with the `co_value` keyword  and much more.
+
+
+
 11. easy to use package management with cpp like compile times:
 like cargo , c colon has a package management system integrated in the tool chain ,
 unlike hedaer files and cpp files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
@@ -67,22 +106,39 @@ each module has hashes of its dependent modules, to help cashing and compile tim
 because the ast can be converted to IR via JIT , the compiler can  use many cashing schemes for templated entities and namespaces 
 , each component and modules in the package management system have precompiled some IR and AST steps , that make it easier for compilers to use them if more download speeds result in faster compilations , if not the compiler can do it by hand without IRs.
 
-what i think will be the strategy in this language to make it easy:
-- begginners: 
+
+
+
+
+---
+
+what i think will be the strategy in this language to make it easy
+
+begginners:
 avoiding most qualifiers and completely, sticking to using mut when necessary, 
 sticking to value semantics, for functions,  inout , in , out  and non reference,  reference-like alternative that dont cause much confusion, 
 and coping most things , occasionally using more complex code.
 avoiding any borrowing and  unsafe.
-- developers who use libraries:
+
+developers who use libraries:
 writing value oriented,  functional-like mutibility avoiding code , knowing how to design easy to use apis , with OOP and more to use 
-- library authors:
+
+
+library authors:
 writing complex performant code that can be used easily using value oriented designs
--  low level library  authors:
+
+low level library authors:
 using the language  to its fullest,  writing effective and efficient code without worrying much about abi braking, 
 using the latest technologies and theories to develop code that can be understood well by the optimizer, 
 writing utilities that help automate rust, c++ and other language bindings and more.
 
-- a note from  mjz , on what to do in `c:` : 
+
+
+
+---
+
+a note from mjz on what to do in "c:":
+
 try not to get boggled down with ways to make it faster,
 it is rewarding,  but its hard, the easiest way to write safe code in both rust and c: is to do more functional programming,
 try only focusing on what needs to be optimized before making it hard for yourself, 
@@ -95,48 +151,66 @@ its about using a regex without saying that php's regex is faster.
 
 
 
-- considrations :
-with these goals in mind , i aim to improve this spec , to make it practical, i often start with over engineering things , then chop unnecessary additions, to make it more practical, as of rn , were in over engineering phase.
 
-> considrations :
- this abi aims to have minimal compatibility with the itanium abi , such that an extern "c++" statement can make most code usable in a c++ platform,
+---
+
+considrations
+
+with these goals in mind , i aim to improve this spec , to make it practical, i often start with over engineering things , then chop unnecessary additions, to make it more practical, as of rn , were in over engineering phase.
+this abi aims to have minimal compatibility with the itanium abi , such that an extern "c++" statement can make most code usable in a c++ platform,
  some concepts may be excluded from such inclutions , for instance , a c++ type's dclaration must be expressable in c colon and vise versa .
 
-> definitions:
 
-> value qualifiers:
+---
 
-> volatile/nonvolatile :
- a change, read or write in a volatile-ly used region of memory may not be optimized out.
+definitions
+
+value qualifiers
+
+volatile / nonvolatile
+
+a change, read or write in a volatile-ly used region of memory may not be optimized out.
  volatile often has to come with the unstable+unrestricted qualifiers so thet need explicit mention.
 
-> mut/const :
- a change, read or write in a mutable region of memory is allowed
 
-> unstable/stable:
- for a pointer p declared within a code block b to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of b , the expression std::memcmp(std::addressof(v),a,sizeof(v))==0 must be true , otherwise the behaviour is undefined.
+mut / const
+
+a change, read or write in a mutable region of memory is allowed
+
+
+unstable / stable
+
+for a pointer p declared within a code block b to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of b , the expression std::memcmp(std::addressof(v),a,sizeof(v))==0 must be true , otherwise the behaviour is undefined.
 
  for a pointer p declared within a code block b to an stable mut region of memory r, if a stable byte const v stored to address a originating from p is used , then until the end of b , the expression `v== (byte)*a` must be true , if not , a value has been stored to address a originating from p in b or by a function called in b who is given a non const-stable pointer originating from p , otherwise the behaviour is undefined.
 
  note:
+ 1. mut-stable is like restrict in c, but a const-stable is like a rust constant
+ 2. its dangerous for stable values to be declared unrestricted, it is as if a c restrict aliases
 
- 1- mut-stable is like restrict in c, but a const-stable is like a rust constant
- 2- its dangerous for stable values to be declared unrestricted, it is as if a c restrict aliases
 
-> uninitilized/initilized:
- a read from uninitilized valued via unsafe pointer  is undefined and without it  ill formed, but an store is valid, and will make  the qualifier go away.
+uninitilized / initilized
 
-> unrestricted/restricted:
- unrestricted disables the exclusive mutibility borrow rule in the compiler.
+a read from uninitilized valued via unsafe pointer  is undefined and without it  ill formed, but an store is valid, and will make  the qualifier go away.
+
+
+unrestricted / restricted
+
+unrestricted disables the exclusive mutibility borrow rule in the compiler.
  unrestricted often has to come with the unstable qualifier so explicit stable xor unstable qualification is required.
 
-> noaliastype/aliastype:
- aliastype means that any store/load/modification throgh this type can influence types outside the alias set.
 
-> mutexpr/constexpr:
- a value dcalared constexpr is known at compile time.
+noaliastype / aliastype
 
-> static/thread_local/automatic/dynamic/register/opaque/external/nostorage, storage :
+aliastype means that any store/load/modification throgh this type can influence types outside the alias set.
+
+
+mutexpr / constexpr
+
+a value dcalared constexpr is known at compile time.
+
+storage qualifiers
+
 - external storage:
 the storage semantic is unknown.
 - static storage:
@@ -154,35 +228,44 @@ value's storage is somewhere , but its valid at least till the current block end
 - nostorage storage:
 no address is given for the value
 
-> refexpr/valexpr:
+
+refexpr / valexpr
+
 the address of a valexpr value may not be uniqe, the state may be used to represent other objects as well ,
 its like no_unique_address in c++:
-makes this member subobject pote
-
-ntially-overlapping, i.e., allows this member to be overlapped with other non-static data members or base class subobjects of its class. this means that if the member has an empty class type (e.g. stateless allocator), the compiler may optimise it to occupy no space, just like if it were an empty base. if the member is not empty, any tail padding in it may be also reused to store other data members.
+makes this member subobject potentially-overlapping, i.e., allows this member to be overlapped with other non-static data members or base class subobjects of its class. this means that if the member has an empty class type (e.g. stateless allocator), the compiler may optimise it to occupy no space, just like if it were an empty base. if the member is not empty, any tail padding in it may be also reused to store other data members.
 also if reorder is possible , any padding bytes or invalid state may be used to represent such object,
 if its a bitset , even more possibilities are made , as long as other dclared object's are preserved
 
-> not_reorderable/reorderable ( struct/class qualifier ):
+reorderable/not_reorderable(struct/class qualifier )
+
 we can do rust-like reorder optimization if this enabled
-> offset_dependant/not_offset_dependant/member_offset_dependant/member_not_offset_dependant(struct/class qualifier,and type qualifier):
- a not_offset_dependant type is a type whoes inner structs can be scattered in memory when accessed,
+
+offset_dependant/not_offset_dependant/member_offset_dependant/member_not_offset_dependant(struct/class qualifier,and type qualifier):
+
+a not_offset_dependant type is a type whoes inner structs can be scattered in memory when accessed,
  specifically ,a pointer to a sub object cannot be used to reliably get to the main object by a subtraction of the offset (other than a base class to drived class cast).
  but offset_dependant objects can use the offset to gain a pointer to the main object.
+member_offset_dependant objects are the ones that specifically can be used for casts by offset , base classes are member_offset_dependant by deafult.
 
- member_offset_dependant objects are the ones that specifically can be used for casts by offset , base classes are member_offset_dependant by deafult.
+forceref / unforceref
 
-> forceref/unforceref:
 forceref makes the refrence a pointer-like type that hold the address of the refrenced type ,
 unforceref allows the refrence to be a custom type , for example a const str& is more appropriate as a string-view like type than a refrence to a string.
 
-> unaligned/aligned:
- the alignment of this type might be neglected
 
-> unsafe/safe:
- a value modifier that makes usage of this value an unsafe operation.
+unaligned / aligned
 
-> interface/final/virtual/nonvirtual:
+the alignment of this type might be neglected
+
+
+unsafe / safe
+
+a value modifier that makes usage of this value an unsafe operation.
+
+
+interface / final / virtual / nonvirtual
+
 - virtual:
  a virtual type is
  a type pointer + virtual table pointer.
@@ -195,13 +278,16 @@ unforceref allows the refrence to be a custom type , for example a const str& is
 - final:
  a type with a v-table who's dynamic refrence type maches the static type.
 
-> noaliasset/usealiasset:
+
+noaliasset / usealiasset
+
 noaliasset means the alias set of the type cannot alias the type,
-for example intn_t can alias the uintn_t and mintn_t types , but noaliasset intn_t cannot.
+for example `intn_t` can alias the `uintn_t` and `mintn_t` types , but `noaliasset intn_t` cannot.
 
-> inexpr/outexpr/inoutexpr:
- determines the general usage and call convention in a function argument.
 
+inexpr / outexpr / inoutexpr
+
+determines the general usage and call convention in a function argument.
 - inexpr:
 a stable const value.
 - outexpr:
@@ -209,7 +295,7 @@ a stable uninitilized mutable value that will initilize the caller argument afte
 - inoutexpr:
 a stable mutable value.
 
-> borrowed/refrenced/owned:
+borrowed / refrenced / owned
 
 - borrowed:
 object cannot be used.
@@ -218,7 +304,12 @@ can be used but does not drop.
 - owned:
 an owned object can use and must drop after use.
 
-> function qualifiers:
+
+
+---
+
+function qualifiers
+
 - effectless:
 an evaluation of a function call is effectless if any store operation that is sequenced during the call is the modification of an object that synchronizes with the call; if additionally the operation is observable, all access to the object must be based on a unique pointer parameter of the function.
 - idempotent:
@@ -267,66 +358,86 @@ noexcept means the behaviour is undefined if the function returns to the caller 
 noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
 - fastdyncaller/fastdyncallee:
   functions are fastdyncaller by default, 
-  a fastdyncaller qualifier makes the dynamic call,  have no variables in the used set,
-   it makes functions have 2 parts:
-   
-   
- >  the fastdyncaller transformation :
+  a fastdyncaller qualifier makes the dynamic call,  have no variables in the used set.
+  a fastdyncallee doesn't do much to the function's dynamic signature,  but  the registers in the used set increase a lot.
+ 
+ 
+ * the fastdyncaller transformation :
  this is intended  for functions that want minimal register usage in the functions who use the dynamic call,
  usually smaller functions with less used  registers benefit from the fastdyncaller specification, but those with many moving parts who already have large register usage are better used with the fastdyncallee qualifier. 
-``` 
+ if F's adress isnt stored or used , then the transformation code  is optimized away.
+ the fastdyncallee , on the other hand  doesn't have a transformation in the function's assembly.
+
+
+ ```txt 
+ 
     RC:
+    
     restore the catching return  to the return pointer.
     jump to ret.
+
     RN:
-    restore the normal return  to the return pointer
-    ret:
-    restore all registers specified as used in F in stack.
+ 
+   restore the normal return  to the return pointer
+ 
+   ret:
+  
+  restore all registers specified as used in F in stack.
     jump to the return pointer.
     
     dynamic F( where the dynamic pointer will point):
+
     save all  registers specified as used in F in stack.
     save both return pointers.
     set both return pointers to &RN and &RC.
+
     static F:
+    
     F's code...
     
     
     
    
-   a call to dynamic F is made through the function pointer.
+   a call to &(dynamic F) is made through the function pointer.
    
 ```
-if F's adress isnt stored or used , then the transformation code  is optimized away.
 
-the fastdyncallee , on the other hand  doesn't have a transformation in the function's assembly.
-
-
+---
+ refrences
  
+ out/in/inout T:
  
-
-
-> refrences:
-- out/in/inout T:
 a value oriented reference-like type ,
 for function arguments,  these don't necessarily mean that T will have the same address,  unless T isnt triviality relocatable, which will make T relocate into the stack in the caller.
 
-- T&:
+T&:
+
 a typical l-value reference like rust , and if unrestricted , like c++.
 its like inout,for passing around T without potentially changing the adresss of T , unlike inout.
--T&&:
+
+T&&:
+
 a typical r-value reference like c++ but borrow  checked like T&, and if unrestricted , like c++.
 its mut is used in the move constructors. 
 its const is used in the copy constructors.
 ( unlike c++ ,T&& cant bind to  const T&, but T& can bind to const T&&)
--T&&&:
+
+T&&&:
+
 a dropping reference,  meaning that after the lifetime  of the `T&&&` the entity will be dropped.
 used in the relocation constructors.
 
-- non forceref user defined refrences:
+non forceref user defined refrences:
+
 are user defined types who's purpose is refrencing variables. 
 
-> itanium-like definitions:
+
+
+---
+
+
+
+itanium-like definitions:
 
 the descriptions below make use of the following definitions:
 
@@ -355,9 +466,7 @@ the descriptions below make use of the following definitions:
 - inheritance graph: a graph with nodes representing a class and all of its subobjects, and arcs connecting each node with its direct bases.
 
 - inheritance graph order: the ordering on a class object and all its subobjects obtained by a depth-first traversal of its inheritance graph, from the most-derived class object to base objects, where:
-    - no node is visited more than once. (so, a virtual base subobject, and all of its base subobjects, w
-
-ill be visited only once.)
+    - no node is visited more than once. (so, a virtual base subobject, and all of its base subobjects, will be visited only once.)
     - the subobjects of a node are visited in the order in which they were declared. (so, given class a : public b, public c, a is walked first, then b and its subobjects, and then c and its subobjects.)
     - note that the traversal may be preorder or postorder. unless otherwise specified, preorder (derived classes before their bases) is intended.
 
@@ -397,41 +506,100 @@ the target function.
 - virtual table (or vtable): a dynamic class has an associated table (often several instances, but not one per object) which contains information about its dynamic attributes, e.g. virtual function pointers, virtual base class offsets, etc.
 - virtual table group: the primary virtual table for a class along with all of the associated secondary virtual tables for its proper base classes.
 
-> calling convention:
+
+ layout:
+ 
+in what follows, we define the memory layout for c colon data objects. specifically, for each type, we specify the following information about an object o of that type:
+
+- the size of an object, sizeof(o);
+- the alignment of an object, align(o); and
+- the offset within o, offset(c), of each data component c, i.e. base or member.
+for purposes internal to the specification, we also specify:
+
+- dsize(o): the data size of an object, which is the size of o without tail padding.
+- nvsize(o): the non-virtual size of an object, which is the size of o without virtual bases.
+- nvalign(o): the non-virtual alignment of an object, which is the alignment of o without virtual bases.
+
+virtual table layout contains:
+
+- cast table:
+  1. number of bases
+  2. cast-table-pointers-to-baes.
+  3. type-table-pointers
+- type-table:
+  1. offset-of-type
+  2. cast-table-pointer
+  3. virtual-base-objects-offsets
+  4. function-pointers
+  
+  
+  a virtual refrence is :
+virtual table pointer
+and
+type pointer
+
+  
+  
+---
+
+calling convention
+
 a mcc signature has:
+
 return-type function-mangled-name ( arg-type-(in/out/inout) args... ) context-type (noexcept/throws) (noreturn/mayreturn) ( other-function-qualifiers);
 
 - note:
+
 the context type is as if its an inout argument.
+
 the return type is as if its an out argument.
 
 there are special registers:
+
 1. the stack pointer and the base pointer (callee saved):
+
 stack pointer is like itanum , except the base pointer is a register, the caller can assume its value is the same after the call, usually some optimizations might use other stratch registers as base pointer as well ,but this one is special because it isnt used through a fastdyncallee dynamic call.
+
 2. the instruction pointer (caller passed, no save):
+
 like itanum
+
 3. the normal return address (caller passed, no save):
+
 the return adress to the happy path section in the caller.
+
 4. the catching return address (caller passed, no save):
+
 the return address to the unwind/sad path code section in the caller
+
 
 ( only 5 pointer sized registers, 2 of which are already used in all architectures for that purpose)
 ( the other 3 can be pushed before general purpose use and poped/re assigned when needed at the call boundaries to reduce register pressure when register utilization is too much)
 
 a function's manipulated registers come in 4 categories ( aside from special ones):
+
 1. in:
+
 cannot be written to by callee, only read from
+
 2. out:
+
 cannot be read from by callee( before the initialization),
 and must be written to at some point in callee
 
+
 3. inout:
+
 free to read or write.
 
+
 4. used ( scratch registers),(caller saved):
+
 may be read from or written to , but its undefined if the caller reads these after the call , except when initialized again.
 
+
 important note: 
+
  in and out registers may overlap in the calling convention , this doesn't mean that they will be inout , only that the registers who are used for input purposes, will have output purposes after the call,  because its faster as an inout amd has less register pressure.
 
 any registers not used or not in any signature is unused ,
@@ -441,10 +609,41 @@ for example if i do a call to a fastdyncallee dynamic function in an almost empt
 a function signature , or a function pointer type will determine the :
 in , out, and inout registers.
 
+
+- in the rare occasion  of using all registers for parameter passing , the caller pushes arguments to the stack , the caller is responsible for the cleanup of the out and inout parameters,  but the callee is responsible for the in parameter cleanup. 
+
+- the registers allocator priority goes like( lower means more priority for being in a registers):
+1.   all inout registers  ( including the ones made implicitly via the overloap of in and out registers).
+2.  all out registers. 
+3.  all in registers. 
+
+- after stable sorting of arguments based on in/out/inout the stack arguments are pushed onto the stack from right to left.
+
+ - the responsibility of cleanup of stack variables:
+ 1. inout and out:
+ these arguments are cleaned up by the caller. 
+ the reason is that the caller might read these so they do  need cleanup by the caller.
+ these arguments are allocated on the stack before assignments of the stack pointer  to the base pointer of the callee.
+2. in:
+these arguments are cleaned up by the callee.
+the reason is that the caller will not read these so they do not need cleanup. 
+these arguments are allocated on the stack  after assignments of the stack pointer  to the base pointer of the callee.
+
+
+
+* the unsafe(dyn-args) dynamic variading functions  ( printf in C is one of the examples, although these functions are unsafe and therfore bad practice to write) implicitly treat the underlying in registers that weren't overlapping  with outs as inout for the abi to be able to clean it up by the caller side.
+
+
+
 the used registers set is :
 
-for a fastdyncallee dynamic function call ( through a function pointer or a dll call) : all the registers not used in the signature ( except for the base pointer register and other special registers), so the callee's function pointer  is as if it was to its static call , but ,all the callers who use this function have the burden of saving intermediate values into the stack.
-for a fastdyncaller dynamic function call  ( through a function pointer or a dll call) : no registers are in the used set , this means that the callee  saved all the callee used registers in the dynamic transformation code,  so the caller is free to assume that all  registers not in the function signature are preserved,  making the caller more performant and reducing caller code size.
+for a fastdyncallee dynamic function call ( through a function pointer or a dll call) : 
+
+all the registers not used in the signature ( except for the base pointer register and other special registers), so the callee's function pointer  is as if it was to its static call , but ,all the callers who use this function have the burden of saving intermediate values into the stack.
+
+for a fastdyncaller dynamic function call  ( through a function pointer or a dll call) : 
+
+no registers are in the used set , this means that the callee  saved all the callee used registers in the dynamic transformation code,  so the caller is free to assume that all  registers not in the function signature are preserved,  making the caller more performant and reducing caller code size.
 for a static call:
 
 all registers used in the callee and through the function call .
@@ -454,6 +653,7 @@ a used registers is a registers whose value is potentially modified, but the ini
 for example, a push of r and a pop of r at the end in return means r is restored so r is not a used register, even though it might be modified.
 
 a formal description might be:
+
 a registers who's observed values before the call might be different after the call , in at least one code path.
 
 - more explanation:
@@ -482,6 +682,8 @@ note that , as far as i know, the call and ret instructions already store much u
 also , i believe that allowing the return , arguments and more be able to expand , be even simd registers is far more beneficial than a restricted set of registers as function arguments and a single return registers, let alone the catch register
 
 there might also be optimizations:
+
+```txt
 f:
 init:...
 code:...
@@ -489,14 +691,15 @@ if ... jump to happy
 (throw code ...)
 move catch ret register to normal ret .
 ( this will make the return at the end a throwing return)
+jump to clean
 happy:
 ....
 clean:
 ....
-
-end and ret:....
-
+end and ret:
+....
 ret to normal ret
+```
 instead of duplicated cleanup code in happy and sad paths in the c++ throw conversions, or returning to an unnecessary brach that is known to be happy or sad in the calle.
 
 in x86 specifically ,some things to note is that , while x86 has like 1024 bytes of zmm registers, its all caller saved in itanum , so... the compiler often wont use their full potential even in static calls, it is already not used ,
@@ -516,20 +719,32 @@ pushed before the call instruction.
 even tho the call instruction is faster than pushing them manually, the registers are still being spilled to the stack , so in every case , a dynamic call necessarily has to store the registers necessary in the stack .
 all we did was , for static calls, reduce the burden of the runtime to the link time analysis.
 
-> limits:
-the architecture  must have at least 5 pointer sized registers.
 
-> namespace and header:
+---
+
+limits
+
+the architecture must have at least 5 pointer sized registers.
+
+
+---
+
+namespace and header
+
 this abi specifies a number of type and function apis supplemental to those required by the c colon standard. a header file named mccabi.h will be provided by implementations that declares these apis. the reference header file included with this abi definition shall be the authoritative definition of the apis.
 
-these apis will be placed in a namespace __mccabiv1. the header file will also declare a namespace alias abi for __mccabiv1. it is expected that users will use the alias, and the remainder of the abi specification will use it as well.
+these apis will be placed in a namespace `__mccabiv1`. the header file will also declare a namespace alias abi for  `__mccabiv1`. it is expected that users will use the alias, and the remainder of the abi specification will use it as well.
 
 in general, api objects defined as part of this abi are assumed to be extern "c:". however, some (many?) are specified to be extern "c" or extern "c++" if they:
 
 - are expected to be called by users from c/c++ code, e.g. longjmp_unwind/throw/...; or
 - are expected to be called only implicitly by compiled code, and are likely to be implemented in c/c++.
 
-> compatibility:
+
+
+---
+
+compatibility
 
 - extern "c:" :
  the function has c colon abi , no restrictions.
@@ -537,39 +752,16 @@ in general, api objects defined as part of this abi are assumed to be extern "c:
  the function signature, should have types that are not reorderable , templates that are valid in c++ , and structures consistent of only fundemental cxx types , this will be more exactly specified in next revisions.
 - extern "c" :
  very bare bones , only fundemental types, trivial structures and pointers .
-
+ 
+ 
 - others:
  next revisions.
 
-> layout:
-in what follows, we define the memory layout for c colon data objects. specifically, for each type, we specify the following information about an object o of that type:
 
-- the size of an object, sizeof(o);
-- the alignment of an object, align(o); and
-- the offset within o, offset(c), of each data component c, i.e. base or member.
-for purposes internal to the specification, we also specify:
+---
 
-- dsize(o): the data size of an object, which is the size of o without tail padding.
-- nvsize(o): the non-virtual size of an object, which is the size of o without virtual bases.
-- nvalign(o): the non-virtual alignment of an object, which is the alignment of o without virtual bases.
 
-> virtual table layout contains:
-- cast table:
-  1. number of bases
-  2. cast-table-pointers-to-baes.
-  3. type-table-pointers
-- type-table:
-  1. offset-of-type
-  2. cast-table-pointer
-  3. virtual-base-objects-offsets
-  4. function-pointers
-
-> a virtual refrence is :
-virtual table pointer
-and
-type pointer
-
-> context object has:
+context object:
 
 - operator throw(self,...) noexcept->void:
 this operator is used when the contexts scope uses the throw operator.
@@ -584,13 +776,9 @@ it is usual for this operation to throw an exception to the outer context object
 
 uaually specified noreturn, if not the user might struggle writing code.
 
-
-
-> operator contract_assert(...)  context-type :
-- gets called when a contract violation occurs 
-
-
-- uaually specified noreturn , if not theres a chance that it ignores the violation.
+---
+ contracts :
+ 
 
 
 - diffrent types of contract_assert:
@@ -618,38 +806,56 @@ results in calling the operator contract_assert.
 results in undefined behaviour.
 
 
+operator contract_assert(...)  context-type :
+- gets called when a contract violation occurs 
 
 
-> fundemental types:
+- uaually specified noreturn , if not theres a chance that it ignores the violation.
 
-- (m/u)intN_t:
+
+
+---
+
+fundemental types
+
+- `(m/u)intN_t`:
+
  1. nothing:
- overflow is violation, is a signed integral.
+ overflow is a contract  violation, is a signed integral.
  2. u :
- overflow is violation, is an unsigned integral.
+ overflow is a contract violation, is an unsigned integral.
  3. m :
- any overflow is well-defined, only devision by 0 is violation,is unsigned modular arethmatic type.
+ any overflow is well-defined, only devision by 0 is a contract violation,is unsigned modular arethmatic type.
 
-- (b)floatN_t:
+- `(b)floatN_t`:
+
 floating point types with N bits.
-- charN_t:
+
+- `charN_t`:
+
 charechter types with N bits.
-- nullptr_t:
+
+- `nullptr_t`:
+
 type of a nullptr.
-- abi_t:
+
+- `abi_t`:
+
  the hash type that the abiof operator gives.
  its a 128 bit uuid , it doesn't support any operations outside of the abi operators,  other than the usual load and store or casts.
  for example,  the hash given by xxhash128. 
   this is good enough,  because the linker already has to append the cxx-style name mangle to the hash .
    `namenangle__hexed-hash`. 
 
-- cxx_(wchar/...)_t:
+- `cxx_(wchar/...)_t`:
+
  cxx compat types.
 
 
+---
 
+abi and compatibility
 
-# abi , and compatibility:
 - the abi@() operators:
 1. abi+(t/abi_t):
 adds the hash as a sult to the abi hash of the apllied expression.
@@ -671,7 +877,12 @@ gets the abi hash off the inner expression.
 - note :
 the c colon linker only uses the abi hashes as signaturs for linkage.
 
-## runtime libraries and compilation:
+
+
+---
+
+runtime libraries and compilation
+
 the objective of a full abi is to allow arbitrary mixing of object files produced by conforming implementations, by fully specifying the binary interface of application programs.
 
 - there are 8 main steps( might ):
@@ -684,19 +895,20 @@ the objective of a full abi is to allow arbitrary mixing of object files produce
  7. map ir-3 the code to the target assembly, while optimizing unnececery register usage , for example by register allocation optimizations and generate an object file.
  8. link the object files to an executable.
 
-## refrences:
-Mjz C colon or mjz C: compiler (mcc):
-<https://github.com/Mjz86/c_colon>
+
+
+---
+
+refrences
+
+Mjz C colon:
+https://github.com/Mjz86/c_colon
 
 itanium abi:
-<https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro>
+https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro
 
 xxhash128:
-<https://xxhash.com>
+https://xxhash.com
 
 
-
-
-
-
-
+---
