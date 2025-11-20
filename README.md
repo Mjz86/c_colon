@@ -831,7 +831,7 @@ its mandatory that this function is noexcept beacuse, only the void context obje
 
 this function generates the throw object that is propagated to thr callers catch.
 
-- operator catch(self,callee-throw-value) context-type:
+- operator catch(self,callee-throw-value,...) context-type:
 
 this operator is used when the contexts scope has an expression resulting in a call that might unwind by exception.
 
@@ -1037,7 +1037,7 @@ users don't need to worry about using old or vulnerable code , or complex buildi
 7. safe with rare  borrowing errors:
 
 theres no traditional borrowing in express colon , because refrences aren't allowed,  only value oriented reference-like alternatives are, this is because most simple objectives can be achieved soly via containers, dynamic refrencing containers and value types,
-while the underlying c colon has borrowing rules,  express colon programs still dont need lifetime anotations ( the c colon libraries however probably do)
+the express colon language also tends to look more functional than its c colon counterparts,  many changes to heap variables happening in monadic like fashion if they are garded via a mutex, or value based of they are easily movable and copyable, while the underlying c colon has borrowing rules,  express colon programs still dont need lifetime anotations ( the c colon libraries however probably do)
 
 
 
