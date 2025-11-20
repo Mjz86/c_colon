@@ -49,7 +49,16 @@ the rust language, although very fast, still lacks the option of non trivial mov
 although like rust these are unsafe in c:, these are not totally disallowed, they are just unrestricted in c colon. unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev,
 although, at the cost of safety (using unsafe(unrestricted) ) and maybe performance (for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage).
 note that some qualifier are unsafe to add or remove, for example the no alias qualifiers may lead to ub if removed so it has to be unsafe.
+unlike  c++'s deafult of code not being able to run at compile time,  code using mutibility and unstable, 
+c: would use and be written with functional looking deafults,
+for example a variable with no qualifier would be implicitly stable , const , safe and ect.
+or an inout would be implicitly mutable , and so on,
+these would make most code value oriented and functional,  
+and a code similar to cpp with rust like safety would be achieved. 
 
+
+
+---
 
 4. compile time code:
 the c colon spec aims to use way more compike time code.
@@ -108,9 +117,6 @@ because the ast can be converted to IR via JIT , the compiler can  use many cash
 
 
 
-
-
----
 
 what i think will be the strategy in this language to make it easy
 
@@ -285,9 +291,11 @@ noaliasset means the alias set of the type cannot alias the type,
 for example `intn_t` can alias the `uintn_t` and `mintn_t` types , but `noaliasset intn_t` cannot.
 
 
-inexpr / outexpr / inoutexpr
+inexpr / outexpr / inoutexpr / no-argument-in-or-out
 
 determines the general usage and call convention in a function argument.
+- none ( translates to mut inexpr  or the in val register):
+a stable  mutable value that is initialized on the call site.
 - inexpr:
 a stable const value.
 - outexpr:
@@ -608,26 +616,32 @@ the return address to the unwind/sad path code section in the caller
 ( only 5 pointer sized registers, 2 of which are already used in all architectures for that purpose)
 ( the other 3 can be pushed before general purpose use and poped/re assigned when needed at the call boundaries to reduce register pressure when register utilization is too much)
 
-a function's manipulated registers come in 4 categories ( aside from special ones):
+a function's manipulated registers come in 5 categories ( aside from special ones):
+1.  in ( const in argument ) :
 
-1. in:
+cannot  be written to by callee, only read from .  
+ 
+2.  in val ( mut in argument ) :
 
-cannot be written to by callee, only read from
+categorized among in, but with ability to write.
+can be written to by callee, and read from but its undefined if the caller reads these after the call , except when initialized again.
 
-2. out:
+3.   out:
+
 
 cannot be read from by callee( before the initialization),
 and must be written to at some point in callee
 
 
-3. inout:
+4.  inout:
 
 free to read or write.
 
 
-4. used ( scratch registers),(caller saved):
+5. used ( scratch registers),(caller saved):
 
-may be read from or written to , but its undefined if the caller reads these after the call , except when initialized again.
+may be read from after initilization or written to  , but its undefined if the caller reads these after the call , except when initialized again.
+
 
 
 important note: 
