@@ -1013,25 +1013,36 @@ this languages goals include:
   most complex code are implicit ,
   for example instead of references , developers use in/inout/out and values , 
   this makes this code readable and object oriented while being very safe and optimizable.
-   containers are represented by value oriented objects and no poiner or reference semantics is required. 
+  containers are represented by value oriented objects and no poiner or reference semantics is required. 
+  it  might not be as fast as c: , it may use more dynamic types or copies,  but for application logic its far more elegant,
+  and if it wasnt optimal , you can always go a level down to c colon land to optimize it.
  
 3.  safety :
+
     any unsafe code is delt with in the internal c colon libraries,  freeing the burden of safety concers from the developers.
 
 4. speed :
+
  even in value oriented code,  functions can throw errors with ease and speed 
 
 5. rich set of libraries:
+
 the standard library aims to have many of the widely used utilities,  for example networking libraries,  asynchronous frameworks and web like UI development utilities. 
 this is because the standard can change the abi of these components at later versions so it doesn't need to worry about backwards compatibility. 
 
 6. easy to use package management with abi stability:
+
 users don't need to worry about using old or vulnerable code , or complex building process. 
 
 7. safe with rare  borrowing errors:
+
 theres no traditional borrowing in express colon , because refrences aren't allowed,  only value oriented reference-like alternatives are, this is because most simple objectives can be achieved soly via containers, dynamic refrencing containers and value types,
 while the underlying c colon has borrowing rules,  express colon programs still dont need lifetime anotations ( the c colon libraries however probably do)
 
+
+
+i pridict that the worst error is an easy "must initialized an out prameter" , which is , simple and far better than lifetimes or memory bugs.
+ 
 
 ---
 
