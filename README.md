@@ -552,7 +552,7 @@ return-type function-mangled-name ( arg-type-(in/out/inout) args... ) context-ty
 
 the context type is as if its an inout argument.
 
-the throw-value specified in the context type is as if its an out argument, this out argument  can overload with any other arguments except the context object, because this is the only out argument other than the context object that is preserved  in a unsuccessful call to a function, as a result  this often overlaps with the return argument.
+the throw-value specified in the context type is as if its an out argument, this out argument  can overload with any other arguments except the context object, because this is the only out argument other than the context object that is preserved  in a unsuccessful call to a function, as a result  this often overlaps with the return argument, however a non triviality relocatable throw value will need to be passed via a non overlapping  throw-value-pointer input, for this reason it is discouraged that throw values be non triviality relocatable.
 
 the return type is as if its an out argument.
 
@@ -767,7 +767,8 @@ context object:
 
 - throw-value:
 the value that is returned via the catching return address. 
- propagated through the operator catch 
+ propagated through the operator catch .
+ this is highly encouraged to be trivially relocatable.
 
 
 
