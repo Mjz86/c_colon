@@ -1059,7 +1059,7 @@ although this is fast enough so its good enough,  if not , c colon can be used t
 
 i pridict that the worst common error is an easy "must initialized an out prameter" , which is , simple and far better than lifetimes or memory bugs.
   
-  9.  elegant functional programming:
+  9.  elegant parallel programming with safety and structured concurrency:
   
   for example,  common  monadic operations can be made in a lambda function that is hidden inside of a for loop , iteration-primitive can be a mutex,  can be a vector,  can be an optional, 
   the option for monadic lambdas is provided,  but common  monands can be expressed with ease.
@@ -1072,8 +1072,27 @@ i pridict that the worst common error is an easy "must initialized an out pramet
 for ( auto [inout a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the state and has an multiple argument provided in the iterator internals.
 // d is copied , a , b and c are "refrenced" via value input outputs
 // modify outputs.
-}// lambda scope end
+// it not a coroutine so it has:
+break;
+continue;
+return...;
+}// lambda scope end , once the function ends via the iteration-primitive, it can either implicitly return a value or continue execution or throw.
 
+
+// the context object  acts like the promise type in c++, providing much needed abstractions , providing many low level primitives in c colon , however , most coroutine usage is restricted in express colon to safe usage of libraries. 
+// theres an implicit  transformation for these code , to make it able to do either a ,co await , co return or a throw or simply  continue execution .
+ for co_await (auto [inout a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable constant state if it wants to do parallelization , a const stable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
+// can modify a c and d , but cannot modify other variables outside of the for loop , however mutexes can still be modified beacuse they can be modified when constant.
+// parallelizable async co routine code....
+ co_value std::async_io_file_t file(...);// makes an object  capable  of async construction and destruction,  and async destruction runs in cancelation,  cancelation is achieved by throw exceptions after a suspended co await is resumed 
+ .... = co_yeild...;// produces a result 
+ .... = co_await...;// awaits a result 
+ co_return ...;  in a parallel loop does a cancelation of its siblings. and a total function return.
+ co_break; in a parallel loop does a cancelation of its siblings. and  function continues.
+ co_continue;// ends the execution of the current coroutine , but doesn't result in a cancelation. 
+ }// lambda scope end , once the function ends via the iteration-primitive.
+
+//... many other for variants to help build readable and reliable abstractions. 
 ```
 
 10. multi paradigm:
