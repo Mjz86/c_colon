@@ -1077,6 +1077,7 @@ for ( auto [inout a, in b, out c, d ]: iteration-primitive){// function body beg
 ```
 
 10. multi paradigm:
+
  while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the refrenced ban.
  however rust-like enum types with pattern matching  are still very performant and value oriented .
  and object oriented ( without inheritance) would still be whidly used ,
