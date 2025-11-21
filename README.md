@@ -994,7 +994,7 @@ the mcc toolchain and abi outside of c colon:
     this is a more begginners friendly language that has the same abi and type system as c colon , but without many of its complexities, so the unsafe parts can be written in libraries in c colon.    
       
 ---
-express colon :
+express colon  or "E:":
 
 a language  for those who like simplicity while writing c colon.
 
