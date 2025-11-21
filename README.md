@@ -1078,7 +1078,7 @@ for ( auto [inout a, in b, out c, d ]: iteration-primitive){// function body beg
 
 10. multi paradigm:
  while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the refrenced ban.
- however rust-like enum types with pattern matching  are still very performant and valur oriented .
+ however rust-like enum types with pattern matching  are still very performant and value oriented .
  and object oriented ( without inheritance) would still be whidly used ,
  for example constructors would output the self object to  out prameters,
  copy would use the in parameter and moving/ relocation would be automatically generated(  not using any references would make types trivial to automatically relocate if inner c colon types are trivial) . 
