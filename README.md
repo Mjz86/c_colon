@@ -459,7 +459,7 @@ any catch block who doesn't result in a throw in all code paths and is mayreturn
   
   };
     
- 
+ // these are simplified code , the actual code would check to see if its a noop coroutine first .
   // all of these are unsafe(explicit-coroutine-handles) . 
 // bool    done() == (program_switch_counter==0)
 // it is necessary for safety that all coroutines are called with their context-type known ( context-type  is acting like the itanium promise type)
