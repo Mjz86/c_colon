@@ -1063,12 +1063,14 @@ i pridict that the worst common error is an easy "must initialized an out pramet
  ( note that iteration-primitive is written in c colon as it involves more complex machinery)
  ``` 
   for ( inout variable: iteration-primitive) {// function body beginning, the function captues the sate and has an inout argument 
-
+// modify variable.
 }// lambda scope end
 
-for ( auto [inout a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the sate and has an multiple argument provided in the iterator internals.
+for ( auto [inout a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the state and has an multiple argument provided in the iterator internals.
 // d is copied , a , b and c are "refrenced" via value input outputs
+// modify outputs.
 }// lambda scope end
+
 ```
 
 
