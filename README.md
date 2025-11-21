@@ -1018,10 +1018,16 @@ this languages goals include:
   and if it wasnt optimal , you can always go a level down to c colon land to optimize it.
  
 3.  safety :
-
+     the reason for safety being granteed for express colon, ( if the c colon libraries  used internally are well written and safe ) is that there is no referencing to begin with,  imagine using a member from a vector,  you arent using a reference to it , so you must copy it ,so you will never worry if the vector reallocation will invalidate anything,  because you do not have any reference to begin with. 
+     you dont need to borrow anything because you only need to change its value,  most functions can use either full value semantics or fall into using a reference-counted variable if they truly need multiple ownership.
     any unsafe code is delt with in the internal c colon libraries,  freeing the burden of safety concers from the developers.
-
-4. speed :
+    refrences being disallowed means that express colon by definition cannot use after free, cannot use invalid state,  cannot even intract with dead state, 
+    because the only thing allowed to be modified is the value of objects,
+    even data races cannot be made in express colon because the reference counted variable provided by c colon is either a totally immutable value or protected via a read write lock ( assuming the c colon libraries dont provide safe looking unsafe abstractions)
+    although  dead locks can be a concern in highly parallel environments,  they don't really cause memory unsafty.
+    even stack overflows can be tracked  if context objects use the reflection information into a stack trace ( for example by having a counter incremented by the stack usage of a frame when the context begins and having a maximum threshold before a contract violation occurs)
+    
+4. seed :
 
  even in value oriented code,  functions can throw errors with ease and speed 
 
@@ -1049,9 +1055,24 @@ although this is fast enough so its good enough,  if not , c colon can be used t
 
 
 i pridict that the worst common error is an easy "must initialized an out prameter" , which is , simple and far better than lifetimes or memory bugs.
- 
+  
+  9.  elegant functional programming:
+  
+  for example,  common  monadic operations can be made in a lambda function that is hidden inside of a for loop , iteration-primitive can be a mutex,  can be a vector,  can be an optional, 
+  the option for monadic lambdas is provided,  but common  monands can be expressed with ease.
+ ( note that iteration-primitive is written in c colon as it involves more complex machinery)
+ ``` 
+  for ( inout variable: iteration-primitive) {// function body beginning, the function captues the sate and has an inout argument 
 
----
+}// lambda scope end
+
+for ( auto [inout a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the sate and has an multiple argument provided in the iterator internals.
+// d is copied , a , b and c are "refrenced" via value input outputs
+}// lambda scope end
+```
+
+
+--
 
 refrences
 
