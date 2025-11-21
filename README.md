@@ -437,6 +437,41 @@ contract's code...
 ```
 
 
+--- 
+ coroutines:
+
+
+- cancelation grantees: 
+any catch block who doesn't result in a throw in all code paths and is mayreturn will be ill-formed unless its unsafe(ignore-cancelation) specified. 
+ 
+- destroyed only when everything is canceled and "done()".
+
+
+ - abi :
+  the coroutine handle  is a pointer to the structure with the following layout:
+ ```C
+ struct frame{
+  void (* resume_function ) ( frame* ptr);// fastdyncaller , and  dyncontract  by default 
+ intptr_t  program_switch_counter;// positive indexes show normal control flow, negative indexes show the same suspension's catching/cancelation control flow,  0 shows that the function and all of its variables will be destroyed on next suspension ( final suspend) .
+ // if the function's last destination ( the counter being set to zero) throws by exception, the resume pointer will be reassigned to soly point to the frame deallocation destructor,  the frame wouldn't be destroyed,  but rather,  the exception would  be caught in the catch and stored on the stack  then the frame will finally be destroyed by calling the resume pointer again. 
+ // if a the deallocation of the frame fails by exception the program will terminate ( we can assume free and delete will never fail so this isn't an issue) 
+  byte[....];// coroutine frame storage 
+  
+  };
+    
+ 
+  // all of these are unsafe(explicit-coroutine-handles) . 
+// bool    done() == (program_switch_counter==0)
+// it is necessary for safety that all coroutines are called with their context-type known ( context-type  is acting like the itanium promise type)
+// void resume() context-type {resume_function(ptr);}
+//  void cancel() {ptr->program_switch_counter=-abs(ptr->program_switch_counter);}// if there are no co_value expressions , then only one resume is necessary before its "done".
+ // context-type & context() ...
+  
+  
+  
+```
+
+  
 
 
 
