@@ -440,6 +440,9 @@ contract's code...
 --- 
  coroutines:
 
+- context-type in the signature:
+ 
+ has to have a promise-type declared inside it , the promise type is the callee facing context type ( because the callee always knows its coroutine status, it can always know if its the context type or the promise type as the context type , on each resume , the promise type is refreshed with new caller facing context types , but the promise within manages the callee.
 
 - cancelation grantees: 
 any catch block who doesn't result in a throw in all code paths and is mayreturn will be ill-formed unless its unsafe(ignore-cancelation) specified. 
@@ -451,7 +454,7 @@ any catch block who doesn't result in a throw in all code paths and is mayreturn
   the coroutine handle  is a pointer to the structure with the following layout:
  ```C
  struct frame{
-  void (* resume_function ) ( frame* ptr);// fastdyncaller , and  dyncontract  by default 
+  void (* resume_function ) ( frame* ptr) context-type;// fastdyncaller , and  dyncontract  by default 
  intptr_t  program_switch_counter;// positive indexes show normal control flow, negative indexes show the same suspension's catching/cancelation control flow,  0 shows that the function and all of its variables will be destroyed on next suspension ( final suspend) .
  // if the function's last destination ( the counter being set to zero) throws by exception, the resume pointer will be reassigned to soly point to the frame deallocation destructor,  the frame wouldn't be destroyed,  but rather,  the exception would  be caught in the catch and stored on the stack  then the frame will finally be destroyed by calling the resume pointer again. 
  // if a the deallocation of the frame fails by exception the program will terminate ( we can assume free and delete will never fail so this isn't an issue) 
@@ -468,7 +471,7 @@ any catch block who doesn't result in a throw in all code paths and is mayreturn
 
 // void resume() context-type {resume_function(ptr);}
 //  void cancel() {ptr->program_switch_counter=-abs(ptr->program_switch_counter);}// if there are no co_value expressions , then only one resume is necessary before its "done".
- // context-type & context() ...
+ // context-type-promise & promise() ...
   
   
   
