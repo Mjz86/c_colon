@@ -1030,7 +1030,7 @@ this languages goals include:
     even stack overflows can be tracked  if context objects use the reflection information into a stack trace ( for example by having a counter incremented by the stack usage of a frame when the context begins and having a maximum threshold before a contract violation occurs).
     contracts like pre post and assertions can be checked through any means of function call , so the safety of a function is always  preserved. 
     
-4. seed :
+4. speed :
 
  even in value oriented code,  functions can throw errors with ease and speed 
 
