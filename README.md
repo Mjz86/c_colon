@@ -1125,7 +1125,9 @@ return...;
  for co_await (auto [inout a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable constant state if it wants to do parallelization , a const stable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
 // can modify a c and d , but cannot modify other variables outside of the for loop , however mutexes can still be modified beacuse they can be modified when constant.
 // parallelizable async co routine code....
+// converted into  operator co_value in the construction and operator ~co_value in the destruction 
  co_value std::async_io_file_t file(...);// makes an object  capable  of async construction and destruction,  and async destruction runs in cancelation,  cancelation is achieved by throw exceptions after a suspended co await is resumed 
+
  .... = co_yeild...;// produces a result 
  .... = co_await...;// awaits a result 
  co_return ...;  in a parallel loop does a cancelation of its siblings. and a total function return.
