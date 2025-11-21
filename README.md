@@ -953,6 +953,7 @@ gets the abi hash off the inner expression.
 7. bases abi hash and dclaration order
 8. abi+(...) es abi hash and dclaration order
 9. qualifiers of a type , but order independant
+10. throw-value  type hash of the context
 
 - note :
 the c colon linker only uses the abi hashes as signaturs for linkage.
