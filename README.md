@@ -461,8 +461,11 @@ any catch block who doesn't result in a throw in all code paths and is mayreturn
     
  // these are simplified code , the actual code would check to see if its a noop coroutine first .
   // all of these are unsafe(explicit-coroutine-handles) . 
-// bool    done() == (program_switch_counter==0)
+// bool    done() == (program_switch_counter==0 )
+//note that a cancelation of a function is only observable while it hasn't  reached final suspension,  in the final suspend it had done all of its work so even if the resume throws an exception,  it has already been a finished routine. 
+//  bool canceled() ==(program_switch_counter<0)
 // it is necessary for safety that all coroutines are called with their context-type known ( context-type  is acting like the itanium promise type)
+
 // void resume() context-type {resume_function(ptr);}
 //  void cancel() {ptr->program_switch_counter=-abs(ptr->program_switch_counter);}// if there are no co_value expressions , then only one resume is necessary before its "done".
  // context-type & context() ...
