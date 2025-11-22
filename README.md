@@ -1090,7 +1090,7 @@ this languages goals include:
     
 4. speed :
 
- even in value oriented code,  functions can throw errors with ease and speed 
+ even in value oriented code,  functions can throw errors with ease and speed , the values often flow in registers and they are optimized well beacuse of lack of aliases 
 
 5. rich set of libraries:
 
