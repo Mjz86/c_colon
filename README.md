@@ -463,7 +463,8 @@ if a promise wants ( decided in the awaiter suspension via returned `transfered_
 `promise_transfer(this promise& self,in transfered_handle,bool& is_cancled )context-type->transfered-context-type-coro-input;`
 
 - cancelation grantees: 
-any catch block who doesn't result in a throw in all code paths and is mayreturn will be ill-formed unless its unsafe(ignore-cancelation) specified. 
+ an error type in the catch scope is either a base of the empty cancelation token type , or its a base of the common violation token or isnt either , for cancelation and violation catches ( a catch with these types) unsafe(ignore-cancelation) and unsafe(ignore-violation) is applied , but otherwise its safe to do in the coroutine,  also the  catch(throw-value), equivalent to catch(...) in c++  is also unsafe(catch-all-tokens).
+ so , the c colon libraries can distinguish if the throw is a cancelation or not and do the appropriate safe thing for E:
  
 - destroyed only when everything is canceled and "done()".
 
