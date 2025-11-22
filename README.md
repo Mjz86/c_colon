@@ -442,8 +442,17 @@ contract's code...
 
 - context-type in the signature:
  
- has to have a promise-type declared inside it , the promise type is the callee facing context type ( because the callee always knows its coroutine status, it can always know if its the context type or the promise type as the context type , on each resume , the promise type is refreshed with new caller facing context types , but the promise within manages the callee.
+1. has to have a promise-type ( dependent on function signature ) declared inside it , the promise type is the callee facing context type ( because the callee always knows its coroutine status, it can always know if its the context type or the promise type as the context type , on each resume , the promise type is refreshed with new caller facing context types , but the promise within manages the callee.
+2. has to have a context-type-coro-return ( independant of the function signature) to be returned from a resume.
 
+3. the promise  function's :
+  - first function  that is called once resumed :
+  `promise_resumed(this promise&  self,in is_cancled) context-type;`
+   
+- last function that is called resulting in suspension: 
+  note that the reason for using references instead of inout here is because the callee will probably throw , resulting in the drop of inout , but references don't drop self on throw.
+  `promise_suspend(this promise& self,bool& is_cancled )context-type->context-type-coro-return;`
+  
 - cancelation grantees: 
 any catch block who doesn't result in a throw in all code paths and is mayreturn will be ill-formed unless its unsafe(ignore-cancelation) specified. 
  
@@ -454,7 +463,7 @@ any catch block who doesn't result in a throw in all code paths and is mayreturn
   the coroutine handle  is a pointer to the structure with the following layout:
  ```C
  struct frame{
-  void (* resume_function ) ( frame* ptr) context-type;// fastdyncaller , and  dyncontract  by default 
+  context-type-coro-return (* resume_function ) ( frame* ptr) context-type;// fastdyncaller , and  dyncontract  by default 
  intptr_t  program_switch_counter;// positive indexes show normal control flow, negative indexes show the same suspension's catching/cancelation control flow,  0 shows that the function and all of its variables will be destroyed on next suspension ( final suspend) .
  // if the function's last destination ( the counter being set to zero) throws by exception, the resume pointer will be reassigned to soly point to the frame deallocation destructor,  the frame wouldn't be destroyed,  but rather,  the exception would  be caught in the catch and stored on the stack  then the frame will finally be destroyed by calling the resume pointer again. 
  // if a the deallocation of the frame fails by exception the program will terminate ( we can assume free and delete will never fail so this isn't an issue) 
@@ -469,7 +478,7 @@ any catch block who doesn't result in a throw in all code paths and is mayreturn
 //  bool canceled() ==(program_switch_counter<0)
 // it is necessary for safety that all coroutines are called with their context-type known ( context-type  is acting like the itanium promise type)
 
-// void resume() context-type {resume_function(ptr);}
+// context-type-coro-return  resume() context-type {return resume_function(ptr);}
 //  void cancel() {ptr->program_switch_counter=-abs(ptr->program_switch_counter);}// if there are no co_value expressions , then only one resume is necessary before its "done".
  // context-type-promise & promise() ...
   
@@ -671,12 +680,14 @@ can be written to by callee, and read from but its undefined if the caller reads
 
 
 cannot be read from by callee( before the initialization),
-and must be written to at some point in callee
+and must be written to at some point in callee.
+
 
 
 4.  inout:
 
-free to read or write.
+free to read or write,
+once the callee throws , this value is considered dropped by the caller.
 
 
 5. used ( scratch registers),(caller saved):
