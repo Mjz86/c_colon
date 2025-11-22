@@ -1115,7 +1115,7 @@ the express colon language also tends to look more functional than its c colon c
 although this is fast enough so its good enough,  if not , c colon can be used to optimize  it more.
 
 
-i pridict that the worst common error is an easy "must initialized an out prameter" or "make a copy of a variable and use that instead of passing itself to multiple function prameters"( the reason being that variables are relocated to the prameter when the prameter is created and will be relocated back when the prameter is "destroyed"  in c colon land , but , often the only use after-rellocation-error is these , which can be avoided  by declaration of a new variable  ), which is , simple and far better than lifetimes or memory bugs.
+
   
   9.  elegant parallel programming with safety and structured concurrency:
   
@@ -1170,6 +1170,11 @@ return...;
  copy would use the in parameter and moving/ relocation would be automatically generated(  not using any references would make types trivial to automatically relocate if inner c colon types are trivial) . 
  the destructor would also use in val ( no specifier) to relocate the object for final destruction. 
   these arent just safe , these are also fast , because trivial values are passed by registers , and this language mostly operates on trivial values 
+
+
+i pridict that the worst common error is an easy "must initialized an out prameter" or "make a copy of a variable and use that instead of passing itself to multiple function prameters"( the reason being that variables are relocated to the prameter when the prameter is created and will be relocated back when the prameter is "destroyed"  in c colon land , but , often the only use after-rellocation-error is these , which can be avoided  by declaration of a new variable  ), which is , simple and far better than lifetimes or memory bugs.
+or at most a " the catch block cannot caputure a variable that might be dropped in the try block , try copying that variable before the try block to ensure it will not be an output of a throwing function"( the inout or out function  arguments  will  have an uninitialized state or qualifier  on that functios throw path in the caller, when used , the same qualifier per expression rule will make that expression ill formed)
+
 
 
 
