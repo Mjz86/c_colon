@@ -194,6 +194,9 @@ for a pointer p declared within a code block b to an stable const region of memo
  1. mut-stable is like restrict in c, but a const-stable is like a rust constant
  2. its dangerous for stable values to be declared unrestricted, it is as if a c restrict aliases
 
+`thread_safe` / `thread_unsafe`:
+ these qualifiers are typically used as indicators of whether or not something is safe to pass and use between threads , the default is , any stable variable is thread safe and otherwise  unsafe, the stable mut is exclusively owned , and so safe to pass around, however,  std::rc_t<T> overrides that , so in any async boundaries the c colon libraries can notice via reflection that a mutable thread unsafe variable is used, so they can disallow it.
+ also , if a member  is thread unsafe in E: ( not C:) , because of the qualifier visibility ban , that qualifier cannot be overriden by using a thread safe type with an aliasset.
 
 uninitilized / initilized
 
