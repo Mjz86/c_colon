@@ -442,6 +442,8 @@ contract's code...
 
 - context-type in the signature:
  
+0.  has to have a noop coroutine function  :
+   `context-type-coro-return noop_resume(in context-type-coro-input) context-type;`
 1. has to have a promise-type ( dependent on function signature ) declared inside it , the promise type is the callee facing context type ( because the callee always knows its coroutine status, it can always know if its the context type or the promise type as the context type , on each resume , the promise type is refreshed with new caller facing context types , but the promise within manages the callee.
 2. has to have a context-type-coro-return and context-type-coro-input ( independant of the function signature) to be returned from a resume.
 
@@ -452,7 +454,11 @@ contract's code...
 - last function that is called resulting in suspension: 
   note that the reason for using references instead of inout here is because the callee will probably throw , resulting in the drop of inout , but references don't drop self on throw.
   `promise_suspend(this promise& self,bool& is_cancled )context-type->context-type-coro-return;`
-  
+ 
+- (a)symetric transfer:
+if a promise wants ( decided in the awaiter suspension via returned `transfered_handle` being noop or not ) to do a asymetric transfer , instead of the `promise_suspend` , the `promise_transfer` is called, they should have the same context-type to be compatible:
+`promise_transfer(this promise& self,in transfered_handle,bool& is_cancled )context-type->transfered-context-type-coro-input;`
+
 - cancelation grantees: 
 any catch block who doesn't result in a throw in all code paths and is mayreturn will be ill-formed unless its unsafe(ignore-cancelation) specified. 
  
@@ -463,7 +469,7 @@ any catch block who doesn't result in a throw in all code paths and is mayreturn
   the coroutine handle  is a pointer to the structure with the following layout:
  ```C
  struct frame{
-  context-type-coro-return (* resume_function ,in context-type-coro-input) ( frame* ptr) context-type;// fastdyncaller , and  dyncontract  by default 
+  context-type-coro-return (* resume_function ) ( frame* ptr,in context-type-coro-input) context-type;// fastdyncaller , and  dyncontract  by default 
  intptr_t  program_switch_counter;// positive indexes show normal control flow, negative indexes show the same suspension's catching/cancelation control flow,  0 shows that the function and all of its variables will be destroyed on next suspension ( final suspend) .
  // if the function's last destination ( the counter being set to zero) throws by exception, the resume pointer will be reassigned to soly point to the frame deallocation destructor,  the frame wouldn't be destroyed,  but rather,  the exception would  be caught in the catch and stored on the stack  then the frame will finally be destroyed by calling the resume pointer again. 
  // if a the deallocation of the frame fails by exception the program will terminate ( we can assume free and delete will never fail so this isn't an issue) 
