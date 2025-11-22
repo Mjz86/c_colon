@@ -1162,7 +1162,7 @@ return...;
 // the context object  acts like the promise type in c++, providing much needed abstractions , providing many low level primitives in c colon , however , most coroutine usage is restricted in express colon to safe usage of libraries. 
 // all of these co@ operators do implicit calls reliant on the context-type and the iterator context.
 // theres an implicit  transformation for these code , to make it able to do either a ,co await , co return or a throw or simply  continue execution .
- for co_await (auto [inout a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable constant state if it wants to do parallelization , a const stable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
+ for co_await (auto [inout a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const stable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
 // can modify a c and d , but cannot modify other variables outside of the for loop , however mutexes can still be modified beacuse they can be modified when constant.
 // parallelizable async co routine code....
 // converted into  operator co_value in the construction and operator ~co_value in the destruction 
