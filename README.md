@@ -517,6 +517,11 @@ T&&:
 a typical r-value reference like c++ but borrow  checked like T&, and if unrestricted , like c++.
 its mut is used in the move constructors. 
 its const is used in the copy constructors.
+
+if a function throws by exception,  this value is considered dropped/uninitilized if T is mutable .
+however if returned,  this value would still be considered in its lifetime. 
+
+
 ( unlike c++ ,T&& cant bind to  const T&, but T& can bind to const T&&)
 
 T&&&:
