@@ -1205,7 +1205,8 @@ this isnt really a safety problem,  but an error massage problem,
 if express colon wants readable error massages in its express colon module,  it needs to have less type anotations necessary to show that error message,  and therefore,  much type information would not be shown because the function name and at most the namespace would be sufficient for its detection. 
 most template specifications can just be ignored by deafult in express colon,  however C colon errors may not have much clarity without those informations. 
 however E colon still recognizes these C colon constructs , allowing custom types like `std::(u)intdyn_t` ( similar to python's big integer types) to be used by their overloaded operators.
-
+ similarly, common pitfalls like cyclic object hash dependency chains have relatively good information on their errors " it seems that your building a graph like structure within your types , however types dependent on themselves tend to be error prone , firstly,  use abi= operators to resolve the cyclic hash , secondly,  if dynamic refrencing is involved,  consider using weak pointers as well, because it would help avoid leaks".
+ 
 12. exception safety:
 
  because of the implicit one qualifier set per expression rule, any E: function that might modify its arguments on the throw statement,  the arguments would not be usable after that throw, 
