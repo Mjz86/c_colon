@@ -1103,7 +1103,8 @@ this languages goals include:
     even stack overflows can be tracked  if context objects use the reflection information into a stack trace ( for example by having a counter incremented by the stack usage of a frame when the context begins and having a maximum threshold before a contract violation occurs).
     contracts like pre post and assertions can be checked through any means of function call , so the safety of a function is always  preserved. 
     while,like rust , its still possible to make a self referential  reference counter `std::rc_t`/`std::arc_t` who will be "leaked", this is not a common issue and not a memory unsafty,  it still can be resolved with `std::weak_rc_t` or `std::weak_arc_t` ( proving this will not happen  by the compiler is very hard , and resolution of this issue requires a garbage collector and graph traversal,  which is not what we want, but a memory leak is still not a security exploit but a programmer bug , similar to a deadlock)
- 
+    also,  if you noticed that you need an abi= in a structure, because the hash of the internal reference needs the hash of the external loop , congratulations, you've found the part that needs a weak reference, this is because the hash dependancy chain created via a dependancy  of T to its arc<T> and arc<T> to T is exactly the thing that makes arc<T> a candidate for a self referential reference. 
+    or your just trying to implement a tree , graph or linked list , which you can do via reference counted variables , but your notified of its potential for a self reference when you used abi= to make it compile again. 
     
 4. speed :
 
