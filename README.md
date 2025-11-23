@@ -75,7 +75,8 @@ imagine a world were the old std::regex was used for old code and the same std r
 this truly makes it paying for what we used. the old programer payed for old slow usage, but new code did not have to pay for the burdens in old code.
 and each independent code that stayed unchanged did not need duplications, a dream for the cpp committee, and a possibility in mcc, the c colon abi.
 the hashes although not cryptographically secure are big enough to be unique, basically like a uuid (because its just a name mangling scheme).
-
+if theres a cycle in the hash dependancy chain, the problem is ill formed and notified of the need to use the `abi=` operator that doesn't rely on something  else at least one node in that cycle,
+although  a rare occurrence might be that  the f() abi=(f())  when calling the constexpr f , itself needs f, so , while such issues cannot be avoided due to the halting problem,  its still relatively easy to fix when noticing the constexpr max evaluation steps has been reached. 
 
 7. type qualifier deriven optimizations:
 the qualifiers change throughout the code, the same expression have lead to diffrent qualifiers, its ill-formed, but this makes uninitilized variables truly safe to use.
