@@ -773,7 +773,7 @@ a registers who's observed values before the call might be different after the c
 - dynamic function contract tracking:
 any dyncontract function who's adresss is captured for dynamic calls must have a pointer-sized function pointer before the function's code itself. 
 this function pointer is the contract checked F pointer , it points to the contract handler,
-the contact handler checkes the pre or post conditions of a function, based on an implicit  in argument  that contains:
+the contact handler checkes the pre or post conditions of a function, based on an implicit  in val argument  that contains:
 0. check the pre vs check the post bit.
 1. expected contact violation semantic of caller.
 
@@ -1137,7 +1137,7 @@ although this is fast enough so its good enough,  if not , c colon can be used t
   
   9.  elegant parallel programming with safety and structured concurrency:
   
-  for example,  common  monadic operations can be made in a lambda function that is hidden inside of a for loop , iteration-primitive can be a mutex,  can be a vector,  can be an optional, 
+  for example,  common  monadic operations can be made in a lambda function that is hidden inside of a for loop, this doesn't look like were using a monadic operation here , but we implicitly are doing that, while still benefiting from readability of c style for loops, iteration-primitive can be a mutex,  can be a vector,  can be an optional, 
   the option for monadic lambdas is provided,  but common  monands can be expressed with ease.
  ( note that iteration-primitive is written in c colon as it involves more complex machinery)
  ``` 
@@ -1176,6 +1176,9 @@ return...;
  co_continue;// ends the execution of the current coroutine , but doesn't result in a cancelation. 
  }// lambda scope end , once the function ends via the iteration-primitive.
 
+
+
+
 //... many other for variants to help build readable and reliable abstractions. 
 ```
 
@@ -1192,7 +1195,12 @@ return...;
 11. easy errors:
 
 i pridict that the worst common error is an easy "must initialized an out prameter" or "make a copy of a variable and use that instead of passing itself to multiple function prameters"( the reason being that variables are relocated to the prameter when the prameter is created and will be relocated back when the prameter is "destroyed"  in c colon land , but , often the only use after-rellocation-error is these , which can be avoided  by declaration of a new variable  ), which is , simple and far better than lifetimes or memory bugs.
-or at most a " the catch block cannot caputure a variable that might be dropped in the try block , try copying that variable before the try block to ensure it will not be an output of a throwing function"( the inout or out function  arguments  will  have an uninitialized state or qualifier  on that functios throw path in the caller, when used , the same qualifier set per expression rule will make that expression ill formed)
+or at most a " the catch block cannot caputure a variable that might be dropped in the try block , try copying that variable before the try block to ensure it will not be an output of a throwing function"( the inout or out function  arguments  will  have an uninitialized state or qualifier  on that functios throw path in the caller, when used , the same qualifier set per expression rule will make that expression ill formed).
+in contrast to C colon ( which allows all of these c++ style things) , Express colon does not have operator overloadding,and also function overloadding,  and template specilizations, and only allows simple template declarations ( like the c++ auto concept constraint prameters),
+this isnt really a safety problem,  but an error massage problem,  
+if express colon wants readable error massages in its express colon module,  it needs to have less type anotations necessary to show that error message,  and therefore,  much type information would not be shown because the function name and at most the namespace would be sufficient for its detection. 
+most template specifications can just be ignored by deafult in express colon,  however C colon errors may not have much clarity without those informations. 
+however E colon still recognizes these C colon constructs , allowing custom types like `std::(u)intdyn_t` ( similar to python's big integer types) to be used by their overloaded operators.
 
 12. exception safety:
 
@@ -1215,6 +1223,17 @@ https://github.com/Mjz86/c_colon
 
 itanium abi:
 https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro
+
+x86 cxx:
+
+https://gitlab.com/x86-psABIs/x86-64-ABI
+
+arm cxx:
+https://github.com/ARM-software/abi-aa/blob/main/cppabi64/cppabi64.rst
+
+wg21 std c++ draft standard :
+https://wg21.link/n5008
+
 
 xxhash128:
 https://xxhash.com
