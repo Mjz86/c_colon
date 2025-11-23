@@ -1192,7 +1192,7 @@ return...;
 
 10. multi paradigm:
 
- while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the refrenced ban.
+ while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the refrenced ban ( or completely disallowed because of the abi= ban) .
  however rust-like enum types with pattern matching  are still very performant and value oriented .
  and object oriented ( without inheritance) would still be whidly used ,
  for example constructors would output the self object to  out prameters,
