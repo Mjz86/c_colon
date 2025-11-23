@@ -1101,13 +1101,15 @@ this languages goals include:
     although  dead locks can be a concern in highly parallel environments,  they don't really cause memory unsafty.
     even stack overflows can be tracked  if context objects use the reflection information into a stack trace ( for example by having a counter incremented by the stack usage of a frame when the context begins and having a maximum threshold before a contract violation occurs).
     contracts like pre post and assertions can be checked through any means of function call , so the safety of a function is always  preserved. 
+    while,like rust , its still possible to make a self referential  reference counter `std::rc_t`/`std::arc_t` who will be "leaked", this is not a common issue and not a memory unsafty,  it still can be resolved with `std::weak_rc_t` or `std::weak_arc_t` ( proving this will not happen  by the compiler is very hard , and resolution of this issue requires a garbage collector and graph traversal,  which is not what we want, but a memory leak is still not a security exploit but a programmer bug , similar to a deadlock)
+ 
     
 4. speed :
 
  even in value oriented code,  functions can throw errors with ease and speed , the values often flow in registers and they are optimized well beacuse of lack of aliases .
  happy path often has less branches compared to using optional/expected/result types, and sad path is more performant than cxx-throw or rust panic, and as performant as optional types.
  the variable access is often faster , because in architectures like x86 , almost 1 kilobytes can be passed between functions via prameters in registers with ease.
-
+ 
 5. rich set of libraries:
 
 the standard library aims to have many of the widely used utilities,  for example networking libraries,  asynchronous frameworks and web like UI development utilities. 
