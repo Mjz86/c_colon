@@ -80,6 +80,12 @@ although  a rare occurrence might be that  the f() abi=(f())  when calling the c
 also , using abi= on a member doesn't change the members real type and hash , and even if in some cases it  does, its still possible  to "unsafe(abi-cast)" the hash to the original type's hash ( variable definition having the type be type1 abi=(abiof(type2)) or at most an unsafe `reinterpret_cast` known as pointer-cast or a bit cast)
 
 
+ * as a gist :
+It's similar to itanium,  however, 
+The name has an appended xxhash128 , of its signature, 
+Every type function and namespace has these hashes , and they recursively depend on each other ( for a cycle,  like in a graphs node type , there are operators such as abi=,abi+,abiof that operate on the 128 hashes)
+This makes the language entirely abi stable , at least within the ecosystem
+
 7. type qualifier deriven optimizations:
 the qualifiers change throughout the code, the same expression have lead to diffrent qualifiers, its ill-formed, but this makes uninitilized variables truly safe to use.
 because the function either throws or initilizes them, if not initilized it is an error.
@@ -658,7 +664,16 @@ type pointer
   
 ---
 
-calling convention
+
+
+
+calling convention:
+
+the gist is ,
+The caller can store values into registers that the callee has promised to not modify, 
+To reduce stack spills,
+to reduce spills , the function signature should also require minimal usage ( thats where overlap optimization comes in) and also ,
+for reducing braching , most of the branches known in the callee to occur at call site have been moved to the return branch in the callee , the callees return acting like a switch statement to the caller code, but because the return is already a necessary dynamic branch , the cost of 2 branches ( return , and a check of return calue in callee) is reduced  to one.
 
 a mcc signature has:
 
