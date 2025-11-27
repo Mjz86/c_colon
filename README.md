@@ -915,9 +915,12 @@ compatibility
 - extern "c:" :
  the function has c colon abi , no restrictions.
 - extern "c++" :
- the function signature, should have types that are not reorderable , templates that are valid in c++ , and structures consistent of only fundemental cxx types , this will be more exactly specified in next revisions.
-- extern "c" :
+ the function signature, should have types that are not reorderable , templates that are valid in c++ , and structures consistent of only fundemental cxx types , this will be more exactly specified in next revisions,
+ these functions have large thunks, although,  most of it is deterministic,  and the cxx throw and catch is already bloated anyway.
+ extern "c" :
  very bare bones , only fundemental types, trivial structures and pointers .
+ these functions have large thunks, similar to the fastdyncaller transformation, because of unknown usage set,
+ however c style function pointers ( similar to cxx ones) are mandatory fastdyncallee,  because  obviously we cannot assume anything about the assembly. 
  
  
 - others:
