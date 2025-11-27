@@ -366,7 +366,17 @@ indicates that a function is effectless and idempotent.
 * these qualifiers have restrictions, for example a stateless function can only call other stateless functions a stateless function can only call other stateless functions in safe code, and cannot modify `thread_local` or `static` variables or access global non-stable mutable variables , many  of these qualified functions can only call functions that have these qualities. 
 
 
-- noexcept/throws:
+- enumret&enumcatch( this is implicitly given based on the type of the return,  if its an enum type with this specifier , then the function returning it would have this property):
+ enumret and enumcatch are similar to each other , but one applies to the normal return type , and one applies to the throw-value ( catching return type) ,
+ both return pointers can have this property. 
+ any function with these qualifiers  necceceraly has to have a match expression in the call site ( ot the catch site)( if throw-value  is this way , via operator catch(auto) , auto corresponding to the enum entries) 
+
+ * definition of what enum return and call means:
+   the return pointer of that specific channle ( return or throw) would not be a pointer to the return address , instead,  it will point to a lookup table of return addresses,  corresponding to the enum declaration order, that is handled in the return path.
+   the way these functions are called ( necceceraly having a match expression on the call site) makes it so that the return jump is to the match path corresponding to the enum type,
+   the table will be as big as the number of enum entries.
+
+ noexcept/throws:
 noexcept means the behaviour is undefined if the function returns to the caller using the catching return register.
 - noreturn/mayreturn:
 noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
@@ -675,10 +685,12 @@ like itanum
 3. the normal return address (caller passed, no save):
 
 the return adress to the happy path section in the caller.
+ if specified enum return , its the table pointer to the table of return entries corresponding  to each enum entry.
 
 4. the catching return address (caller passed, no save):
 
-the return address to the unwind/sad path code section in the caller
+the return address to the unwind/sad path code section in the caller.
+if specified enum return , its the table pointer to the table of return entries corresponding  to each enum entry catch path.
 
 
 ( only 5 pointer sized registers, 2 of which are already used in all architectures for that purpose)
@@ -843,7 +855,22 @@ pushed before the call instruction.
 even tho the call instruction is faster than pushing them manually, the registers are still being spilled to the stack , so in every case , a dynamic call necessarily has to store the registers necessary in the stack .
 all we did was , for static calls, reduce the burden of the runtime to the link time analysis.
 
+--- 
+ enum/pattern matching functions:
+ a function returning an enum type , depending on the enum-type's properties can fall into two categories:
+ 
+ - normal control flow: 
+ the enum type doesn't have any match specifier 
+ 
+ - enum control flow:
+  the enum type returned dictates what caller return adress entry the callee jumps to .
+  this is especially useful because many throw-values are enums of :
+  0. many violation exceptions.
+  1. many cancelation tokens.
+  2. many user code exceptions.
 
+  but often the return pointer doesn't need indirections because often the return is not an enum.
+  
 ---
 
 limits
