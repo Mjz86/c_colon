@@ -259,12 +259,15 @@ reorderable/not_reorderable(struct/class qualifier )
 
 we can do rust-like reorder optimization if this enabled
 
-offset_dependant/not_offset_dependant/member_offset_dependant/member_not_offset_dependant(struct/class qualifier,and type qualifier):
+`offset_dependant/not_offset_dependant/member_offset_dependant/member_not_offset_dependant`(struct/class qualifier,and type qualifier):
 
 a not_offset_dependant type is a type whoes inner structs can be scattered in memory when accessed,
  specifically ,a pointer to a sub object cannot be used to reliably get to the main object by a subtraction of the offset (other than a base class to drived class cast).
  but offset_dependant objects can use the offset to gain a pointer to the main object.
 member_offset_dependant objects are the ones that specifically can be used for casts by offset , base classes are member_offset_dependant by deafult.
+
+
+
 
 forceref / unforceref
 
@@ -457,9 +460,41 @@ contact_checked_F:
 contract's code...    
 
 ```
+---
+ constant sharing :
+ 
+ 
+- in function  arguments when a stable byte B with adresss A is triviality relocatable within its type,
+   if passed as a stable constant , we can trivialy copy it to address B , we know it will not get changed,  and we know the original value will not change until it gets relocated back ,
+   but, we can still use that byte B within other *constant* arguments,  thats because :
+   1. B is within its lifetime. 
+   2. B will not change until the scope ends.
+   3. we can assume that each time    we access a copy of B , that its as if we triviality relocated it from the original.
+   4. its as if we propagate a const refrence borrow without the stable address  
+   5. the callee will not drop the exclusive in prameters  in any code path.
 
 
---- 
+-  immutable data structures and CoW: 
+  there are many benefits to such structures , especially in a value oriented language like C colon , and by extention ,E colon.
+  there might be more incentive on doing these styles of data structures for data oriented designs. 
+
+
+
+- strings :
+   string types heavily benefit from both sso and cow ,
+   in C colon,  each string has to have an encoding, 
+   the most common encoding is the utf8 encoding, the standard library  should strive to support this encoding and be up to date on the unicode standard.
+  because of the language safety rules,  we have both thread unsafe string types for single-threaded like strings and we also have thread safe strings, 
+   however,  constant strings are different from mutable strings , so , these are specilizations on the common standard basic string type,
+   the format includes `std::(m)(z)(u)string` , for the:
+   0. m:
+   mutibility, it is not allowed for this string type to use copy on Write on the current buffer of text.
+   1. z:
+   the string mut be null terminated. 
+   2. u: 
+   the string can be thread unsafe in the way it is reference counted   
+   
+ --- 
  coroutines:
 
 - context-type in the signature:
