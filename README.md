@@ -721,15 +721,27 @@ for purposes internal to the specification, we also specify:
 
 virtual table layout contains:
 
-- cast table:
-  1. number of bases
-  2. cast-table-pointers-to-baes.
-  3. type-table-pointers
-- type-table:
-  1. offset-of-type
-  2. cast-table-pointer
-  3. virtual-base-objects-offsets
-  4. function-pointers
+
+- type-vtable:
+  0. castation-table( used in dynamic cast) :
+  we have the search table , to do a binary search,  for each type , there might be a different lookup table depending on class visibility and the highariachy,
+  but , for this type , all the accessible types are in the lookup, this , although taking up more space,  is more efficient than a graph traversal algorithm at runtime,  either way, it is already a bad practice to do dynamic inheritance, and most things would be resolved via enum types anyway, with simplicity , and more safety
+  
+```
+struct {
+number-of-types;
+sorted-cryptographic-256bit-hash-of-dest-types-name-mangle(*) [number-of-types];
+type-vtable-of-dest-types* (*)[number-of-types]
+} 
+```
+  1. offset-of-most-drived-type.
+  2. cryptographic-256bit-hash-of-most-drived-types-name-mangle.
+  3. function-pointers.
+  4. virtual-base-objects-offsets.
+  5. pointer-to-type-vtable-of-virtual-bases.
+  6. pointer-to-type-vtable-of-non-virtual-bases.
+  
+  
   
   
   a virtual refrence is :
@@ -1241,7 +1253,9 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
     however,  an extreme measure against all cycles is  making the use of abi= as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and ect , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
     ( this is the deafult therfore any use of abi= is unsafe and so E colon programs cannot have memory leaks by deafult,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's abi hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the abi chain via abi= , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust enum or cpp std variant) ) ( because  the virtual table abi is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
     arguably this is extreme , and we cant always grantee that no open-set type erasure will be provided from c colon,   but i would say that if E colon developers want to make a self referential type, it would be more elegant in C colon , and probably there are graph, linked list  and tree libraries that can do that.
-    and ,abi= is already low level enough to be a c colon only spec.
+    and ,abi= is already low level enough to be a c colon only spec,
+    for this reason,  all forms of non trivial type erasure ( erasure of a type with non trivial destructor) is unsafe ,
+    for example , E colon can only do bitcast if and only if the type of source and dest are trivially relocatable and trivially destructable( to prevent memory leak via type erasure), but in C colon , we can do unsafe(bit-cast) to do any form of bit cast( or other casts) .
     
 4. speed :
 
