@@ -389,6 +389,10 @@ indicates that a function is effectless and idempotent.
 noexcept means the behaviour is undefined if the function returns to the caller using the catching return register.
 - noreturn/mayreturn:
 noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
+
+- dllexport/dllimport: 
+  makes the function/module an export/import for dll linking.
+
 - fastdyncaller/fastdyncallee:
   functions are fastdyncaller by default, 
   a fastdyncaller qualifier makes the dynamic call,  have no variables in the used set.
@@ -422,7 +426,7 @@ noreturn means the behaviour is undefined if the function returns to the caller 
     
     
      
-     absolute value of (&contact_checked_F)
+     absolute value of (&contact_checked_F-&dyn F)
      dynamic F( where the dynamic pointer will point):
 
     save all  registers specified as used in F in stack.
@@ -448,7 +452,7 @@ the difference to fastdyncallee is :
 
 
 
-absolute value of (&contact_checked_F)
+absolute value of (&contact_checked_F-&dyn F)
 dynamic F( where the dynamic pointer will point):
 static F:
     
@@ -460,6 +464,44 @@ contact_checked_F:
 contract's code...    
 
 ```
+
+---
+exact mechanism of return pointers:
+
+ conceptually,  we have 2 return pointers, 
+ and or potentially table pointers,
+ however,  most of these are offsets, 
+ the real way we store them is in 4 cases( 2 and 0 being thr most common) :
+ 
+0. no tables( enum ret) :
+ `return_ptr`= the absolute pointer to the return path.
+ `catching_return_ptr`=   the relative offset of the absolute path to the return pointer.
+ 
+ 
+1. enum normal return table, catching return:
+`return_ptr`= the absolute pointer to the first return path.
+ `catching_return_ptr`=`table_pointer`= absolute address of the table.
+  -  table: 
+    contains reletive offsets to the paths, the pointer points to the first return offset( granteed as zero)
+  `{catching_return_offset, nth_retuen_path_offset....}`.
+     
+2. enum catching table, normal return:
+`return_ptr`= the absolute pointer to the return path.
+ `catching_return_ptr`=`table_pointer`= absolute address of the table.
+  -  table: 
+    contains reletive offsets to the paths,the pointer points to the first catching return offset, the catching offsets are accessible via positive indexes to the table.
+  `{ nth_catching_return_offset....}`.
+ 
+3. enum catching table, enum normal return table:
+`return_ptr`= the absolute pointer to the first return path.
+ `catching_return_ptr`=`table_pointer`= absolute address of the table.
+  -  table: 
+    contains reletive offsets to the paths, the pointer points to the first return offset( granteed as zero), the catching offsets are accessible via  negative indexes to the table.
+  `{...(-n)th_catching_return_offset, nth_retuen_path_offset....}`.
+    
+
+
+
 ---
  constant sharing :
  
@@ -952,11 +994,12 @@ compatibility
 - extern "c++" :
  the function signature, should have types that are not reorderable , templates that are valid in c++ , and structures consistent of only fundemental cxx types , this will be more exactly specified in next revisions,
  these functions have large thunks, although,  most of it is deterministic,  and the cxx throw and catch is already bloated anyway.
- extern "c" :
+ - extern "c" :
  very bare bones , only fundemental types, trivial structures and pointers .
  these functions have large thunks, similar to the fastdyncaller transformation, because of unknown usage set,
  however c style function pointers ( similar to cxx ones) are mandatory fastdyncallee,  because  obviously we cannot assume anything about the assembly. 
  
+
  
 - others:
  next revisions.
