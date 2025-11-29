@@ -847,7 +847,8 @@ in , out, and inout registers.
 - the registers allocator priority goes like( lower means more priority for being in a registers):
 1.   all inout registers  ( including the ones made implicitly via the overloap of in and out registers).
 2.  all out registers. 
-3.  all in registers. 
+3.  all in val registers. 
+4. all in registers. 
 
 - after stable sorting of arguments based on in/out/inout the stack arguments are pushed onto the stack from right to left.
 
