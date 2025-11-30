@@ -996,7 +996,9 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 limits
 
 the architecture must have at least 5 pointer sized registers.
-
+while possible for a very obscure architecture to use static variables as  registers , 
+the design's focus on extreme register utilization might mitigate the gains ,
+however,  modorn architectures have more than enough registers at their disposal. 
 
 ---
 
