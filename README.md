@@ -722,24 +722,27 @@ for purposes internal to the specification, we also specify:
 virtual table layout contains:
 
 
-- type-vtable:
+- type-vtable( 64 byte aligned) :
   0. castation-table( used in dynamic cast) :
   we have the search table , to do a binary search,  for each type , there might be a different lookup table depending on class visibility and the highariachy,
   but , for this type , all the accessible types are in the lookup, this , although taking up more space,  is more efficient than a graph traversal algorithm at runtime,  either way, it is already a bad practice to do dynamic inheritance, and most things would be resolved via enum types anyway, with simplicity , and more safety
   
 ```
+
 struct {
 number-of-types;
-sorted-cryptographic-256bit-hash-of-dest-types-name-mangle(*) [number-of-types];
+// the 256 bit hashes arent 256 values , instead,  32 arrays of  system endian bytes , the reason for this is presented in the dynamic cast spec.
+sorted-cryptographic-256bit-hash-of-dest-types-name-mangle-byte(*) [number-of-types][32/* hash bytes*/];
 type-vtable-of-dest-types* (*)[number-of-types]
 } 
 ```
   1. offset-of-most-drived-type.
-  2. cryptographic-256bit-hash-of-most-drived-types-name-mangle.
-  3. function-pointers.
-  4. virtual-base-objects-offsets.
-  5. pointer-to-type-vtable-of-virtual-bases.
-  6. pointer-to-type-vtable-of-non-virtual-bases.
+  2.  cryptographic-256bit-hash-of-current-types-name-mangle 
+  3. cryptographic-256bit-hash-of-most-drived-types-name-mangle 
+  4. function-pointers.
+  5. virtual-base-objects-offsets.
+  6. pointer-to-type-vtable-of-virtual-bases.
+  7. pointer-to-type-vtable-of-non-virtual-bases.
   
   
   
@@ -749,8 +752,20 @@ virtual table pointer
 and
 type pointer
 
-  
-  
+
+
+- dynamic cast( a cache-friendly binary search , instead of a graph traversal in itanum) :
+  we first  do a binary search for the lowest and highest  most significant  bytes  with equal value to the most significant bytes from the cast destination.
+  if the value is not found we return nullptr ( range is empty) , if only one value in range , we use that index for getting type v table , then if our hash is  not equal to hash-of-current-types-name , we return nullptr , else, then use the offset to get the pointer,  else:
+  we do a binary search  on the next most significant bytes , similar to the first step.
+  we do this loop until we either reach the hash , or we get nullptr or , if  all the 32 bytes are searched,  we return nullptr.
+  * the reason for doing this unusual storage of hash:
+    when we search , each time we do so , we search for the byte , and in each section,  the bytes are next to each other , so 64 bytes (64 bases) can be easily searched through without a cashe miss , and in most cases,  we have few bases , so , the first steps , which are the most likely to find the hash in ( cryptographic hashes are uniformly distributed, so in 256 bases ( which is a lot) we are likely to have 1 to 5 bases, so the next step will likely resolve the search ).
+    also ,either way we will need to access the offset anyway,  and because of the 32 byte alignment , we know that ( assuming 64 byte cache line) we only access one cache line to get both the offset , and the 256bit hash to check equality with to see if we have a match.
+    this strategy helps mitigate the binary search cache miss penalty. 
+    if the number of bases are less than 64 , we most likely have only 3 cache lookups ( 1 for the first search step , and assume the first step is successful, another one for the  v table lockup  , and last one for check and pointer offset lookup)
+    
+    
 ---
 
 
