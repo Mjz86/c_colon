@@ -1256,7 +1256,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
     arguably this is extreme , and we cant always grantee that no open-set type erasure will be provided from c colon,   but i would say that if E colon developers want to make a self referential type, it would be more elegant in C colon , and probably there are graph, linked list  and tree libraries that can do that.
     and ,abi= is already low level enough to be a c colon only spec,
     for this reason,  all forms of non trivial type erasure ( erasure of a type with non trivial destructor) is unsafe ,
-    for example , E colon can only do bitcast if and only if the type of source and dest are trivially relocatable and trivially destructable( to prevent memory leak via type erasure), but in C colon , we can do unsafe(bit-cast) to do any form of bit cast( or other casts) .
+    for example , E colon can only do bitcast if and only if the type of source and dest are trivially relocatable and trivially destructable and have no pointer/references in their layouts ( to prevent memory leak via type erasure), but in C colon , we can do unsafe(bit-cast) to do any form of bit cast( or other casts) .
     
 4. speed :
 
