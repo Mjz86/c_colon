@@ -1186,8 +1186,17 @@ gets the abi hash off the inner expression.
 - note :
 the c colon linker only uses the abi hashes as signaturs for linkage.
 
-
-
+- choice of hash:
+ because,  the hashes are only relevant for a function/type/namespace... with a specific name ( similar to the uniqueness of  name mangles in Cxx) , and the specific hash ,
+ lets say a name has been  changed  N times , 
+  the collision probability is one halfs if we have tried 2^64 different versions, 
+  as long as we haven't changed the name more than 2^(32) times , we are extremely unlikely to find a collision.
+  and , because of the practical nature , we obviously do not have 4 gigabytes of functions/types/... *with the same name mangle* ( other than the hash) in the same binary,
+  it is simply too much names  to be a practical limitation .
+  
+ 
+ 
+ 
 ---
 
 runtime libraries and compilation
