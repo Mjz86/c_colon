@@ -1014,7 +1014,60 @@ in general, api objects defined as part of this abi are assumed to be extern "c:
 - are expected to be called only implicitly by compiled code, and are likely to be implemented in c/c++.
 
 
+---
+ module dependancy resolutions:  
+  each file , has many kind of cached compiler outputs relevant to it in the build directory.
 
+
+  0. import modules :
+    lists all the modules imported from this file.
+
+  1. export modules:
+    lists all the modules exported from this file.
+  
+  2. import identifiers:
+  lists all the identifiers and a refrence to their relevant AST/IR code exported from this file.
+  
+  3. export identifiers:
+  lists all the identifiers and a refrence to their relevant AST/IR code  imported from this file.
+  
+ 4. identifier contents(AST & JIT-IR &  IR & binary) :
+ lists all the identifiers and their relevant AST/IR/asm code,
+ also , each of the identifiers lists who their dependancies. 
+ 
+ 
+  5. import library:
+  lists all the dependancies from the web C colon repository. 
+  6. export library: 
+  lists all the dependancies that will be build for  the web C colon repository. 
+ 
+ 
+ 
+ 
+  - type and function identifier categories:
+    
+    0. non templated:
+    these are straightforward to make a graph of.
+
+    
+    1. full template specilization:
+    these are similar to that of a non template in the graph contributions. 
+    
+    2. partial template specilizations:
+    these are similar to that of an overload set.
+    
+    3.  template overload set ( set of templates and non templates with this name):
+     because templates in c++  and similarly C colon are turning complete  , we cannot determine if the template graphes will end their cycles or not ,
+     so , for the resolution of this , we first need to resolve all the dependancies by execution of the constexpr IR-JIT code, the IR code will build the graph during its execution, 
+     if the step count doesn't exceed,  then we have the  the graph in all templates being specialized,  and so being usable.
+     while non specialized  templates are hard to parrarelize ,  the non dependent parts of the global graph can still run their template resolutions in parallel. 
+ 
+  dependency graph building:
+   for each part of the system,  we have a node in a dependancy graph ,
+   we start from parts where theres  no dependancy and propagate to the nodes where the dependancies are resolved, 
+   each time a template's full non template/specialized dependancies are resolved,  it  tries to resolve the rest via constexpr execution,
+   this is repeated till we either reach max evaluation step or we resolve all identifiers to move to the next step.
+  
 ---
 
 compatibility
