@@ -602,6 +602,9 @@ if a promise wants ( decided in the awaiter suspension via returned `transfered_
  // if a the deallocation of the frame fails by exception the program will terminate ( we can assume free and delete will never fail so this isn't an issue) 
   byte[....];// coroutine frame storage 
   
+  // the fastdyncaller transformation is a bit different for asymetric transfer,  each jump to a sibling restores the used set as if it was a return. 
+
+
   };
     
  // these are simplified code , the actual code would check to see if its a noop coroutine first .
