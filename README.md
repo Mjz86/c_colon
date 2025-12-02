@@ -227,6 +227,21 @@ mutexpr / constexpr
 
 a value dcalared constexpr is known at compile time.
 
+
+`no_dll_comparable_address`(default)/`dll_comparable_address`(dynamic loader used Function and variable ( any symbol) qualifier):
+ a function,  variable or storage space,  used in the dynamic shared  library, may have a different address to the static function,
+ a `dll_comparable_address` mandates that the storage adress is unique,
+ comparing two variables with  `no_dll_comparable_address` may or may not change during the execution , also interposition is not allowed for these values.
+ a symbol of `dll_comparable_address` definition  is required to be loaded before any c colon code executes,
+this means that all linkable binaries with this qualifier  must be available when the program starts.
+the adresses of these variables is overriden at load time , and the memory  section is set to read execute for the duration of the program. 
+
+ dllhidden/dllexport/dllimport( only on static symbols,  like functions or static variables): 
+   makes the symbol an export/import for dll linking by providing a symbol hash.
+   also dllhidden is the deafult and removes the symbol  hash in the binary .
+
+
+
 storage qualifiers
 
 - external storage:
@@ -390,8 +405,6 @@ noexcept means the behaviour is undefined if the function returns to the caller 
 - noreturn/mayreturn:
 noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
 
-- dllexport/dllimport: 
-  makes the function/module an export/import for dll linking.
 
 - fastdyncaller/fastdyncallee:
   functions are fastdyncaller by default, 
@@ -499,7 +512,21 @@ exact mechanism of return pointers:
     contains reletive offsets to the paths, the pointer points to the first return offset( granteed as zero), the catching offsets are accessible via  negative indexes to the table.
   `{...(-n)th_catching_return_offset, nth_retuen_path_offset....}`.
     
+--- 
+the symbol table and dynamic loader:
+ any c colon symbol with dllimport or dllexport qualifier has its cryptographic 256 bit hash stored in the binary, 
+ this is for dynamic linking and the dynamic loader to be able to load the dll.
 
+
+- c colon symbols are *not* interpositioned :
+0. we do not want the overhead of the global offset table(GOT) by deafult, as it takes a toll on all calls from shared libraries even thoes thar are never interpositioned (see the shared libraries cppcon video).
+1.  it has an uneasy coexistence with the c colon odr.
+2. it is rarely used and can be mimicked by a macanism like cxx `set_terminate`.
+3. GOT being writable during the execution of the program is a security  problem because of being able to change the common functions to do something malicious( glaring attack surface).
+4. we do not want the overhrad of the procedural lookup table by deafult.
+ 
+
+- c colon sym
 
 
 ---
@@ -697,8 +724,13 @@ the descriptions below make use of the following definitions:
         5. an entity within a templated namespace or
         6. a lambda in a templated entity.
 - thunk: a segment of code associated (in this abi) with a target function, which is called instead of the target function for the purpose of modifying parameters (e.g. this) or other parts of the environment before transferring control to the target function, and possibly making further modifications after its return. a thunk may contain as little as an instruction to be executed prior to falling through to an immediately following target function, or it may be a full function with its own stack frame that does a full call to
-
 the target function.
+
+ - interposition :
+  overriding a symbol in one binary fron another. 
+
+
+
 
 - vague linkage: the treatment of entities -- e.g. inline functions, templates, virtual tables -- with external linkage that can be defined in multiple translation units, while the odr requires that the program behave as if there were only a single definition.
 
@@ -1474,6 +1506,9 @@ https://wg21.link/n5008
 
 xxhash128:
 https://xxhash.com
+
+shared libraries and loader in cxx windows and Linux: 
+https://www.youtube.com/watch?v=_enXuIxuNV4
 
 
 ---
