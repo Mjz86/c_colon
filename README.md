@@ -1,5 +1,4 @@
 
-
 c colon lang , its brothers and the mcc abi
 
 > introduction
@@ -1070,7 +1069,7 @@ in general, api objects defined as part of this abi are assumed to be extern "c:
  4. identifier contents(AST & JIT-IR &  IR & binary) :
  lists all the identifiers and their relevant AST/IR/asm code,
  also , each of the identifiers lists who their dependancies. 
- 
+ this includes but is not limited to : call graph, refrence graph,  abi graph, static variables used, register pressure, optimization qualifier and  ect.
  
   5. import library:
   lists all the dependancies from the web C colon repository. 
@@ -1298,8 +1297,8 @@ the objective of a full abi is to allow arbitrary mixing of object files produce
  3. compile the asts to mcc ir-0 .
  4. for every constexpr ir-0 path , evaluate all constexpr code and generate mcc ir-1 files.
  5. for every ir-1 file , optimize the code to ir-2 files.
- 6. link all ir-2 files in the mcc linker to an ir-3 file.
- 7. map ir-3 the code to the target assembly, while optimizing unnececery register usage , for example by register allocation optimizations and generate an object file.
+ 6.  using all of the summary and dependancy graph information,  we make an ir-3 file for each partially-independent unit of execution in the graph to be optimized , we do the processing of these files then we, link all ir-3 files in the mcc linker to an ir-4 file, this is  ThinLTO style .
+ 7. map ir-4 the code to the target assembly, while optimizing unnececery register usage , for example by register allocation optimizations and generate an object file( also happens with the previous step).
  8. link the object files to an executable.
 
 
@@ -1513,6 +1512,18 @@ https://xxhash.com
 
 shared libraries and loader in cxx windows and Linux: 
 https://www.youtube.com/watch?v=_enXuIxuNV4
+
+Teresa Johnson “ThinLTO： Scalable and Incremental Link-Time Optimization” :
+https://www.youtube.com/watch?v=p9nH2vZ2mNo
+
+
+CppCon 2017： Michael Spencer “My Little Object File： How Linkers Implement C++” :
+https://www.youtube.com/watch?v=a5L66zguFe4
+
+
+CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()” :
+https://www.youtube.com/watch?v=dOfucXtyEsU
+
 
 
 ---
