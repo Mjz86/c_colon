@@ -1486,6 +1486,31 @@ however E colon still recognizes these C colon constructs , allowing custom type
   i think that terminations is very brutal , because of this exception handling mechanism , i think all violations are represented by an exception, 
   this is fast and effective , violations *can* be terminations,  and violation catching is unsafe , but generally program will be fine and exception would be lead to a  terminate in main with very sane stack trace and debug info ( if we choose).
 
+
+--- 
+roadmap:
+
+1. build a C colon subset language front-end for llvm in c++:
+this in itself will require substantial work .
+
+2. build one or more  standards documents with clear information,  similar to the cxx spec, and the cxx abi specs:
+this would need to be designed carefully and diligently to ensure that the language stays well-defined.
+
+3. ( dependent on 1 and 2) migrate the C colon front-end to a  C colon codebase:
+not in scope rn.
+
+4. ( dependent on 3) replacement or extension ( probably a fork ) of the llvm back-end, linker:
+not in scope rn, but the reason being is to be able to nativity support the mcc abi in all platforms instead of piggybacking it on top of the c abi.
+
+5. ( dependent on 4) rewriting the full toolchain in c colon:
+not in scope rn
+
+
+- considerations: 
+yes , this is too ambitious to build in few years,let alone quickly,  however if we let ourselves to build the 2 first parts by not focusing on performance ( because the abi is build on top of llvm ir with its conventions around calls ), we may be able to get the language up and running to build itself eventually in the following years to come. 
+
+
+
 ---
 
 refrences
