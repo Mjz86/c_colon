@@ -1269,7 +1269,8 @@ gets the abi hash off the inner expression.
 7. bases abi hash and dclaration order
 8. abi+(...) es abi hash and dclaration order
 9. qualifiers of a type , but order independant
-10. throw-value  type hash of the context
+10. throw-value  and promise-type and input and output of async/sync functions of the context
+11. the abi version number ( any changes to the abi scheme in the standard will alter this number)
 
 - note :
 the c colon linker only uses the abi hashes as signaturs for linkage.
@@ -1282,6 +1283,8 @@ the c colon linker only uses the abi hashes as signaturs for linkage.
   and , because of the practical nature , we obviously do not have 4 gigabytes of functions/types/... *with the same name mangle* ( other than the hash) in the same binary,
   it is simply too much names  to be a practical limitation .
   
+ 
+ the hashs dependent on their dependancies form a tree ( no cycles ) and any changes in any part of the tree will alter all above sections of the tree , similar to a murcle tree , so any changes in the abi of a section will force all dependent sections to need a new link target .
  
  
  
@@ -1517,6 +1520,9 @@ refrences
 
 Mjz C colon:
 https://github.com/Mjz86/c_colon
+
+Quantum-Secure Encryption is Here. And it's WILD ( hash verification) :
+https://youtube.com/watch?v=T9fCCGzwHJc&si=BzDNoo-vLqmsSJ7g
 
 itanium abi:
 https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro
