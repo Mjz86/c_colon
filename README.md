@@ -1271,6 +1271,8 @@ gets the abi hash off the inner expression.
 9. qualifiers of a type , but order independant
 10. throw-value  and promise-type and input and output of async/sync functions of the context
 11. the abi version number ( any changes to the abi scheme in the standard will alter this number)
+12. diffrent triviality properties of a type.
+
 
 - note :
 the c colon linker only uses the abi hashes as signaturs for linkage.
