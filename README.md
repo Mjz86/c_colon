@@ -218,6 +218,13 @@ unrestricted disables the exclusive mutibility borrow rule in the compiler.
  unrestricted often has to come with the unstable qualifier so explicit stable xor unstable qualification is required.
 
 
+
+`represent_cxx` ( deafult only in fundemental  `cxx_T_t`)/ `no_represent_cxx`(deafult in any other type):
+for this to be used  many rules need to be checked  to have a cxx compatible type , 
+for example  the alignment must not be fractional and must be at least `alignof(cxx_char_t)`, 
+these types 
+
+
 noaliastype / aliastype
 
 aliastype means that any store/load/modification throgh this type can influence types outside the alias set.
@@ -400,10 +407,20 @@ indicates that a function is effectless and idempotent.
    the way these functions are called ( necceceraly having a match expression on the call site) makes it so that the return jump is to the match path corresponding to the enum type,
    the table will be as big as the number of enum entries.
 
- noexcept/throws:
+- noexcept/throws:
 noexcept means the behaviour is undefined if the function returns to the caller using the catching return register.
 - noreturn/mayreturn:
 noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
+
+
+- transactional memory ( optional to be implemented):
+0. atomic_cancel,
+1. atomic_commit, 
+2. atomic_noexcept, 
+3. synchronized, 
+4. transaction_safe, 
+5. transaction_safe_dynamic
+6. transactional ( value qualifier)
 
 
 - fastdyncaller/fastdyncallee:
@@ -713,7 +730,7 @@ the descriptions below make use of the following definitions:
 - non-trivial for the purposes of calls: a type is considered non-trivial for the purposes of calls if:
     - it has a non-trivial realloc-constructor , or if its realloc constructors are deleted.
     - this definition, as applied to class types, a type which is trivial for the purposes of the abi will be passed and returned according to the rules of the base mcc abi, e.g. in registers; often this has the effect of performing a trivial reallocation of the type.
-    - otherwise it is passed as if it had a stable forceref&&& qualifier
+    - if non trivial,  it is passed as if it had a stable forceref(&&or &&&)qualifier, as if  passed by reference,  the relocation is allowed to be optimized out if the passed variable is &&& qualified or is a temporary at the call site, note that if the variable has internal mutibility as an input , it is ill formed to pass it by value ( input) and its relocation constructors cannot be trivial.
 
 - potentially-overlapping subobject: a base class subobject or a non-static data member declared with the valexpr qualifier.
 - primary base class: for a dynamic class, the unique base class (if any) with which it shares the virtual pointer at offset 0.
@@ -731,6 +748,20 @@ the target function.
 
  - interposition :
   overriding a symbol in one binary fron another. 
+
+
+- memory orders( similar to cxx) :
+1. relaxed 
+2. aquire 
+3. release 
+4. aquire release 
+5. sequencal consistency.
+
+
+
+
+
+
 
 
 
@@ -813,6 +844,7 @@ The caller can store values into registers that the callee has promised to not m
 To reduce stack spills,
 to reduce spills , the function signature should also require minimal usage ( thats where overlap optimization comes in) and also ,
 for reducing braching , most of the branches known in the callee to occur at call site have been moved to the return branch in the callee , the callees return acting like a switch statement to the caller code, but because the return is already a necessary dynamic branch , the cost of 2 branches ( return , and a check of return calue in callee) is reduced  to one.
+also , because of the lifetime problem( understood in rust dyn calls with lifetime signatures that convert to other signatures) in dynamic calls , any call through a dynamic  function pointer or dll  has either provable valud lifetimes or is unsafe(lifetime-dyn-call) or  for casting between lifetimes using unsafe(lifetime-cast)
 
 a mcc signature has:
 
@@ -1026,14 +1058,29 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 
   but often the return pointer doesn't need indirections because often the return is not an enum.
   
----
 
-limits
+--- 
+(de)initilization sequence of modules:
+0. test and set the initilization atomic flag and if it was 1 at the beginning,  return.
+1. all the dependant modules get initilized.
+2. all the static variables get initialized in order of declaration.
+3. the main function in the module will run if defined.
+4. after main returns,   destroy every static variable in the reverse order of declaration and deinitilize each module that we initilized.
+5. clear  the atomic flag(from  the part who set it in the first place) and return to caller module.
+ 
 
-the architecture must have at least 5 pointer sized registers.
-while possible for a very obscure architecture to use static variables as  registers , 
-the design's focus on extreme register utilization might mitigate the gains ,
-however,  modorn architectures have more than enough registers at their disposal. 
+*  in a dll initilization the loader has different work to do , so the first step is loading , and after the destruction theres unloading.
+ 
+ 
+ 
+
+ 
+
+
+ 
+
+
+
 
 ---
 
@@ -1117,10 +1164,16 @@ compatibility
  these functions have large thunks, similar to the fastdyncaller transformation, because of unknown usage set,
  however c style function pointers ( similar to cxx ones) are mandatory fastdyncallee,  because  obviously we cannot assume anything about the assembly. 
  
+ 
 
  
 - others:
  next revisions.
+ 
+ 
+ 
+  * note : for each calling convention ( fast call, vector call, cdecl ,....) we have a unique caller register saver trunk and a unique callee register changer trunk and  exception handling trunks.
+ 
 
 
 ---
@@ -1214,8 +1267,9 @@ operator contract_assert(...)  context-type :
 
 fundemental types
 
-- `(m/u)intN_t`:
-
+- `std::(m/u)intN_t`:
+ N  goes from 1 ( fractional alignment, with math similar to c bit feilds) , 2 , 4, 8 ( byte aligned) , 16,....up to at least 1024 ( the 11 power of 2 starting feom the 0th power)  , while unnecessary, its better to have reliable deafults, especially  because  modorn cpus have massive registers.
+ 
  1. nothing:
  overflow is a contract  violation, is a signed integral.
  2. u :
@@ -1223,19 +1277,32 @@ fundemental types
  3. m :
  any overflow is well-defined, only devision by 0 is a contract violation,is unsigned modular arethmatic type.
 
-- `(b)floatN_t`:
-
+- `std::(b/eEmM)floatN_t`:
+4, 8, 16,  32,64,80, 128
+ 
 floating point types with N bits.
 
-- `charN_t`:
-
+- `std::charN_t`:
+N is one of 8,16,32,64
 charechter types with N bits.
 
-- `nullptr_t`:
+- `std::nullptr_t`:
 
-type of a nullptr.
+type of a nullptr, its size is similar to a byte pointer.
 
-- `abi_t`:
+  
+- `std::bool_t`(1 byte) ,`std::flag_t`(1 bit) :
+  the bolean types 
+  
+-  `std::bit_t`:
+the special bit type with special pointers and references , `sizeof(bit_t)` and any types with fractional alignments ( and therfore sizes) are ill-formed,  instead,  `bit_sizeof(T)`,`bit_alignof(T)`can be used, also , the bit can alias all types with any  alignment.
+ 
+
+
+- `std::byte_t`:
+the special byte type with the alias set of all types (with non fractional alignment, although it can alias the memory holing it).
+
+- `std::abi_t`:
 
  the hash type that the abiof operator gives.
  its a 128 bit uuid , it doesn't support any operations outside of the abi operators,  other than the usual load and store or casts.
@@ -1243,11 +1310,47 @@ type of a nullptr.
   this is good enough,  because the linker already has to append the cxx-style name mangle to the hash .
    `namenangle__hexed-hash`. 
 
-- `cxx_(wchar/...)_t`:
+- `std::cxx_(wchar/...)_t`:
 
  cxx compat types.
 
 
+
+
+
+
+* pointer types are different: 
+
+`(memcast<uintmax_t>(bit_ptr)&7)==8*memcast<uintmax_t>(byte_ptr)`.
+ 
+
+0. c colon typical pointers( deafult ) : 
+ these point to types with non fractional alignments
+ most types do not have fractional alignment.
+ these are typically cxx pointer sized 
+ 
+ 2.   c colon fractional pointers: 
+  these point to types with fractional alignments, the reason is to make common bit feilds and flag  vectors easy.
+  these are cxx  pointer sized in many cases ( 64 bit ptrs are big enough, however 32 bit ones will reduce the memory map 8 simes!, so  its not big enough)
+  
+ 3. cxx pointers: 
+ these are cxx compatible pointers  with cxx pointer sizes , pointer to any `represent_cxx` type.
+  
+  
+  ---
+
+limits
+
+the architecture must have at least 5 pointer sized registers.
+while possible for a very obscure architecture to use static variables as  registers , 
+the design's focus on extreme register utilization might mitigate the gains ,
+however,  modorn architectures have more than enough registers at their disposal. 
+note that in architectures where `sizeof(cxx_char_t)!=1` , the `represent_cxx` is provided  to be used in abi boundaries .
+and for any cxx pointer `(memcast<uintmax_t>(byte_ptr)&(sizeof(cxx_char_t)-1))==sizeof(cxx_char_t)*memcast<uintmax_t>(cxx_ptr)`, note that the lower bits in the c colon pointers in these architectures indicate shifts.
+  
+  
+  
+  
 ---
 
 abi and compatibility
@@ -1270,8 +1373,9 @@ gets the abi hash off the inner expression.
 8. abi+(...) es abi hash and dclaration order
 9. qualifiers of a type , but order independant
 10. throw-value  and promise-type and input and output of async/sync functions of the context
-11. the abi version number ( any changes to the abi scheme in the standard will alter this number)
+11. the abi version number ( any changes to the abi scheme in the standard will alter this number) 
 12. diffrent triviality properties of a type.
+13. lifetimes of  arguments or members and their dependancies ( the tokens and their hash in the definition of templates , lifetimes, contracts and requirements)
 
 
 - note :
