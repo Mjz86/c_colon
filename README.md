@@ -66,7 +66,8 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 MCC:
 
 a toolchain with a radical abi , designed to have the best theoretical calling conventions and a fast exception system, 
-with  parallel compilation and a cargo like module system,  while supporting dynamic linking, and with the recursive abi , having no fear of braking odr 
+with  parallel compilation and a cargo like module system,  while supporting dynamic linking, and with the recursive abi , having no fear of braking odr .
+the abi calling conventions is very radical  ( dual return address or table, in out inout registers, used and unused registers ect)
  for more details,  see the mcc document 
  
  ---
