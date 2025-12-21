@@ -58,7 +58,6 @@ and a code similar to cpp with rust like safety would be achieved.
 
 
 
----
 
 4. compile time code:
 the c colon spec aims to use way more compike time code.
@@ -1636,8 +1635,11 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
 refrences
 
-Mjz C colon:
+Mjz C colon summary:
 https://github.com/Mjz86/c_colon
+
+Mjz  colon compiler design and details:
+https://github.com/Mjz86/c_colon/blob/main/mcc.md
 
 Quantum-Secure Encryption is Here. And it's WILD ( hash verification) :
 https://youtube.com/watch?v=T9fCCGzwHJc&si=BzDNoo-vLqmsSJ7g
