@@ -590,16 +590,18 @@ the symbol table and dynamic loader:
 2. has to have a context-type-coro-return and context-type-coro-input ( independant of the function signature) to be returned from a resume.
 
 3. the promise  function's :
-  - first function  that is called once resumed :
-  `promise_resumed(this promise&  self, context-type-coro-input,in is_cancled) context-type;`
+  - first function  that is called once resumed ,the input is typically the callers coroutine handle and other information :
+  
+  `promise_resumed(this promise&  self, context-type-coro-input,in is_cancled) context-type-> promise-cache;`
    
 - last function that is called resulting in suspension: 
   note that the reason for using references instead of inout here is because the callee will probably throw , resulting in the drop of inout , but references don't drop self on throw.
-  `promise_suspend(this promise& self,bool& is_cancled )context-type->context-type-coro-return;`
+  `promise_suspend(this promise& self, promise-cache,bool& is_cancled )context-type->context-type-coro-return;`
  
 - (a)symetric transfer:
-if a promise wants ( decided in the awaiter suspension via returned `transfered_handle` being noop or not ) to do a asymetric transfer , instead of the `promise_suspend` , the `promise_transfer` is called, they should have the same context-type to be compatible:
-`promise_transfer(this promise& self,in transfered_handle,bool& is_cancled )context-type->transfered-context-type-coro-input;`
+if a promise wants ( decided in the awaiter suspension via returned `transfered_handle` being noop or not ) to do a asymetric transfer , instead of the `promise_suspend` , the `promise_transfer` is called, they should have the same context-type to be compatible, the return value is typically the  coroutine handle and other information:
+`promise_transfer(this promise& self,promise-cache ,in transfered_handle,bool& is_cancled )context-type->transfered-context-type-coro-input;`
+
 
 - cancelation grantees: 
  an error type in the catch scope is either a base of the empty cancelation token type , or its a base of the common violation token or isnt either , for cancelation and violation catches ( a catch with these types) unsafe(ignore-cancelation) and unsafe(ignore-violation) is applied , but otherwise its safe to do in the coroutine,  also the  catch(throw-value), equivalent to catch(...) in c++  is also unsafe(catch-all-tokens).
@@ -607,6 +609,8 @@ if a promise wants ( decided in the awaiter suspension via returned `transfered_
  
 - destroyed only when everything is canceled and "done()".
 
+- promise-cache :
+the promise cache is an object only visible in the promise, with lifetime of the promise itself, as if an stack variable on the promisesl function's stack, its accessible as an inout like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle 
 
  - abi :
   the coroutine handle  is a pointer to the structure with the following layout:
@@ -634,8 +638,9 @@ if a promise wants ( decided in the awaiter suspension via returned `transfered_
 //  void cancel() {ptr->program_switch_counter=-abs(ptr->program_switch_counter);}// if there are no co_value expressions , then only one resume is necessary before its "done".
  // context-type-promise & promise() ...
   
-  
-  
+   
+   std::coroutine_handle_t<context-type, std::meta(^^coro-function)> is the non type erased handle , with superior static calls ( calling and optimizing via the reflection information) 
+  , however the type erased one has an empty reflection value of  std::meta  , and does a dynamic call, and is needed for callees to preform the control transfer via resume on the caller.
 ```
 
   
