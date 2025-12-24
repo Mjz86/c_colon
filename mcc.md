@@ -1281,10 +1281,11 @@ fundemental types
  3. m :
  any overflow is well-defined, only devision by 0 is a contract violation,is unsigned modular arethmatic type.
 
-- `std::(b/eEmM)floatN_t`:
+- `std::(s)(b/eEmM)floatN_t`:
 4, 8, 16,  32,64,80, 128
  
 floating point types with N bits.
+ also , s stands for stable, as in , the floating point math is platform independent,  although slower.
 
 - `std::charN_t`:
 N is one of 8,16,32,64
