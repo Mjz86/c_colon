@@ -1326,7 +1326,7 @@ the special byte type with the alias set of all types (with non fractional align
 
 * pointer types are different: 
 
-`(memcast<uintmax_t>(bit_ptr)&7)==8*memcast<uintmax_t>(byte_ptr)`.
+`(memcast<uintmax_t>(bit_ptr)&~7)==8*memcast<uintmax_t>(byte_ptr)`.
  
 
 0. c colon typical pointers( deafult ) : 
@@ -1351,7 +1351,7 @@ while possible for a very obscure architecture to use static variables as  regis
 the design's focus on extreme register utilization might mitigate the gains ,
 however,  modorn architectures have more than enough registers at their disposal. 
 note that in architectures where `sizeof(cxx_char_t)!=1` , the `represent_cxx` is provided  to be used in abi boundaries .
-and for any cxx pointer `(memcast<uintmax_t>(byte_ptr)&(sizeof(cxx_char_t)-1))==sizeof(cxx_char_t)*memcast<uintmax_t>(cxx_ptr)`, note that the lower bits in the c colon pointers in these architectures indicate shifts.
+and for any cxx pointer `(memcast<uintmax_t>(byte_ptr)&~(sizeof(cxx_char_t)-1))==sizeof(cxx_char_t)*memcast<uintmax_t>(cxx_ptr)`, note that the lower bits in the c colon pointers in these architectures indicate shifts.
   
   
   
