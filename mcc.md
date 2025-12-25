@@ -350,6 +350,28 @@ an owned object can use and must drop after use.
 
 
 
+qualiexpr(T V)/qualiexpr() ( deafult):
+an special qualifier.
+ V itself has a type with its qualifiers, 
+ the value of V can be changed by the constexpr code section by qualiexprof(indentifier)  that accecess the V inside (needs to have unsafe(qualiexprof) , beacuse E colon does not need this level of power).
+ any function attempting to caputure this qualifier inside its scope needs to be a template,
+ however , the outside of scope qualifier checks can still be there without changing the function signature;
+c colon code:
+```
+template<autoexpr T-outside>
+...requires... consteval pre... consteval post...
+template<autoexpr T-inside>
+...requires...
+ ...f( T-outside (<-optional) name (<-optional):T-inside,... )...;
+T-outside is the complete outside type, the checks of the outside , however the T-inside is what the function body actually gets as the atgument type of name, 
+however if there is a dependancy from T-inside to T-outside, the function is considered fully templated , but if not , the function body is considered to be non templated , but the function call site still does execute the requires clause, which may contain checks or info about the type,
+for example , a safe function may need to get a sorted vector ,  but the vector cant really prove without O(n) ops that it is sorted ,  and we really dont want static overhead , 
+we can now declare a qualiexpr(bool sorted_flag=false) , (the empty qualiexpr being recognized as not sorted), and dclare that the class member has qualiexpr(bool sorted_flag=true) and any operation that preserves that invariant are valid, and therfore we can statically assert that a binary search is not undefined behaviour.
+
+```
+ 
+
+
 ---
 
 function qualifiers
