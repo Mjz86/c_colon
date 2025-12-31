@@ -3335,7 +3335,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
 
 6. layout optimizations :
-  on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types ,
+  on top of rust like member reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types ,
   for example  if i have an array of offset independent members,  and refrence a member,  i can just only use the memory of that member and other members may not be in ajason stack memory .
 
  7. so maybe one day cpp can be as fast:
