@@ -657,27 +657,8 @@ for example `intn_t` can alias the `uintn_t` and `mintn_t` types , but `noaliass
 
 
 
-inexpr / outexpr / inoutexpr / no-argument-in-or-out
 
 
-
-determines the general usage and call convention in a function argument.
-
-- none ( translates to mut inexpr  or the in val register):
-
-a stable  mutable value that is initialized on the call site.
-
-- inexpr:
-
-a stable const value.
-
-- outexpr:
-
-a stable uninitilized mutable value that will initilize the caller argument after a succsesfful call.
-
-- inoutexpr:
-
-a stable mutable value.
 
 
 
@@ -697,6 +678,32 @@ can be used but does not drop.
 
 an owned object can use and must drop after use.
 
+
+
+
+ `drop_on_throw/presist_on_throw,drop_on_ret/presist_on_ret,xvaluexpr, rvaluexpr/lvaluexpr , (i)(o)valuexpr`(function arg qualifiers): 
+ drop on X makes it so that the object is  when X , (xvaluexpr is unconditional drop),rvaluexpr premotes move semantics.
+ (i)(o)valuexpr does the automatic in(i)/out(o)/inout(io)/inval(none) dropping semantic to the current refrence or if trivial , via register 
+ 
+
+determines the general usage and call convention in a function argument.
+
+- valuexpr ( translates to mut ivaluexpr  or the in val register):
+
+a stable  mutable value that is initialized on the call site. the value qualification
+
+- ivaluexpr:
+
+a stable const value. the input qualification
+
+- ovaluexpr:
+
+a stable uninitilized mutable value that will initilize the caller argument after a succsesfful call. the ouput qualification
+
+- iovaluexpr:
+
+a stable mutable value. the inout qualification
+ 
 
 
 
@@ -1350,7 +1357,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
 ---
 
- refrences
+ refrences( there are more combinations of qualifiers  , but the common ones include )
 
  
 
@@ -1364,8 +1371,8 @@ for function arguments,  these don't necessarily mean that T will have the same 
 
 
 
-T&:
-
+ T&:
+(lvaluexpr is defualt)
 
 
 a typical l-value reference like rust , and if unrestricted , like c++.
@@ -1373,8 +1380,10 @@ a typical l-value reference like rust , and if unrestricted , like c++.
 its like inout,for passing around T without potentially changing the adresss of T , unlike inout.
 
 
+its const is used in the copy constructors.
 
-T&&:
+
+rvaluexpr T&:
 
 
 
@@ -1382,8 +1391,17 @@ a typical r-value reference like c++ but borrow  checked like T&, and if unrestr
 
 its mut is used in the move constructors. 
 
-its const is used in the copy constructors.
 
+
+ 
+
+
+iovaluexpr T&:
+
+
+a typical l-value reference like inout , this is the awnser to inout like semantics without the intent to steal.
+
+its like inout,for passing around T without potentially changing the adresss of T , unlike inout.
 
 
 if a function throws by exception,  this value is considered dropped/uninitilized if T is mutable .
@@ -1394,15 +1412,12 @@ however if returned,  this value would still be considered in its lifetime.
 
 
 
-( unlike c++ ,T&& cant bind to  const T&, but T& can bind to const T&&)
+
+xvaluexpr T&:
 
 
 
-T&&&:
-
-
-
-a dropping reference,  meaning that after the lifetime  of the `T&&&` the entity will be dropped.
+a dropping reference (like r value or x value),  meaning that after the lifetime  of the `xvaluexpr T&` the entity will be dropped.
 
 used in the relocation constructors.
 
@@ -1522,7 +1537,7 @@ the descriptions below make use of the following definitions:
 
     - this definition, as applied to class types, a type which is trivial for the purposes of the abi will be passed and returned according to the rules of the base mcc abi, e.g. in registers; often this has the effect of performing a trivial reallocation of the type.
 
-    - if non trivial,  it is passed as if it had a stable forceref(&&or &&&)qualifier, as if  passed by reference,  the relocation is allowed to be optimized out if the passed variable is &&& qualified or is a temporary at the call site, note that if the variable has internal mutibility as an input , it is ill formed to pass it by value ( input) and its relocation constructors cannot be trivial.
+    - if non trivial,  it is passed as if it had a stable forceref (i)(o)valuexpr qualifier, as if  passed by reference,  the relocation is allowed to be optimized out if the passed variable is (i)(o)valuexpr qualified or is a temporary at the call site, note that if the variable has internal mutibility as an input , it is ill formed to pass it by value ( input) and its relocation constructors cannot be trivial.
 
 
 
