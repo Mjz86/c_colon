@@ -3349,8 +3349,8 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
   on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types ,
   for example  if i have an array of offset independent members,  and refrence a member,  i can just only use the memory of that member and other members may not be in ajason stack memory .
 
- 7. allocation Ellison :
- its similar to how cxx does coroutine frame Ellison.
+ 7. dynamic allocation Ellison :
+ its similar to how cxx does coroutine frame Ellison but with std::allocator or custom allocators that satisfy the allocator concept.
 
  8.  less interposition depending dynamic dispatch  :
    when code is similar and linked together, it can be sometimes de duplicated,
