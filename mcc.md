@@ -1332,8 +1332,15 @@ the promise cache is an object only visible in the promise, with lifetime of the
 ```
 
 
-
+----
+ allocation and the as if rule:
   
+  the  allocators ( defined via the `std::allocator_c` concept(s)) in mcc followed the as if rule ,
+  if multiple allocations can be elided safety, they will,
+  the allocators fall into two categories,  the ones that are thread-safe and the ones that arent,
+  thread-safe allocators are more expensive to use , although non thread-safe allocators can be used via channels , its still not a good choice.
+ its similar to how cxx does coroutine frame Ellison, but this time the stack frame is allso available. 
+
 
 
 
@@ -3302,8 +3309,12 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 --- 
 
  improvments and advancements compared to cxx ( in the performance category):
+  0. so maybe one day cpp can be as fast:
 
- 1. abi brakage leads to better implementations.
+  i always have loved C++ , even seeing it now with all its legecy , cxx still can be like c colon , heck i wanted c colon to be a c++ superset , but i dont think i can change anything major in it anytime soon, in hopes that a std c++xx maybe powered by mcc  can be as fast as c colon  in the following decades
+  
+ 1. abi brakage leads to better implementations:
+ the 128 bit recursive hash abi makes this possible.
 
  2. minimal and fast stack spill :
 
@@ -3335,15 +3346,25 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
 
 6. layout optimizations :
-
-  on top of rust like member reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types ,
+  on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types ,
   for example  if i have an array of offset independent members,  and refrence a member,  i can just only use the memory of that member and other members may not be in ajason stack memory .
 
- 7. so maybe one day cpp can be as fast:
+ 7. allocation Ellison :
+ its similar to how cxx does coroutine frame Ellison.
 
-  i always have loved C++ , even seeing it now with all its legecy , cxx still can be like c colon , heck i wanted c colon to be a c++ superset , but i dont think i can change anything major in it anytime soon, in hopes that a std c++xx maybe powered by mcc  can be as fast as c colon  in the following decades
+ 8.  less interposition depending dynamic dispatch  :
+   when code is similar and linked together, it can be sometimes de duplicated,
+also if a function's adress is not taken or exported it doesn't need a fixed adress, also the relaxed function addresss help in dew duplicated code.
 
+9.  fast program and dll loader:
+all mcc symbols have two kinds of name mangles , the front-end mangle and the back-end mangle ,
+the front-end one is like cxx but with the abi hash appended , the back-end mangle is a 256bit hash of the front-end mangle,
+this is to make all symbols have a fixed size and to be able to store all symbols needing work on startup or dll load in an array , 
+this helps along side the interposition less code , to help reduce start up times.
 
+10 . more parrarelized code  and structured concurrency:
+by enabling cancelation in the abi of coroutines we can swiftly do many structural concurrency patterns, 
+std primitives such as tasks , channels,schedulers,  promises ect .also help this
 
 ---
 
