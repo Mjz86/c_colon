@@ -3022,7 +3022,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     for this reason,  all forms of non trivial type erasure ( erasure of a type with non trivial destructor) is unsafe ,
 
-    for example , E colon can only do bitcast if and only if the type of source and dest are trivially relocatable and trivially destructable and have no pointer/references in their layouts ( to prevent memory leak via type erasure), but in C colon , we can do unsafe(bit-cast) to do any form of bit cast( or other casts) .
+    for example , E colon can only do bitcast if and only if the type of source and dest are trivially relocatable and trivially destructable and have no pointer/references in their layouts ( to prevent memory leak via type erasure), but in C colon , we can do unsafe(bit-cast) to do any form of bit cast( or other casts) . also , beacuse making a thread is unsafe(threads) , the async scheduler is in c colon and E colon remains free of its compications.
 
     
 
@@ -3309,9 +3309,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 --- 
 
  improvments and advancements compared to cxx ( in the performance category):
-  
-
-0. so maybe one day cpp can be as fast:
+  0. so maybe one day cpp can be as fast:
 
   i always have loved C++ , even seeing it now with all its legecy , cxx still can be like c colon , heck i wanted c colon to be a c++ superset , but i dont think i can change anything major in it anytime soon, in hopes that a std c++xx maybe powered by mcc  can be as fast as c colon  in the following decades
   
@@ -3344,19 +3342,18 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
  
 
  5. rich aliasing info , and function purity metrics:
-my philosophy is , Every immutability comes with a disability,in e colon , progrmmers are forced with a disability to gain safety and immutability ,  and even boring simplicity. the c colon programmers however should be allowed to dclarar the disability to get the performance from the immutability, 
- for example stable values dont need to be loaded two times in registers to be captured! , they can be loaded only one time only because of their stability ,  the lack of others to change its value is the disability. 
+
+ for example stable values dont need to be loaded two times in registers to be captured! , they can be loaded only one time
 
 
 6. layout optimizations :
-  on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types , for example  if i have an array of offset independent members,  and refrence a member,  i can just only use the memory of that member and other members may not be in ajason stack memory , also it might help in making array of structures to structure of array
+  on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types ,
+  for example  if i have an array of offset independent members,  and refrence a member,  i can just only use the memory of that member and other members may not be in ajason stack memory , also it might help in making array of structures to structure of array
   on the stack ,  reflection also can help with this
-   
-   
+  
+ 7. allocation Ellison :
+ its similar to how cxx does coroutine frame Ellison.
 
-
- 7. dynamic allocation Ellison :
- its similar to how cxx does coroutine frame Ellison but with std::allocator or custom allocators that satisfy the allocator concept.
  8.  less interposition depending dynamic dispatch  :
    when code is similar and linked together, it can be sometimes de duplicated,
 also if a function's adress is not taken or exported it doesn't need a fixed adress, also the relaxed function addresss help in dew duplicated code.
