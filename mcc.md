@@ -29,6 +29,7 @@ this language aims to be in the "c++ successor" language  categories,
 having c++ like syntax but with memory safety ,
 aiming to be able to express c++'s full power while  freeing the language from the abi stability nightmare  that the wg21 standard committee made and the stack consuming windows calling convention ABI.
 
+
 this languages goals include:
 
 
@@ -1645,6 +1646,29 @@ not in scope rn
 - considerations: 
 yes , this is too ambitious to build in few years,let alone quickly,  however if we let ourselves to build the 2 first parts by not focusing on performance ( because the abi is build on top of llvm ir with its conventions around calls ), we may be able to get the language up and running to build itself eventually in the following years to come. 
 
+
+
+
+--- 
+ improvments and advancements compared to cxx ( in the performance category):
+ 1. abi brakage leads tp better implementations.
+ 2. minimal and fast stack spill :
+ when all the registers modifted are known , we can just put values in thoes that are not modified,
+ when presssure is too high , all the registers are stored(call)/loaded(return) at once (or even have entier hot code sections that do this via a ```move ret ip; jump __mccabiv1::pop_all or jump __mccabiv1::push_all```), on architechures like x86 , cpus can parrarelize multiple stores or multiple loads but not intertwined load and stores like thoes in cxx calls.
+ also the fastdyncaller qualifier really helps reduce the register usage.
+ all the arguments and their data flow in registers also helps significantly
+
+ 3. dynamic cast:
+   bigger rtti sizes but much faster cast with less cache miss.
+
+ 4. fast exception paths, fast happy path,fast enum types :
+ all with the split return channel, no if on the happy path , no cxx lib unwind on the sad path , just caller code, i envision compilers even collapsing offsets to particular values to avoid table duplication.
+ 
+ 5. rich aliasing info , and function purity metrics:
+ for example stable values dont need to be loaded two times in registers to be captured! , they can be loaded only one time
+
+ 6. so maybe one day cpp can be as fast:
+  i always have loved C++ , even seeing it now with all its legecy , cxx still can be like c colon , heck i wanted c colon to be a c++ superset , but i dont think i can change anything major in it anytime soon, in hopes that a std c++xx maybe powered by mcc  can be as fast as c colon  in the following decades
 
 ---
     Copyright (C) 2025 Mjz86 
