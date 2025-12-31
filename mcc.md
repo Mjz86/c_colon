@@ -3309,7 +3309,9 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 --- 
 
  improvments and advancements compared to cxx ( in the performance category):
-  0. so maybe one day cpp can be as fast:
+  
+
+0. so maybe one day cpp can be as fast:
 
   i always have loved C++ , even seeing it now with all its legecy , cxx still can be like c colon , heck i wanted c colon to be a c++ superset , but i dont think i can change anything major in it anytime soon, in hopes that a std c++xx maybe powered by mcc  can be as fast as c colon  in the following decades
   
@@ -3324,7 +3326,8 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
  also the fastdyncaller qualifier really helps reduce the register usage.
 
- all the arguments and their data flow in registers also helps significantly
+ all the arguments and their data flow in registers also helps significantly.
+ also , i doubt that even asm experts can track register allocation across all programs , its too much mental overhead for humans.
 
 
 
@@ -3341,20 +3344,22 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
  
 
  5. rich aliasing info , and function purity metrics:
-
- for example stable values dont need to be loaded two times in registers to be captured! , they can be loaded only one time
+my philosophy is , Every immutability comes with a disability,in e colon , progrmmers are forced with a disability to gain safety and immutability ,  and even boring simplicity. the c colon programmers however should be allowed to dclarar the disability to get the performance from the immutability, 
+ for example stable values dont need to be loaded two times in registers to be captured! , they can be loaded only one time only because of their stability ,  the lack of others to change its value is the disability. 
 
 
 6. layout optimizations :
   on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types ,
-  for example  if i have an array of offset independent members,  and refrence a member,  i can just only use the memory of that member and other members may not be in ajason stack memory .
-
+  for example  if i have an array of offset independent members,  and refrence a member,  i can just only use the memory of that member and other members may not be in ajason stack memory , also it might help in making array of structures to structure of array
+  on the stack ,  reflection also can help with this
+  
  7. allocation Ellison :
  its similar to how cxx does coroutine frame Ellison.
 
  8.  less interposition depending dynamic dispatch  :
    when code is similar and linked together, it can be sometimes de duplicated,
 also if a function's adress is not taken or exported it doesn't need a fixed adress, also the relaxed function addresss help in dew duplicated code.
+also static data like strings would be able to merge better with  `no_unique_adress` ( because  no null termination,  sub string merge is safe)
 
 9.  fast program and dll loader:
 all mcc symbols have two kinds of name mangles , the front-end mangle and the back-end mangle ,
@@ -3402,51 +3407,83 @@ refrences
 
 
 
-[Mjz C colon summary:](https://github.com/Mjz86/c_colon)
+Mjz C colon summary:
+
+https://github.com/Mjz86/c_colon
 
 
 
-[Mjz  colon compiler design and details:](https://github.com/Mjz86/c_colon/blob/main/mcc.md)
+Mjz  colon compiler design and details:
+
+https://github.com/Mjz86/c_colon/blob/main/mcc.md
 
 
 
-[Quantum-Secure Encryption is Here. And it's WILD ( hash verification) :](https://youtube.com/watch?v=T9fCCGzwHJc&si=BzDNoo-vLqmsSJ7g)
+Quantum-Secure Encryption is Here. And it's WILD ( hash verification) :
+
+https://youtube.com/watch?v=T9fCCGzwHJc&si=BzDNoo-vLqmsSJ7g
 
 
 
-[itanium abi:](https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro)
+itanium abi:
+
+https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro
 
 
 
-[x86 cxx:](https://gitlab.com/x86-psABIs/x86-64-ABI)
+x86 cxx:
 
 
 
-[arm cxx:](https://github.com/ARM-software/abi-aa/blob/main/cppabi64/cppabi64.rst)
+https://gitlab.com/x86-psABIs/x86-64-ABI
 
 
 
-[wg21 std c++ draft standard :](https://wg21.link/n5008)
+arm cxx:
+
+https://github.com/ARM-software/abi-aa/blob/main/cppabi64/cppabi64.rst
 
 
 
+wg21 std c++ draft standard :
 
-[xxhash128:](https://xxhash.com)
-
-
-[shared libraries and loader in cxx windows and Linux: ](https://www.youtube.com/watch?v=_enXuIxuNV4)
-
-[Teresa Johnson “ThinLTO： Scalable and Incremental Link-Time Optimization” :](https://www.youtube.com/watch?v=p9nH2vZ2mNo)
-
-
-
-
-[CppCon 2017： Michael Spencer “My Little Object File： How Linkers Implement C++” :](https://www.youtube.com/watch?v=a5L66zguFe4)
+https://wg21.link/n5008
 
 
 
 
-[CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()” :](https://www.youtube.com/watch?v=dOfucXtyEsU)
+
+xxhash128:
+
+https://xxhash.com
+
+
+
+shared libraries and loader in cxx windows and Linux: 
+
+https://www.youtube.com/watch?v=_enXuIxuNV4
+
+
+
+Teresa Johnson “ThinLTO： Scalable and Incremental Link-Time Optimization” :
+
+https://www.youtube.com/watch?v=p9nH2vZ2mNo
+
+
+
+
+
+CppCon 2017： Michael Spencer “My Little Object File： How Linkers Implement C++” :
+
+https://www.youtube.com/watch?v=a5L66zguFe4
+
+
+
+
+
+CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()” :
+
+https://www.youtube.com/watch?v=dOfucXtyEsU
 
 
 
