@@ -2198,18 +2198,25 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 --- 
 
 (de)initilization sequence of modules:
-
-0. test and set the initilization atomic flag and if it was 1 at the beginning,  return.
+the module constructor that runs :
+0. fetch add 1  to the initilization atomic  and if it was not 0 at the beginning, return.
 
 1. all the dependant modules get initilized.
 
 2. all the static variables get initialized in order of declaration.
 
+
+program code: 
+
 3. the main function in the module will run if defined.
+ 
+ 
+ the module destructor that runs :
+4 .fetch sub 1 to the init atomic , if it didnt went to zero , return. 
 
-4. after main returns,   destroy every static variable in the reverse order of declaration and deinitilize each module that we initilized.
+5.    destroy every static variable in the reverse order of declaration and deinitilize each module that we initilized.
 
-5. clear  the atomic flag(from  the part who set it in the first place) and return to caller module.
+
 
  
 
