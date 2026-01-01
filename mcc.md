@@ -3383,9 +3383,9 @@ also static data like strings would be able to merge better with  `no_unique_adr
 
 9.  fast program and dll loader:
 all mcc symbols have two kinds of name mangles , the front-end mangle and the back-end mangle ,
-the front-end one is like cxx but with the abi hash appended , the back-end mangle is a 256bit hash of the front-end mangle,
+the front-end one is like cxx but with the abi hash appended , the back-end mangle is a 256bit hash of the front-end mangle ,
 this is to make all symbols have a fixed size and to be able to store all symbols needing work on startup or dll load in an  array of sorted hashes ( 32 arrayes of bytes beacuse of 256 bit nature) ( similar layout to what mcc dynamic cast castation-tables had)
-this helps along side the interposition less code , to help reduce start up times.
+, ( because of the hashed  nature we can use the fast radix sort to make this array in backend in the linker) this helps along side the interposition less code , to help reduce start up times.
 when loading a dll , those sorted arrays of hashes combine into one array , similar to the merge (O(n)) in merge sort ,
 while doing so , we can spot all duplicate symbols if any and do the appropriate thing accordingly 
 
