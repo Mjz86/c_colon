@@ -2534,6 +2534,9 @@ context object:
 destructs the context type of the callee after the call,  potentially handing rich unwind information.
 in a debugging environment,  this can have conditional trap instructions. 
  
+ * note: caller and callee are both protective in the caller and callee respectively.
+ 
+ 
  - operator  caller (  callee-pointer or backend-hash  (depending on  dynamic call vs static call), stack-size,stack-pointer, instruction-pointer, argument-sttack-size)callee-context-type :
 in the caller , before the call , the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
 in a debugging environment,  this can have conditional trap instructions. 
@@ -2556,6 +2559,7 @@ there is an operator to declare a new context for a code block,
 also one to get a reference to a context-type. 
 
 - operator set(constructor-args... )main-context-type->block-context-type:
+if set is used in the context,  it creates a code block output the main context , this can be an opt out of debugging for example. 
 ```set_context<block-context-type>( constructor-args...){
 .....
 ...get_context(...);
