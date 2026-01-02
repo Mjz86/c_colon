@@ -3170,7 +3170,7 @@ return...;
 
 // theres an implicit  transformation for these code , to make it able to do either a ,co await , co return or a throw or simply  continue execution .
 
- for co_await (auto [inout a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const stable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
+ for co_await (auto [inout a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const unstable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
 
 // can modify a c and d , but cannot modify other variables outside of the for loop , however mutexes can still be modified beacuse they can be modified when constant.
 
@@ -3389,7 +3389,7 @@ this is to make all symbols have a fixed size and to be able to store all symbol
 when loading a dll , those sorted arrays of hashes combine into one array , similar to the merge (O(n)) in merge sort ,
 while doing so , we can spot all duplicate symbols if any and do the appropriate thing accordingly 
 
-10 . more parrarelized code  and structured concurrency:
+10. more parrarelized code  and structured concurrency:
 by enabling cancelation in the abi of coroutines we can swiftly do many structural concurrency patterns, 
 std primitives such as tasks , channels,schedulers,  promises ect help here .
 
