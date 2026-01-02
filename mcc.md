@@ -846,13 +846,17 @@ indicates that a function is effectless and idempotent.
 
 
 
-- enumret&enumcatch( this is implicitly given based on the type of the return,  if its an enum type with this specifier , then the function returning it would have this property):
+- enumret&enumcatch( this is implicitly given based on the type of the return,  if its an enum type with this specifier , then the function returning it would have this property)( function or enum qualifier):
 
  enumret and enumcatch are similar to each other , but one applies to the normal return type , and one applies to the throw-value ( catching return type) ,
 
  both return pointers can have this property. 
 
  any function with these qualifiers  necceceraly has to have a match expression in the call site ( ot the catch site)( if throw-value  is this way , via operator catch(auto) , auto corresponding to the enum entries) 
+ 
+  * restrictions for enums specified of this use :
+   all enum entries must be continuous ,( if the number is specified) ,
+   warnings will be given in cases where big number of entries generate massive jump tables.
 
 
 
@@ -2786,7 +2790,15 @@ and for any cxx pointer `(memcast<uintmax_t>(byte_ptr)&~(sizeof(cxx_char_t)-1))=
 - hash sizes:
 any implementation may choose hashes with size bigger or smaller than 256 or 128 
 
-  
+
+
+---
+   debugging  :
+   
+  with current debugger technology, if the context-type satisfied the debugging concept,  the compiler will make code much less optimized, 
+  will do little use of  cache friendly reordering , and will implicitly  ( through reflection) give the context-type very granular information using implicit calls providing reflection information and dynamic information ,
+  most values will be lifted to stack for traceability,  this is extremely slow , and thats the reason that it only happens in scopes where context-type is mandating it ,
+  this can help separate the binary debug vs release building model into function by function or module by module debugging 
 
   
 
