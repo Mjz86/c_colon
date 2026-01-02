@@ -3434,25 +3434,24 @@ refrences
 
 Mjz C colon summary:
 
-https://github.com/Mjz86/c_colon
+[link](https://github.com/Mjz86/c_colon)
 
 
 
 Mjz  colon compiler design and details:
-
-https://github.com/Mjz86/c_colon/blob/main/mcc.md
+[link](https://github.com/Mjz86/c_colon/blob/main/mcc.md))
 
 
 
 Quantum-Secure Encryption is Here. And it's WILD ( hash verification) :
 
-https://youtube.com/watch?v=T9fCCGzwHJc&si=BzDNoo-vLqmsSJ7g
+[link](https://youtube.com/watch?v=T9fCCGzwHJc&si=BzDNoo-vLqmsSJ7g)
 
 
 
 itanium abi:
 
-https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro
+[link](https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro)
 
 
 
@@ -3460,19 +3459,19 @@ x86 cxx:
 
 
 
-https://gitlab.com/x86-psABIs/x86-64-ABI
+[link](https://gitlab.com/x86-psABIs/x86-64-ABI)
 
 
 
 arm cxx:
 
-https://github.com/ARM-software/abi-aa/blob/main/cppabi64/cppabi64.rst
+[link](https://github.com/ARM-software/abi-aa/blob/main/cppabi64/cppabi64.rst)
 
 
 
 wg21 std c++ draft standard :
 
-https://wg21.link/n5008
+[link](https://wg21.link/n5008)
 
 
 
@@ -3480,19 +3479,20 @@ https://wg21.link/n5008
 
 xxhash128:
 
-https://xxhash.com
+[link](https://xxhash.com)
 
 
 
 shared libraries and loader in cxx windows and Linux: 
 
-https://www.youtube.com/watch?v=_enXuIxuNV4
+[link](https://www.youtube.com/watch?v=_enXuIxuNV4)
+
 
 
 
 Teresa Johnson “ThinLTO： Scalable and Incremental Link-Time Optimization” :
 
-https://www.youtube.com/watch?v=p9nH2vZ2mNo
+[link](https://www.youtube.com/watch?v=p9nH2vZ2mNo)
 
 
 
@@ -3500,7 +3500,7 @@ https://www.youtube.com/watch?v=p9nH2vZ2mNo
 
 CppCon 2017： Michael Spencer “My Little Object File： How Linkers Implement C++” :
 
-https://www.youtube.com/watch?v=a5L66zguFe4
+[link](https://www.youtube.com/watch?v=a5L66zguFe4)
 
 
 
@@ -3508,7 +3508,7 @@ https://www.youtube.com/watch?v=a5L66zguFe4
 
 CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()” :
 
-https://www.youtube.com/watch?v=dOfucXtyEsU
+[link](https://www.youtube.com/watch?v=dOfucXtyEsU)
 
 
 
