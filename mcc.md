@@ -1674,7 +1674,7 @@ struct {
 // the 256 bit hashes arent 256 values , instead we have a martrix pointer , truncated-count ( max of 32) arrays of  big endian bytes , the reason for this is presented in the dynamic cast spec.
 
 (sorted-cryptographic-256bit-hash-of-dest-types-name-mangle-byte(*)[number-of-types])  [32/* hash bytes*/];// note , if the hashes are unique when truncated ( very often the case ) the least amount of bytes of hash is used while still keeping every hash's value in the table is unique 
- bit pack of <number-of-types, truncated-count>;// between 0 and 32 is truncated-count, as a 5 bit , and rest of the bits are for number-of-type
+ bit pack of <number-of-types, truncated-count>;// between 1 and 32 is truncated-count, as a 5 bit , and rest of the bits are for number-of-type
 type-vtable-of-dest-types* (*)[number-of-types]
 
 } 
