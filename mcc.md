@@ -2543,8 +2543,13 @@ in a debugging environment,  this can have conditional trap instructions.
 in the callee , before the callee code and stack get initialized, the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
 in a debugging environment,  this can have conditional trap instructions. 
 
-- operator  meta (`std::meta` or `std::debug_meta`)callee-context-type :
+- `operator make_meta ( inout std::meta )->meta-input `, `operator make_meta ( inout std::debug_meta )->meta-input`:
+a constexpr function that makes the meta type based on static reflection information, 
+it also can be used to insert canaries and other safety features in debugging,  the output is given to runtime to be used .
+
+- operator  meta ( meta-input )callee-context-type :
  just right after the signature operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations,  but with immense debugging knowledge),  giving rich debug info to the context type.
+
 
 
 there is an operator to declare a new context for a code block,
