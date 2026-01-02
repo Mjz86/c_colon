@@ -762,9 +762,9 @@ function qualifiers
 
 
 
-- async,debug: 
+- async(...),debug(...),optimize(...): 
 these don't really mean anything to the compiler , the are not  relevant to ODR ( the declaration is allowed to not include these while  the definition may) in c colon ,( not even used in the abi hash), however E colon can put these, to allow the context-type to be implicitly changed via reflection to reflect that functions intent 
-
+ for example  debug(std::debug::obfuscated) to do debugging in release or debug(std::debug::unwind) , to debug during unwind. 
 
 
 
