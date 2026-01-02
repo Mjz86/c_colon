@@ -1073,7 +1073,7 @@ exact mechanism of return pointers:
 
 0. no tables( enum ret) :
 
- `return_ptr`= the absolute pointer to the return path.
+ `return_ptr`= the absolute pointer to the return path, calculated via instruction pointer in caller.
 
  `catching_return_ptr`=   the relative offset of the absolute path to the return pointer.
 
@@ -1083,7 +1083,7 @@ exact mechanism of return pointers:
 
 1. enum normal return table, catching return:
 
-`return_ptr`= the absolute pointer to the first return path.
+`return_ptr`= the absolute pointer to the first return path. 
 
  `catching_return_ptr`=`table_pointer`= absolute address of the table.
 
