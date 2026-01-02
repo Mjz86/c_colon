@@ -2525,7 +2525,7 @@ destructs the context type of the callee after the call,  potentially handing ri
 in a debugging environment,  this can have conditional trap instructions. 
 
 - operator  signature (  backend-hash , stack-size,stack-pointer, instruction-pointer )callee-context-type :
-in the call , before the arguments and stack get initialized, the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
+in the callee , before the arguments and stack get initialized, the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
 in a debugging environment,  this can have conditional trap instructions. 
 
 - operator  meta (`std::meta` or `std::debug_meta`)callee-context-type :
