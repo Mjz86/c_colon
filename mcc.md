@@ -2681,14 +2681,18 @@ usually the contract calling code is only repeated once in  the call site if any
 
 
 - diffrent types of `contract_assert`:
+ 
 
 1. pre :
 
+
  in a pre expression of function
+ note that this contract code is under the callee context-type 
 
 2. post:
 
  in a post expression of function
+ note that this contract code is under the callee context-type 
 
 3. explicit:
 
@@ -2697,6 +2701,7 @@ usually the contract calling code is only repeated once in  the call site if any
 4. implicit:
 
 in a  operation that might result in assertion like  a/0,a<<-1,a+maxint
+note that this contract code is under the callee context-type  if its in a post or pre condition.
 
 
 
