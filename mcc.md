@@ -409,7 +409,7 @@ for a pointer p declared within a code block b to an stable const region of memo
 
 `thread_safe` / `thread_unsafe`:
 
- these qualifiers are typically used as indicators of whether or not something is safe to pass and use between threads , the default is , any stable variable is thread safe and otherwise  unsafe, the stable mut is exclusively owned , and so safe to pass around, however,  std::rc_t<T> overrides that , so in any async boundaries the c colon libraries can notice via reflection that a mutable thread unsafe variable is used, so they can disallow it.
+ these qualifiers are typically used as indicators of whether or not something is safe to pass and use between threads , the default is , any stable variable is thread safe and otherwise  unsafe, the stable mut is exclusively owned , and so safe to pass around, however,  `std::rc_t<T>` overrides that , so in any async boundaries the c colon libraries can notice via reflection that a mutable thread unsafe variable is used, so they can disallow it.
 
  also , if a member  is thread unsafe in E: ( not C:) , because of the qualifier visibility ban , that qualifier cannot be overriden by using a thread safe type with an aliasset.
 
@@ -511,7 +511,7 @@ the storage semantic is unknown.
 
 this value is valid for the entier program.
 
-- thread_local storage:
+- `thread_local` storage:
 
 this value is valid while the currunt thread of execution is alive.
 
@@ -545,7 +545,7 @@ refexpr / valexpr
 
 the address of a valexpr value may not be uniqe, the state may be used to represent other objects as well ,
 
-its like no_unique_address in c++:
+its like `no_unique_address` in c++:
 
 makes this member subobject potentially-overlapping, i.e., allows this member to be overlapped with other non-static data members or base class subobjects of its class. this means that if the member has an empty class type (e.g. stateless allocator), the compiler may optimise it to occupy no space, just like if it were an empty base. if the member is not empty, any tail padding in it may be also reused to store other data members.
 
@@ -555,7 +555,7 @@ if its a bitset , even more possibilities are made , as long as other dclared ob
 
 
 
-reorderable/not_reorderable(struct/class qualifier )
+`reorderable/not_reorderable`(struct/class qualifier )
 
 
 
@@ -563,17 +563,17 @@ we can do rust-like reorder optimization if this enabled
 
 
 
-`offset_dependant/not_offset_dependant/member_offset_dependant/member_not_offset_dependant`(struct/class qualifier,and type qualifier):
+`offset_dependant/not_offset_dependant(deafult)/member_offset_dependant/member_not_offset_dependant(deafult)`(struct/class qualifier,and type qualifier):
 
 
 
-a not_offset_dependant type is a type whoes inner structs can be scattered in memory when accessed,
+a `not_offset_dependant` type is a type whoes inner structs can be scattered in memory when accessed,
 
  specifically ,a pointer to a sub object cannot be used to reliably get to the main object by a subtraction of the offset (other than a base class to drived class cast).
 
- but offset_dependant objects can use the offset to gain a pointer to the main object.
+ but `offset_dependant` objects can use the offset to gain a pointer to the main object.
 
-member_offset_dependant objects are the ones that specifically can be used for casts by offset , base classes are member_offset_dependant by deafult.
+`member_offset_dependant` objects are the ones that specifically can be used for casts by offset , base classes are `member_offset_dependant` by deafult.
 
 
 
@@ -804,9 +804,9 @@ indicates that a function is effectless and idempotent.
 
 
 
-- mostly_functional: 
+- `mostly_functional`: 
 
- a function f is mostly_functional if The    returned or outputed value ( via  out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
+ a function f is `mostly_functional` if The    returned or outputed value ( via  out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
 
   f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and inout argument's value. 
 
@@ -818,9 +818,9 @@ indicates that a function is effectless and idempotent.
 
 
 
-- purely_functional: 
+- `purely_functional`: 
 
- a function f is purelyfunctional if The  returned or outputed value ( via  out) by a call to f depends exclusively on The values of its direct function arguments , and   The values of any non-volatile stable constant  global or static objects observed
+ a function f is purely functional if The  returned or outputed value ( via  out) by a call to f depends exclusively on The values of its direct function arguments , and   The values of any non-volatile stable constant  global or static objects observed
 
  and   f performs no read operations from non-volatile global, static, or thread-local memory that is mutable
 
@@ -880,17 +880,17 @@ noreturn means the behaviour is undefined if the function returns to the caller 
 
 - transactional memory ( optional to be implemented):
 
-0. atomic_cancel,
+0. `atomic_cancel`,
 
-1. atomic_commit, 
+1. `atomic_commit`, 
 
-2. atomic_noexcept, 
+2. `atomic_noexcept`, 
 
 3. synchronized, 
 
-4. transaction_safe, 
+4. `transaction_safe`, 
 
-5. transaction_safe_dynamic
+5. `transaction_safe_dynamic`
 
 6. transactional ( value qualifier)
 
@@ -1475,7 +1475,7 @@ the descriptions below make use of the following definitions:
 
 
 
-- direct base class order ( if not_reorderable): when the direct base classes of a class are viewed as an ordered set, the order assumed is the order declared, left-to-right.
+- direct base class order ( if `not_reorderable`): when the direct base classes of a class are viewed as an ordered set, the order assumed is the order declared, left-to-right.
 
 
 
@@ -1669,12 +1669,12 @@ virtual table layout contains:
 
 struct {
 
-number-of-types;
 
-// the 256 bit hashes arent 256 values , instead,  32 arrays of  system endian bytes , the reason for this is presented in the dynamic cast spec.
 
-sorted-cryptographic-256bit-hash-of-dest-types-name-mangle-byte(*) [number-of-types][32/* hash bytes*/];
+// the 256 bit hashes arent 256 values , instead we have a martrix pointer , truncated-count ( max of 32) arrays of  big endian bytes , the reason for this is presented in the dynamic cast spec.
 
+(sorted-cryptographic-256bit-hash-of-dest-types-name-mangle-byte(*)[number-of-types])  [32/* hash bytes*/];// note , if the hashes are unique when truncated ( very often the case ) the least amount of bytes of hash is used while still keeping every hash's value in the table is unique 
+ bit pack of <number-of-types, truncated-count>;// between 0 and 32 is truncated-count, as a 5 bit , and rest of the bits are for number-of-type
 type-vtable-of-dest-types* (*)[number-of-types]
 
 } 
@@ -1725,7 +1725,7 @@ type pointer
 
   we do a binary search  on the next most significant bytes , similar to the first step.
 
-  we do this loop until we either reach the hash , or we get nullptr or , if  all the 32 bytes are searched,  we return nullptr.
+  we do this loop until we either reach the hash , or we get nullptr or , if  all the truncated-count ( max 32)  bytes are searched,  we return nullptr.
 
   * the reason for doing this unusual storage of hash:
 
@@ -1736,8 +1736,9 @@ type pointer
     this strategy helps mitigate the binary search cache miss penalty. 
 
     if the number of bases are less than 64 , we most likely have only 3 cache lookups ( 1 for the first search step , and assume the first step is successful, another one for the  v table lockup  , and last one for check and pointer offset lookup)
-
     
+    in practice most structures have less than astronomical base counts , truncated-count helps to reduce all that 256 of precision,  untill we reach a  sorted set that will lose uniqueness as soon as we truncade more , gaining  the same speed with  equivalent functionality and practically fewer bytes in the table.
+   
 
     
 
@@ -2268,7 +2269,7 @@ in general, api objects defined as part of this abi are assumed to be extern "c:
 
 
 
-- are expected to be called by users from c/c++ code, e.g. longjmp_unwind/throw/...; or
+- are expected to be called by users from c/c++ code, e.g. `longjmp_unwind`/throw/...; or
 
 - are expected to be called only implicitly by compiled code, and are likely to be implemented in c/c++.
 
@@ -2544,7 +2545,7 @@ usually the contract calling code is only repeated once in  the call site if any
 
 
 
-- diffrent types of contract_assert:
+- diffrent types of `contract_assert`:
 
 1. pre :
 
@@ -2556,7 +2557,7 @@ usually the contract calling code is only repeated once in  the call site if any
 
 3. explicit:
 
- in a contract_assert expression of function
+ in a `contract_assert` expression of function
 
 4. implicit:
 
@@ -2572,21 +2573,21 @@ in a  operation that might result in assertion like  a/0,a<<-1,a+maxint
 
 1. enforce :
 
-results in calling the operator contract_assert.
+results in calling the `operator contract_assert`.
 
 2. quick enforce :
 
 results in calling the terminate function.
 
-3. ignore:
+3. ignore ( unsafe(contract-ignore)):
 
 does nothing.
 
 4. observe:
 
-results in calling the operator contract_assert.
+results in calling the operator `contract_assert`.
 
-5. assume:
+5. assume( unsafe(contract-UB) ):
 
 results in undefined behaviour.
 
@@ -2594,7 +2595,7 @@ results in undefined behaviour.
 
 
 
-operator contract_assert(...)  context-type :
+`operator contract_assert(...)  context-type` :
 
 - gets called when a contract violation occurs 
 
@@ -2780,7 +2781,10 @@ note that in architectures where `sizeof(cxx_char_t)!=1` , the `represent_cxx` i
 
 and for any cxx pointer `(memcast<uintmax_t>(byte_ptr)&~(sizeof(cxx_char_t)-1))==sizeof(cxx_char_t)*memcast<uintmax_t>(cxx_ptr)`, note that the lower bits in the c colon pointers in these architectures indicate shifts.
 
-  
+
+
+- hash sizes:
+any implementation may choose hashes with size bigger or smaller than 256 or 128 
 
   
 
@@ -2798,15 +2802,15 @@ abi and compatibility
 
 - the abi@() operators:
 
-1. abi+(t/abi_t):
+1. `abi+(t/abi_t)`:
 
 adds the hash as a sult to the abi hash of the apllied expression.
 
-2. abi=(t/abi_t):
+2. `abi=(t/abi_t)`:
 
 sets the has as the abi hash of the apllied expression.
 
-3. abiof(type/id):
+3. `abiof(type/id)`:
 
 gets the abi hash off the inner expression.
 
@@ -2854,7 +2858,7 @@ the c colon linker only uses the abi hashes as signaturs for linkage.
 
  lets say a name has been  changed  N times , 
 
-  the collision probability is one halfs if we have tried 2^64 different versions, 
+  the collision probability is one halfs if we have tried 2^64 different versions, based on the birthday paradox.
 
   as long as we haven't changed the name more than 2^(32) times , we are extremely unlikely to find a collision.
 
@@ -2863,6 +2867,7 @@ the c colon linker only uses the abi hashes as signaturs for linkage.
   it is simply too much names  to be a practical limitation .
 
   
+
 
  
 
