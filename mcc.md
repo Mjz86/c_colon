@@ -2548,7 +2548,7 @@ a constexpr function that makes the meta type based on static reflection informa
 it also can be used to insert canaries and other safety features in debugging,  the output is given to runtime to be used .
 
 - operator  meta ( meta-input )callee-context-type :
- just right after the signature operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations,  but with immense debugging knowledge),  giving rich debug info to the context type.
+ just right after the callee operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations,  but with immense debugging knowledge),  giving rich debug info to the context type.
 
 
 
