@@ -1,5 +1,5 @@
 
-c colon lang , its brothers and the mcc abi
+c colon lang , its brothers and the mcc ABI 
 
 
 
@@ -11,19 +11,19 @@ c colon lang , its brothers and the mcc abi
 
 
 
-in this document, we specify the application binary interface (abi) for c colon programs: that is, the object code interfaces between different user-provided c colon program fragments and between those fragments and the implementation-provided runtime and libraries. this includes the memory layout for c colon data objects, including both predefined and user-defined data types, as well as internal compiler generated objects such as virtual tables. it also includes function calling interfaces, exception handling interfaces, global naming, and various object code conventions.
+in this document, we specify the application binary interface ( ABI ) for c colon programs: that is, the object code interfaces between different user-provided c colon program fragments and between those fragments and the implementation-provided runtime and libraries. this includes the memory layout for c colon data objects, including both predefined and user-defined data types, as well as internal compiler generated objects such as virtual tables. it also includes function calling interfaces, exception handling interfaces, global naming, and various object code conventions.
 
 
 
-in general, this document is meant to serve as a generic specification which can be used by c colon implementations on a variety of platforms. this is inspiered by the famous itanium abi, there are somtimes assumbions of 64-bit tragets, it is usually straightforward to recognize these unportable assumptions and translate them appropriately, e.g. by replacing a 64-bit pointer with a 32-bit pointer.
+in general, this document is meant to serve as a generic specification which can be used by c colon implementations on a variety of platforms. this is inspired by the famous Itanium ABI , there are sometimes assumptions of 64-bit targets, it is usually straightforward to recognize these non portable assumptions and translate them appropriately, e.g. by replacing a 64-bit pointer with a 32-bit pointer.
 
 
 
-this document is not an authoritative definition of the c colon abi for any particular platform. platform vendors retain the ultimate power to define the c colon abi for their platform. platforms using this abi for c colon should declare that they do so, either unmodified or with a certain set of changes.
+this document is not an authoritative definition of the c colon ABI for any particular platform. platform vendors retain the ultimate power to define the c colon ABI for their platform. platforms using this ABI for c colon should declare that they do so, either unmodified or with a certain set of changes.
 
 
 
-also, this is generally incomplete, the c colon spec and mcc abi of that spec will be more refined in each revisions.
+also, this is generally incomplete, the c colon spec and mcc ABI of that spec will be more refined in each revisions.
 
 
 
@@ -37,7 +37,7 @@ the formatting of this document is currently not very well, under scores are not
 
 
 
-whats c colon
+what's c colon
 
 
 
@@ -55,7 +55,7 @@ this language aims to be in the "c++ successor" language  categories,
 
 having c++ like syntax but with memory safety ,
 
-aiming to be able to express c++'s full power while  freeing the language from the abi stability nightmare  that the wg21 standard committee made and the stack consuming windows calling convention ABI.
+aiming to be able to express c++'s full power while  freeing the language from the ABI stability nightmare  that the wg21 standard committee made and the stack consuming windows calling convention ABI.
 
 
 
@@ -73,7 +73,7 @@ the mcc toolchain needs as much information as it can about the program,
 
 this information helps immensely in optimizations and it also makes the intention of the developers clear.
 
-the language has lifetime anotations,  borrow rules , qualifier rules , pointers and many sorts of reference, operator overloadding , a powrful context-type for explicit  control over many implicit operations,  all trying to make it safe and efficient to excute.
+the language has lifetime annotations,  borrow rules , qualifier rules , pointers and many sorts of reference, operator overloading , a powerful context-type for explicit  control over many implicit operations,  all trying to make it safe and efficient to execute.
 
 
 
@@ -93,25 +93,25 @@ similar to rust, c: has a borrow checker, a powerful one, the local safety and b
 
 similar to rust, c: has unsafe blocks, these unsafe blocks are specified with their safety control, for example unsafe(pointer-use) or unsafe(pointer-cast), unsafe(unrestricted), unsafe(variable) and more unsafe specifiers.
 
-the rust language, although very fast, still lacks the option of non trivial moves, the option of elegant linked lists, the option of self referential sso. it can be achieved with pointers, but it will not look good.
+the rust language, although very fast, still lacks the option of non trivial moves, the option of elegant linked lists, the option of self referential small string/buffer optimization. it can be achieved with pointers, but it will not look good.
 
 although like rust these are unsafe in c:, these are not totally disallowed, they are just unrestricted in c colon. unrestricted keyword aims to be of use for those who want fast iteration speed like in game dev,
 
-although, at the cost of safety (using unsafe(unrestricted) ) and maybe performance (for example because its not safe to assume in the compiler that two spans are non overlapping so less simd usage).
+although, at the cost of safety (using unsafe(unrestricted) ) and maybe performance (for example because its not safe to assume in the compiler that two spans are non overlapping so less SIMD usage).
 
-note that some qualifier are unsafe to add or remove, for example the no alias qualifiers may lead to ub if removed so it has to be unsafe.
+note that some qualifier are unsafe to add or remove, for example the no alias qualifiers may lead to UB if removed so it has to be unsafe.
 
-unlike  c++'s deafult of code not being able to run at compile time,  code using mutibility and unstable, 
+unlike  c++'s default of code not being able to run at compile time,  code using mutability and unstable, 
 
-c: would use and be written with functional looking deafults,
+c: would use and be written with functional looking defaults,
 
-for example a variable with no qualifier would be implicitly stable , const , safe and ect.
+for example a variable with no qualifier would be implicitly stable , const , safe and etc..
 
-or an inout would be implicitly mutable , and so on,
+or an in-out would be implicitly mutable , and so on,
 
 these would make most code value oriented and functional,  
 
-and a code similar to cpp with rust like safety would be achieved. 
+and a code similar to Cpp with rust like safety would be achieved. 
 
 
 
@@ -137,9 +137,9 @@ its like c++ but the legacy has been striped away.
 
 
 
-6. abi stability with ever changing libraries:
+6. ABI stability with ever changing libraries:
 
-the recursive hash abi aims to tag each component with all the dependancies with a hash, without the need for inline namespaces, and it even propagates.
+the recursive hash ABI aims to tag each component with all the dependancies with a hash, without the need for inline namespaces, and it even propagates.
 
 this property of propagation through every type, function and namespace, makes us able to link everything old with everything new without odr violations, and new components can just use a middle api to interface to new code.
 
@@ -147,7 +147,7 @@ imagine a world were the old std::regex was used for old code and the same std r
 
 this truly makes it paying for what we used. the old programer payed for old slow usage, but new code did not have to pay for the burdens in old code.
 
-and each independent code that stayed unchanged did not need duplications, a dream for the cpp committee, and a possibility in mcc, the c colon abi.
+and each independent code that stayed unchanged did not need duplications, a dream for the Cpp committee, and a possibility in mcc, the c colon ABI .
 
 the hashes although not cryptographically secure are big enough to be unique, basically like a uuid (because its just a name mangling scheme).
 
@@ -163,13 +163,13 @@ also , using abi= on a member doesn't change the members real type and hash , an
 
  * as a gist :
 
-It's similar to itanium,  however, 
+It's similar to Itanium,  however, 
 
 The name has an appended xxhash128 , of its signature, 
 
 Every type function and namespace has these hashes , and they recursively depend on each other ( for a cycle,  like in a graphs node type , there are operators such as abi=,abi+,abiof that operate on the 128 hashes)
 
-This makes the language entirely abi stable , at least within the ecosystem
+This makes the language entirely ABI stable , at least within the ecosystem
 
 
 
@@ -195,7 +195,7 @@ the reflection functions work on the ast , after all the de reflection Operation
 
 these operations can happen in parallel,  if they are located in separate dependancy chains .
 
-similarly the abi hashing is also done in parallel  and cashed once completed based on dependancy chain, although the abiof operator might make it happen sooner than usual. 
+similarly the ABI hashing is also done in parallel  and cashed once completed based on dependancy chain, although the abiof operator might make it happen sooner than usual. 
 
 
 
@@ -235,11 +235,11 @@ async destructors work with the `co_value` keyword  and much more.
 
 
 
-11. easy to use package management with cpp like compile times:
+11. easy to use package management with Cpp like compile times:
 
 like cargo , c colon has a package management system integrated in the tool chain ,
 
-unlike hedaer files and cpp files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
+unlike hedaer files and Cpp files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
 
 each module has hashes of its dependent modules, to help cashing and compile times ,
 
@@ -263,7 +263,7 @@ begginners:
 
 avoiding most qualifiers and completely, sticking to using mut when necessary, 
 
-sticking to value semantics, for functions,  inout , in , out  and non reference,  reference-like alternative that dont cause much confusion, 
+sticking to value semantics, for functions,  in-out , in , out  and non reference,  reference-like alternative that dont cause much confusion, 
 
 and coping most things , occasionally using more complex code.
 
@@ -287,7 +287,7 @@ writing complex performant code that can be used easily using value oriented des
 
 low level library authors:
 
-using the language  to its fullest,  writing effective and efficient code without worrying much about abi braking, 
+using the language  to its fullest,  writing effective and efficient code without worrying much about ABI braking, 
 
 using the latest technologies and theories to develop code that can be understood well by the optimizer, 
 
@@ -323,7 +323,7 @@ its about speed if you want it , yes, but its about easier libraries , and not n
 
 its about writing embedded code knowning that your const declared variable wont change or be casted to mutable ,
 
-and about moving away from the burden of abi legacy , from killing the standard library's networking preposal because its not gonna be abi stable,
+and about moving away from the burden of ABI legacy , from killing the standard library's networking preposal because its not gonna be ABI stable,
 
 its about using a regex without saying that php's regex is faster.
 
@@ -345,7 +345,7 @@ considrations
 
 with these goals in mind , i aim to improve this spec , to make it practical, i often start with over engineering things , then chop unnecessary additions, to make it more practical, as of rn , were in over engineering phase.
 
-this abi aims to have minimal compatibility with the itanium abi , such that an extern "c++" statement can make most code usable in a c++ platform,
+this ABI aims to have minimal compatibility with the Itanium ABI , such that an extern "c++" statement can make most code usable in a c++ platform,
 
  some concepts may be excluded from such inclutions , for instance , a c++ type's dclaration must be expressable in c colon and vise versa .
 
@@ -684,7 +684,7 @@ an owned object can use and must drop after use.
 
  `drop_on_throw/presist_on_throw,drop_on_ret/presist_on_ret,xvaluexpr, rvaluexpr/lvaluexpr , (i)(o)valuexpr`(function arg qualifiers): 
  drop on X makes it so that the object is  when X , (xvaluexpr is unconditional drop),rvaluexpr premotes move semantics.
- (i)(o)valuexpr does the automatic in(i)/out(o)/inout(io)/inval(none) dropping semantic to the current refrence or if trivial , via register 
+ (i)(o)valuexpr does the automatic in(i)/out(o)/in-out(io)/inval(none) dropping semantic to the current refrence or if trivial , via register 
  
 
 determines the general usage and call convention in a function argument.
@@ -703,7 +703,7 @@ a stable uninitilized mutable value that will initilize the caller argument afte
 
 - iovaluexpr:
 
-a stable mutable value. the inout qualification
+a stable mutable value. the in-out qualification
  
 
 
@@ -764,7 +764,7 @@ function qualifiers
 
 
 - async(...),debug(...),optimize(...): 
-these don't really mean anything to the compiler , the are not  relevant to ODR ( the declaration is allowed to not include these while  the definition may) in c colon ,( not even used in the abi hash), however E colon can put these, to allow the context-type to be implicitly changed via reflection to reflect that functions intent 
+these don't really mean anything to the compiler , the are not  relevant to ODR ( the declaration is allowed to not include these while  the definition may) in c colon ,( not even used in the ABI hash), however E colon can put these, to allow the context-type to be implicitly changed via reflection to reflect that functions intent 
  for example  debug(std::debug::obfuscated) to do debugging in release or debug(std::debug::unwind) , to debug during unwind. 
 
 
@@ -816,13 +816,13 @@ indicates that a function is effectless and idempotent.
 
  a function f is `mostly_functional` if The    returned or outputed value ( via  out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
 
-  f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and inout argument's value. 
+  f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and in-out argument's value. 
 
   and f performs no write accesses to volatile-qualified objects.
 
   viewstate and idempotent .
 
-( basically gnu::pure if no inout is used) 
+( basically gnu::pure if no in-out is used) 
 
 
 
@@ -834,13 +834,13 @@ indicates that a function is effectless and idempotent.
 
  and f performs no write operations to any memory location visible outside its own activation record, including Global, static, or thread-local objects and Memory pointed to by its arguments ,even if the arguments are non-const pointers, 
 
- only the inout and out arguments are modifiable reference like arguments.
+ only the in-out and out arguments are modifiable reference like arguments.
 
  and f and its callees performs no accesses to volatile-qualified objects.
 
  and f is unsequenced  .
 
- ( basically gnu::const if no inout is used) 
+ ( basically gnu::const if no in-out is used) 
 
 
 
@@ -1259,7 +1259,7 @@ instead of the default `std::context_t<optimization-level>`  use `std::async_con
 
 - last function that is called resulting in suspension: 
 
-  note that the reason for using references instead of inout here is because the callee will probably throw , resulting in the drop of inout , but references don't drop self on throw.
+  note that the reason for using references instead of in-out here is because the callee will probably throw , resulting in the drop of in-out , but references don't drop self on throw.
 
   `promise_suspend(this promise& self, promise-cache,bool& is_cancled )context-type->context-type-coro-return;`
 
@@ -1289,11 +1289,11 @@ if a promise wants ( decided in the awaiter suspension via returned `transfered_
 
 - promise-cache :
 
-the promise cache is an object only visible in the promise, with lifetime of the promise itself, as if an stack variable on the promisesl function's stack, its accessible as an inout like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle 
+the promise cache is an object only visible in the promise, with lifetime of the promise itself, as if an stack variable on the promisesl function's stack, its accessible as an in-out like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle 
 
 
 
- - abi :
+ - ABI :
 
   the coroutine handle  is a pointer to the structure with the following layout:
 
@@ -1333,7 +1333,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
 //  bool canceled() ==(program_switch_counter<0)
 
-// it is necessary for safety that all coroutines are called with their context-type known ( context-type  is acting like the itanium promise type)
+// it is necessary for safety that all coroutines are called with their context-type known ( context-type  is acting like the Itanium promise type)
 
 
 
@@ -1376,7 +1376,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
  
 
- out/in/inout T:
+ out/in/in-out T:
 
  
 
@@ -1392,7 +1392,7 @@ for function arguments,  these don't necessarily mean that T will have the same 
 
 a typical l-value reference like rust , and if unrestricted , like c++.
 
-its like inout,for passing around T without potentially changing the adresss of T , unlike inout.
+its like in-out,for passing around T without potentially changing the adresss of T , unlike in-out.
 
 
 its const is used in the copy constructors.
@@ -1414,9 +1414,9 @@ its mut is used in the move constructors.
 iovaluexpr T&:
 
 
-a typical l-value reference like inout , this is the awnser to inout like semantics without the intent to steal.
+a typical l-value reference like in-out , this is the awnser to in-out like semantics without the intent to steal.
 
-its like inout,for passing around T without potentially changing the adresss of T , unlike inout.
+its like in-out,for passing around T without potentially changing the adresss of T , unlike in-out.
 
 
 if a function throws by exception,  this value is considered dropped/uninitilized if T is mutable .
@@ -1458,7 +1458,7 @@ are user defined types who's purpose is refrencing variables.
 
 
 
-itanium-like definitions:
+Itanium-like definitions:
 
 
 
@@ -1478,7 +1478,7 @@ the descriptions below make use of the following definitions:
 
 
 
-- basic abi properties of a type t: the basic representational properties of a type decided by the base mcc abi, including its size, its alignment, its treatment by calling conventions, and the representation of pointers to it.
+- basic ABI properties of a type t: the basic representational properties of a type decided by the base mcc ABI , including its size, its alignment, its treatment by calling conventions, and the representation of pointers to it.
 
 
 
@@ -1550,7 +1550,7 @@ the descriptions below make use of the following definitions:
 
     - it has a non-trivial realloc-constructor , or if its realloc constructors are deleted.
 
-    - this definition, as applied to class types, a type which is trivial for the purposes of the abi will be passed and returned according to the rules of the base mcc abi, e.g. in registers; often this has the effect of performing a trivial reallocation of the type.
+    - this definition, as applied to class types, a type which is trivial for the purposes of the ABI will be passed and returned according to the rules of the base mcc ABI , e.g. in registers; often this has the effect of performing a trivial reallocation of the type.
 
     - if non trivial,  it is passed as if it had a stable forceref (i)(o)valuexpr qualifier, as if  passed by reference,  the relocation is allowed to be optimized out if the passed variable is (i)(o)valuexpr qualified or is a temporary at the call site, note that if the variable has internal mutibility as an input , it is ill formed to pass it by value ( input) and its relocation constructors cannot be trivial.
 
@@ -1578,7 +1578,7 @@ the descriptions below make use of the following definitions:
 
         6. a lambda in a templated entity.
 
-- thunk: a segment of code associated (in this abi) with a target function, which is called instead of the target function for the purpose of modifying parameters (e.g. this) or other parts of the environment before transferring control to the target function, and possibly making further modifications after its return. a thunk may contain as little as an instruction to be executed prior to falling through to an immediately following target function, or it may be a full function with its own stack frame that does a full call to
+- thunk: a segment of code associated (in this ABI ) with a target function, which is called instead of the target function for the purpose of modifying parameters (e.g. this) or other parts of the environment before transferring control to the target function, and possibly making further modifications after its return. a thunk may contain as little as an instruction to be executed prior to falling through to an immediately following target function, or it may be a full function with its own stack frame that does a full call to
 
 the target function.
 
@@ -1790,7 +1790,7 @@ a mcc signature has:
 
 
 
-return-type function-mangled-name ( arg-type-(in/out/inout) args... ) context-type (noexcept/throws) (noreturn/mayreturn) ( other-function-qualifiers);
+return-type function-mangled-name ( arg-type-(in/out/in-out) args... ) context-type (noexcept/throws) (noreturn/mayreturn) ( other-function-qualifiers);
 
 
 
@@ -1798,7 +1798,7 @@ return-type function-mangled-name ( arg-type-(in/out/inout) args... ) context-ty
 
 
 
-the context type is as if its an inout argument.
+the context type is as if its an in-out argument.
 
 
 
@@ -1894,7 +1894,7 @@ and must be written to at some point in callee.
 
 
 
-4.  inout:
+4.  in-out:
 
 
 
@@ -1922,7 +1922,7 @@ important note:
 
 
 
- in and out registers may overlap in the calling convention , this doesn't mean that they will be inout , only that the registers who are used for input purposes, will have output purposes after the call,  because its faster as an inout amd has less register pressure.
+ in and out registers may overlap in the calling convention , this doesn't mean that they will be in-out , only that the registers who are used for input purposes, will have output purposes after the call,  because its faster as an in-out amd has less register pressure.
 
 
 
@@ -1936,19 +1936,19 @@ for example if i do a call to a fastdyncallee dynamic function in an almost empt
 
 a function signature , or a function pointer type will determine the :
 
-in , out, and inout registers.
+in , out, and in-out registers.
 
 
 
 
 
-- in the rare occasion  of using all registers for parameter passing , the caller pushes arguments to the stack , the caller is responsible for the cleanup of the out and inout parameters,  but the callee is responsible for the in parameter cleanup. 
+- in the rare occasion  of using all registers for parameter passing , the caller pushes arguments to the stack , the caller is responsible for the cleanup of the out and in-out parameters,  but the callee is responsible for the in parameter cleanup. 
 
 
 
 - the registers allocator priority goes like( lower means more priority for being in a registers):
 
-1.   all inout registers  ( including the ones made implicitly via the overloap of in and out registers).
+1.   all in-out registers  ( including the ones made implicitly via the overloap of in and out registers).
 
 2.  all out registers. 
 
@@ -1958,13 +1958,13 @@ in , out, and inout registers.
 
 
 
-- after stable sorting of arguments based on in/out/inout the stack arguments are pushed onto the stack from right to left.
+- after stable sorting of arguments based on in/out/in-out the stack arguments are pushed onto the stack from right to left.
 
 
 
  - the responsibility of cleanup of stack variables:
 
- 1. inout and out:
+ 1. in-out and out:
 
  these arguments are cleaned up by the caller. 
 
@@ -1986,7 +1986,7 @@ these arguments are allocated on the stack  after assignments of the stack point
 
 
 
-* the unsafe(dyn-args) dynamic variading functions  ( printf in C is one of the examples, although these functions are unsafe and therfore bad practice to write) implicitly treat the underlying in registers that weren't overlapping  with outs as inout for the abi to be able to clean it up by the caller side.
+* the unsafe(dyn-args) dynamic variading functions  ( printf in C is one of the examples, although these functions are unsafe and therfore bad practice to write) implicitly treat the underlying in registers that weren't overlapping  with outs as in-out for the ABI to be able to clean it up by the caller side.
 
 
 
@@ -2090,7 +2090,7 @@ this also makes reverse engineering way more difficult, which is a good thing fo
 
 
 
-note that this abi is fully abstractable under itanium , basically, only the outer functions needs itanum for compatibility,
+note that this ABI is fully abstractable under Itanium , basically, only the outer functions needs itanum for compatibility,
 
 at most the catching return points to a cxx throw for compatibility.
 
@@ -2273,15 +2273,15 @@ namespace and header
 
 
 
-this abi specifies a number of type and function apis supplemental to those required by the c colon standard. a header file named mccabi.h will be provided by implementations that declares these apis. the reference header file included with this abi definition shall be the authoritative definition of the apis.
+this ABI specifies a number of type and function apis supplemental to those required by the c colon standard. a header file named mccabi.h will be provided by implementations that declares these apis. the reference header file included with this ABI definition shall be the authoritative definition of the apis.
 
 
 
-these apis will be placed in a namespace `__mccabiv1`. the header file will also declare a namespace alias abi for  `__mccabiv1`. it is expected that users will use the alias, and the remainder of the abi specification will use it as well.
+these apis will be placed in a namespace `__mccabiv1`. the header file will also declare a namespace alias ABI for  `__mccabiv1`. it is expected that users will use the alias, and the remainder of the ABI specification will use it as well.
 
 
 
-in general, api objects defined as part of this abi are assumed to be extern "c:". however, some (many?) are specified to be extern "c" or extern "c++" if they:
+in general, api objects defined as part of this ABI are assumed to be extern "c:". however, some (many?) are specified to be extern "c" or extern "c++" if they:
 
 
 
@@ -2333,7 +2333,7 @@ in general, api objects defined as part of this abi are assumed to be extern "c:
 
  also , each of the identifiers lists who their dependancies. 
 
- this includes but is not limited to : call graph, refrence graph,  abi graph, static variables used, register pressure, optimization qualifier and  ect.
+ this includes but is not limited to : call graph, refrence graph,  ABI graph, static variables used, register pressure, optimization qualifier and  ect.
 
  
 
@@ -2411,7 +2411,7 @@ compatibility
 
 - extern "c:" :
 
- the function has c colon abi , no restrictions.
+ the function has c colon ABI , no restrictions.
 
 - extern "c++" :
 
@@ -2546,7 +2546,7 @@ in a debugging environment,  this can have conditional trap instructions.
 in the callee , before the callee code and stack get initialized, the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
 in a debugging environment,  this can have conditional trap instructions. 
 
-- `operator make_meta ( inout std::meta )->meta-input `, `operator make_meta ( inout std::debug_meta )->meta-input`:
+- `operator make_meta ( in-out std::meta )->meta-input `, `operator make_meta ( in-out std::debug_meta )->meta-input`:
 a constexpr function that makes the meta type based on static reflection information, 
 it also can be used to insert canaries and other safety features in debugging,  the output is given to runtime to be used .
 
@@ -2851,7 +2851,7 @@ the special byte type with the alias set of all types (with non fractional align
 
  the hash type that the abiof operator gives.
 
- its a 128 bit uuid , it doesn't support any operations outside of the abi operators,  other than the usual load and store or casts.
+ its a 128 bit uuid , it doesn't support any operations outside of the ABI operators,  other than the usual load and store or casts.
 
  for example,  the hash given by xxhash128. 
 
@@ -2931,7 +2931,7 @@ the design's focus on extreme register utilization might mitigate the gains ,
 
 however,  modorn architectures have more than enough registers at their disposal. 
 
-note that in architectures where `sizeof(cxx_char_t)!=1` , the `represent_cxx` is provided  to be used in abi boundaries .
+note that in architectures where `sizeof(cxx_char_t)!=1` , the `represent_cxx` is provided  to be used in ABI boundaries .
 
 and for any cxx pointer `(memcast<uintmax_t>(byte_ptr)&~(sizeof(cxx_char_t)-1))==sizeof(cxx_char_t)*memcast<uintmax_t>(cxx_ptr)`, note that the lower bits in the c colon pointers in these architectures indicate shifts.
 
@@ -2958,7 +2958,7 @@ any implementation may choose hashes with size bigger or smaller than 256 or 128
 
 
 
-abi and compatibility
+ ABI  and compatibility
 
 
 
@@ -2966,39 +2966,39 @@ abi and compatibility
 
 1. `abi+(t/abi_t)`:
 
-adds the hash as a sult to the abi hash of the apllied expression.
+adds the hash as a sult to the ABI hash of the apllied expression.
 
 2. `abi=(t/abi_t)`:
 
-sets the has as the abi hash of the apllied expression.
+sets the has as the ABI hash of the apllied expression.
 
 3. `abiof(type/id)`:
 
-gets the abi hash off the inner expression.
+gets the ABI hash off the inner expression.
 
-- the abi hash of a type:
+- the ABI hash of a type:
 
 1. is based on its definition and declaration order.
 
 2. name mangle of expressions
 
-3. abi hash of sub expressions.
+3. ABI hash of sub expressions.
 
-4. non static member abi hash and dclaration order
+4. non static member ABI hash and dclaration order
 
-5. virtual function abi hash and declaration order
+5. virtual function ABI hash and declaration order
 
-6. virtual bases abi hash and declaration order
+6. virtual bases ABI hash and declaration order
 
-7. bases abi hash and dclaration order
+7. bases ABI hash and dclaration order
 
-8. abi+(...) es abi hash and dclaration order
+8. abi+(...) es ABI hash and dclaration order
 
 9. qualifiers of a type , but order independant
 
 10. throw-value  and promise-type and input and output of async/sync functions of the context
 
-11. the abi version number ( any changes to the abi scheme in the standard will alter this number) 
+11. the ABI version number ( any changes to the ABI scheme in the standard will alter this number) 
 
 12. diffrent triviality properties of a type.
 
@@ -3010,7 +3010,7 @@ gets the abi hash off the inner expression.
 
 - note :
 
-the c colon linker only uses the abi hashes as signaturs for linkage.
+the c colon linker only uses the ABI hashes as signaturs for linkage.
 
 
 
@@ -3033,7 +3033,7 @@ the c colon linker only uses the abi hashes as signaturs for linkage.
 
  
 
- the hashs dependent on their dependancies form a tree ( no cycles ) and any changes in any part of the tree will alter all above sections of the tree , similar to a murcle tree , so any changes in the abi of a section will force all dependent sections to need a new link target .
+ the hashs dependent on their dependancies form a tree ( no cycles ) and any changes in any part of the tree will alter all above sections of the tree , similar to a murcle tree , so any changes in the ABI of a section will force all dependent sections to need a new link target .
 
  
 
@@ -3049,7 +3049,7 @@ runtime libraries and compilation
 
 
 
-the objective of a full abi is to allow arbitrary mixing of object files produced by conforming implementations, by fully specifying the binary interface of application programs.
+the objective of a full ABI is to allow arbitrary mixing of object files produced by conforming implementations, by fully specifying the binary interface of application programs.
 
 
 
@@ -3079,17 +3079,17 @@ the objective of a full abi is to allow arbitrary mixing of object files produce
 
 --- 
 
-the mcc toolchain and abi outside of c colon:
+the mcc toolchain and ABI outside of c colon:
 
 
 
- with the absolute expressive power of the c colon IR and abi ,  there might be languages or toochsins who soly focus on a language with c colon like abi,
+ with the absolute expressive power of the c colon IR and ABI ,  there might be languages or toochsins who soly focus on a language with c colon like ABI ,
 
  for example :
 
  
 
-  1. the mcc-cpp transpiler: 
+  1. the mcc-Cpp transpiler: 
 
       a rust compiler that compiles c++ into mcc-ir.
 
@@ -3102,7 +3102,7 @@ the mcc toolchain and abi outside of c colon:
 
   4.   express colon :
   a simple  language , a subset of c colon ,where only safe c colon code is valid ,most  qualifiers are invisible-implicit and inaccessibile.
-  this is a more begginners friendly language that has the same abi and type system as c colon , but without many of its complexities, so the unsafe parts can be written in libraries in c colon.    
+  this is a more begginners friendly language that has the same ABI and type system as c colon , but without many of its complexities, so the unsafe parts can be written in libraries in c colon.    
 
       
 
@@ -3158,7 +3158,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
   most complex code are implicit ,
 
-  for example instead of references , developers use in/inout/out and values , 
+  for example instead of references , developers use in/in-out/out and values , 
 
   this makes this code readable and object oriented while being very safe and optimizable.
 
@@ -3200,7 +3200,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     however,  an extreme measure against all cycles is  making the use of abi= as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and ect , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
 
-    ( this is the deafult therfore any use of abi= is unsafe and so E colon programs cannot have memory leaks by deafult,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's abi hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the abi chain via abi= , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust enum or cpp std variant) ) ( because  the virtual table abi is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
+    ( this is the deafult therfore any use of abi= is unsafe and so E colon programs cannot have memory leaks by deafult,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via abi= , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust enum or Cpp std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
 
     arguably this is extreme , and we cant always grantee that no open-set type erasure will be provided from c colon,   but i would say that if E colon developers want to make a self referential type, it would be more elegant in C colon , and probably there are graph, linked list  and tree libraries that can do that.
 
@@ -3230,11 +3230,11 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
 the standard library aims to have many of the widely used utilities,  for example networking libraries,  asynchronous frameworks and web like UI development utilities. 
 
-this is because the standard can change the abi of these components at later versions so it doesn't need to worry about backwards compatibility. 
+this is because the standard can change the ABI of these components at later versions so it doesn't need to worry about backwards compatibility. 
 
 
 
-6. easy to use package management with abi stability:
+6. easy to use package management with ABI stability:
 
 
 
@@ -3260,7 +3260,7 @@ the express colon language also tends to look more functional than its c colon c
 
  
 
- the function argument flow specifiers ( like a refrence  but without stable adress on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitilized& ) and inout (akin to mutable& ) prameters are all trivial reallocation and register passed, 
+ the function argument flow specifiers ( like a refrence  but without stable adress on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitilized& ) and in-out (akin to mutable& ) prameters are all trivial reallocation and register passed, 
 
  however because of the ABI nature they will remain valid for the duration of the function call so they are inheritly safe. 
 
@@ -3290,7 +3290,7 @@ although this is fast enough so its good enough,  if not , c colon can be used t
 
  ``` 
 
-  for ( inout variable: iteration-primitive) {// function body beginning, the function captues the sate and has an inout argument 
+  for ( in-out variable: iteration-primitive) {// function body beginning, the function captues the sate and has an in-out argument 
 
 // modify variable.
 
@@ -3298,7 +3298,7 @@ although this is fast enough so its good enough,  if not , c colon can be used t
 
 
 
-for ( auto [inout a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the state and has an multiple argument provided in the iterator internals.
+for ( auto [in-out a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the state and has an multiple argument provided in the iterator internals.
 
 // d is copied , a , b and c are "refrenced" via value input outputs
 
@@ -3334,7 +3334,7 @@ return...;
 
 // theres an implicit  transformation for these code , to make it able to do either a ,co await , co return or a throw or simply  continue execution .
 
- for co_await (auto [inout a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const unstable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
+ for co_await (auto [in-out a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const unstable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
 
 // can modify a c and d , but cannot modify other variables outside of the for loop , however mutexes can still be modified beacuse they can be modified when constant.
 
@@ -3398,7 +3398,7 @@ return...;
 
 i pridict that the worst common error is an easy "must initialized an out prameter" or "make a copy of a variable and use that instead of passing itself to multiple function prameters"( the reason being that variables are relocated to the prameter when the prameter is created and will be relocated back when the prameter is "destroyed"  in c colon land , but , often the only use after-rellocation-error is these , which can be avoided  by declaration of a new variable  ), which is , simple and far better than lifetimes or memory bugs.
 
-or at most a " the catch block cannot caputure a variable that might be dropped in the try block , try copying that variable before the try block to ensure it will not be an output of a throwing function"( the inout or out function  arguments  will  have an uninitialized state or qualifier  on that functios throw path in the caller, when used , the same qualifier set per expression rule will make that expression ill formed).
+or at most a " the catch block cannot caputure a variable that might be dropped in the try block , try copying that variable before the try block to ensure it will not be an output of a throwing function"( the in-out or out function  arguments  will  have an uninitialized state or qualifier  on that functios throw path in the caller, when used , the same qualifier set per expression rule will make that expression ill formed).
 
 in contrast to C colon ( which allows all of these c++ style things) , Express colon does not have operator overloadding,and also function overloadding,  and template specilizations, and only allows simple template declarations ( like the c++ auto concept constraint prameters),
 
@@ -3454,7 +3454,7 @@ this in itself will require substantial work .
 
 
 
-2. build one or more  standards documents with clear information,  similar to the cxx spec, and the cxx abi specs:
+2. build one or more  standards documents with clear information,  similar to the cxx spec, and the cxx ABI specs:
 
 this would need to be designed carefully and diligently to ensure that the language stays well-defined.
 
@@ -3468,7 +3468,7 @@ not in scope rn.
 
 4. ( dependent on 3) replacement or extension ( probably a fork ) of the llvm back-end, linker:
 
-not in scope rn, but the reason being is to be able to nativity support the mcc abi in all platforms instead of piggybacking it on top of the c abi.
+not in scope rn, but the reason being is to be able to nativity support the mcc ABI in all platforms instead of piggybacking it on top of the c ABI .
 
 
 
@@ -3482,7 +3482,7 @@ not in scope rn
 
 - considerations: 
 
-yes , this is too ambitious to build in few years,let alone quickly,  however if we let ourselves to build the 2 first parts by not focusing on performance ( because the abi is build on top of llvm ir with its conventions around calls ), we may be able to get the language up and running to build itself eventually in the following years to come. 
+yes , this is too ambitious to build in few years,let alone quickly,  however if we let ourselves to build the 2 first parts by not focusing on performance ( because the ABI is build on top of llvm ir with its conventions around calls ), we may be able to get the language up and running to build itself eventually in the following years to come. 
 
 
 
@@ -3495,12 +3495,12 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 --- 
 
  improvments and advancements compared to cxx ( in the performance category):
-  0. so maybe one day cpp can be as fast:
+  0. so maybe one day Cpp can be as fast:
 
   i always have loved C++ , even seeing it now with all its legecy , cxx still can be like c colon , heck i wanted c colon to be a c++ superset , but i dont think i can change anything major in it anytime soon, in hopes that a std c++xx maybe powered by mcc  can be as fast as c colon  in the following decades
   
- 1. abi brakage leads to better implementations:
- the 128 bit recursive hash abi makes this possible.
+ 1. ABI brakage leads to better implementations:
+ the 128 bit recursive hash ABI makes this possible.
 
  2. minimal and fast stack spill :
 
@@ -3547,14 +3547,14 @@ also static data like strings would be able to merge better with  valexpr ( beca
 
 9.  fast program and dll loader:
 all mcc symbols have two kinds of name mangles , the front-end mangle and the back-end mangle ,
-the front-end one is like cxx but with the abi hash appended , the back-end mangle is a 256bit hash of the front-end mangle ,
+the front-end one is like cxx but with the ABI hash appended , the back-end mangle is a 256bit hash of the front-end mangle ,
 this is to make all symbols have a fixed size and to be able to store all symbols needing work on startup or dll load in an  array of sorted hashes ( 32 arrayes of bytes beacuse of 256 bit nature) ( similar layout to what mcc dynamic cast castation-tables had)
 , ( because of the hashed  nature we can use the fast radix sort to make this array in backend in the linker) this helps along side the interposition less code , to help reduce start up times.
 when loading a dll , those sorted arrays of hashes combine into one array , similar to the merge (O(n)) in merge sort ,
 while doing so , we can spot all duplicate symbols if any and do the appropriate thing accordingly 
 
 10. more parrarelized code  and structured concurrency:
-by enabling cancelation in the abi of coroutines we can swiftly do many structural concurrency patterns, 
+by enabling cancelation in the ABI of coroutines we can swiftly do many structural concurrency patterns, 
 std primitives such as tasks , channels,schedulers,  promises ect help here .
 
 ---
@@ -3608,9 +3608,9 @@ Quantum-Secure Encryption is Here. And it's WILD ( hash verification) :
 
 
 
-itanium abi:
+Itanium ABI :
 
-[link](https://itanium-cxx-abi.github.io/cxx-abi/abi.html#intro)
+[link](https://Itanium-cxx-abi.github.io/cxx-abi/abi.html#intro)
 
 
 
