@@ -2560,10 +2560,12 @@ also one to get a reference to a context-type.
 
 - operator set(constructor-args... )main-context-type->block-context-type:
 if set is used in the context,  it creates a code block output the main context , this can be an opt out of debugging for example. 
-```set_context<block-context-type>( constructor-args...){
+```
+set_context<block-context-type>( constructor-args...){
 .....
 ...get_context(...);
-}```
+}
+```
 
 - operator get(...)context-type -> implementation-defined:
 to get the context type with an expression.
@@ -3096,14 +3098,11 @@ the mcc toolchain and abi outside of c colon:
       a rust compiler that compiles rust into mcc-ir.
 
   3.  functional colon :
-
      a functional language that compiles into c colon  or mcc-ir which most functions are implicitly purely functional in thr c colon code.
 
   4.   express colon :
-
-    a simple  language , a subset of c colon ,where only safe c colon code is valid ,most  qualifiers are invisible-implicit and inaccessibile.
-
-    this is a more begginners friendly language that has the same abi and type system as c colon , but without many of its complexities, so the unsafe parts can be written in libraries in c colon.    
+  a simple  language , a subset of c colon ,where only safe c colon code is valid ,most  qualifiers are invisible-implicit and inaccessibile.
+  this is a more begginners friendly language that has the same abi and type system as c colon , but without many of its complexities, so the unsafe parts can be written in libraries in c colon.    
 
       
 
@@ -3544,7 +3543,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
  8.  less interposition depending dynamic dispatch  :
    when code is similar and linked together, it can be sometimes de duplicated,
 also if a function's adress is not taken or exported it doesn't need a fixed adress, also the relaxed function addresss help in dew duplicated code.
-also static data like strings would be able to merge better with  `no_unique_adress` ( because  no null termination,  sub string merge is safe)
+also static data like strings would be able to merge better with  valexpr ( because  no null termination,  sub string merge is safe)
 
 9.  fast program and dll loader:
 all mcc symbols have two kinds of name mangles , the front-end mangle and the back-end mangle ,
@@ -3677,3 +3676,4 @@ CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()
 
 
 ---
+
