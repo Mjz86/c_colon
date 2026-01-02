@@ -2416,12 +2416,70 @@ compatibility
  however c style function pointers ( similar to cxx ones) are mandatory fastdyncallee,  because  obviously we cannot assume anything about the assembly. 
 
  
-
+- syscalls :
+ theres an unsafe low level syscall trunk to allow talking to the OS  
  
 
+-  trunks for dynamic calls with specific calling conventions:
+ a non exhaustive list of common calling conventions that would  need this thunk 
+```
+  cdecl
+  stdcall
+  fastcall
+  thiscall
+  vectorcall
+  regcall
+  ms_abi
+  sysv_abi
+  pascal
+  regparm
+  sseregs
+  force_align_arg_pointer
+  aapcs
+  aapcs-vfp
+  atpcs
+  pcs
+  aarch64_vector_pcs
+  aarch64_sve_pcs
+  swiftcall
+  swiftasynccall
+  ghc
+  cold
+  naked
+  preserve_most
+  preserve_all
+  preserve_none
+  interrupt
+  signal
+  mips16
+  nomips16
+  micromips
+  nocompression
+  altivec
+  spe_abi
+  eabi
+  m68k_rttd
+  amdgpu_kernel
+  amdgpu_cs 
+ amdgpu_gs 
+ amdgpu_ps 
+ amdgpu_vs 
+ amdgpu_hs 
+ amdgpu_ls 
+ amdgpu_es
+```
 
-
+` ret= std::abi_compat_call<convention-type>(fnptr, args...);`
  
+ 
+ for static calls:
+ 
+ ` ret= std::abi_compat<convention-type>::fn( args...);`
+ 
+ note that this compatibility namespace uses reflection to generate the thrunks , maybe even insert asm directives using reflection,  only the declaration needs to be declared inside this namespace. 
+ 
+ - linking:
+ note that the mcc linker is independent of the os linker , so it can link non mcc code using custom dll plugins at start up.
 
 - others:
 
