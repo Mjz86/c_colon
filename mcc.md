@@ -2522,7 +2522,7 @@ context object:
  the context type satisfying the standard context concept  is a central hub for all things that were previously in thread-local or static storage, 
  the context-type is implicitly initialized by the callees context type via,
  in the debugging environment  every action , would probably have to go through the context-type, but this really helps make everything that is implicit controlled and optimized.
- 
+  almost all of these are inlined , especially the ones handeled in the callee. 
  
  
  
@@ -2551,7 +2551,7 @@ a constexpr function that makes the meta type based on static reflection informa
 it also can be used to insert canaries and other safety features in debugging,  the output is given to runtime to be used .
 
 - operator  meta ( meta-input )callee-context-type :
- just right after the callee operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations,  but with immense debugging knowledge),  giving rich debug info to the context type.
+ just right after the callee operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations( almost having very value an exact adress offset to the stack pointer or heap allocation begin),  but with immense debugging knowledge),  giving rich debug info to the context type.
 
 
 
