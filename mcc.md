@@ -762,6 +762,13 @@ function qualifiers
 
 
 
+- async,debug: 
+these don't really mean anything to the compiler , the are not  relevant to ODR ( the declaration is allowed to not include these while  the definition may) in c colon ,( not even used in the abi hash), however E colon can put these, to allow the context-type to be implicitly changed via reflection to reflect that functions intent 
+
+
+
+
+
 - effectless:
 
 an evaluation of a function call is effectless if any store operation that is sequenced during the call is the modification of an object that synchronizes with the call; if additionally the operation is observable, all access to the object must be based on a unique pointer parameter of the function.
