@@ -856,8 +856,8 @@ indicates that a function is effectless and idempotent.
  
   * restrictions for enums specified of this use :
    all enum entries must be continuous ,( if the number is specified) ,
-   warnings will be given in cases where big number of entries generate massive jump tables.
-
+   warnings or errors will be given in cases where big number of entries generate massive jump tables or missed performance. 
+  
 
 
  * definition of what enum return and call means:
@@ -1223,6 +1223,8 @@ the symbol table and dynamic loader:
 
 
 - context-type in the signature:
+
+instead of the default `std::context_t<optimization-level>`  use `std::async_context_t<optimization-level>`  ( or equivalent non standard types )
 
  
 
@@ -2507,6 +2509,44 @@ compatibility
 
 context object:
 
+ the context type satisfying the standard context concept  is a central hub for all things that were previously in thread-local or static storage, 
+ the context-type is implicitly initialized by the callees context type via,
+ in the debugging environment  every action , would probably have to go through the context-type, but this really helps make everything that is implicit controlled and optimized.
+ 
+ 
+ 
+ 
+ - operator context( out callee-context-type )caller-context-type :
+ constructs the context type of the callee before the call,
+ in a debugging environment,  this can have conditional trap instructions. 
+ 
+ - operator ~context( callee-context-type ) caller-context-type :
+destructs the context type of the callee after the call,  potentially handing rich unwind information.
+in a debugging environment,  this can have conditional trap instructions. 
+
+- operator  signature (  backend-hash , stack-size,stack-pointer, instruction-pointer )callee-context-type :
+in the call , before the arguments and stack get initialized, the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
+in a debugging environment,  this can have conditional trap instructions. 
+
+- operator  meta (`std::meta` or `std::debug_meta`)callee-context-type :
+ just right after the signature operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations,  but with immense debugging knowledge),  giving rich debug info to the context type.
+
+
+there is an operator to declare a new context for a code block,
+also one to get a reference to a context-type. 
+
+- operator set(constructor-args... )main-context-type->block-context-type:
+```set_context<block-context-type>( constructor-args...){
+.....
+...get_context(...);
+}```
+
+- operator get(...)context-type -> implementation-defined:
+to get the context type with an expression.
+
+
+
+
 
 
 - throw-value:
@@ -2558,6 +2598,27 @@ uaually specified noreturn, if not the user might struggle writing code.
  
 
  often if the value is not convertable to be catched in the scope , it will throw to unwind to the rest of the code/ catch blocks.
+
+
+
+
+
+the two standard context types are :
+deafult support is for common exception string and enum categories , and   the common cancelation  and violation tokens,
+however on lower levels , stack traces would get richer , and the exceptions would be paired with origin and specific lines of unwind it went through,
+what objects did the violation and more 
+
+-`std::context_t<optimization-level>` :
+this context type is used in synchronous programming,  specifically designed for an optimization level,
+the lower the level the more debugging friendly is it.
+
+- `std::async_context_t<optimization-level>` :
+this context type is used in asynchronous programming ( paired with the std::scheduler<...>) ,  specifically designed for an optimization level,
+the lower the level the more debugging friendly is it.
+
+
+
+
 
 
 
