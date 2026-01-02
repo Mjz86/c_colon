@@ -487,12 +487,13 @@ the adresses of these variables is overriden at load time , and the memory  sect
 
 
 
- dllhidden/dllexport/dllimport( only on static symbols,  like functions or static variables): 
+ dllhidden/dllexport/dllimport,interpositioned( only on static symbols,  like functions or static variables): 
 
    makes the symbol an export/import for dll linking by providing a symbol hash.
 
    also dllhidden is the deafult and removes the symbol  hash in the binary .
-
+   there is an unsafe(interpositioned) qualifier that can use `set_interposition(fn,address)` to store ( memory  order release) function address on a global atomic static , using  the addressof on this symbol will load by a memory order of aquire,
+   therfore the address  is controlled by developers.
 
 
 
@@ -922,6 +923,7 @@ noreturn means the behaviour is undefined if the function returns to the caller 
  - nodyncontract/ dyncontract:
 
  dyncontract ( deafult) allows a function's contract to execute in the call site based on the callers contract evaluation requirements. 
+ an in val argument is implicitly passed to make contract violation controlled. 
 
 
 
@@ -1133,7 +1135,7 @@ the symbol table and dynamic loader:
 
 
 
-- c colon symbols are *not* interpositioned :
+- c colon symbols are *not* interpositioned by deafult :
 
 0. we do not want the overhead of the global offset table(GOT) by deafult, as it takes a toll on all calls from shared libraries even thoes thar are never interpositioned (see the shared libraries cppcon video).
 
@@ -1585,6 +1587,7 @@ the target function.
  - interposition :
 
   overriding a symbol in one binary fron another. 
+
 
 
 
