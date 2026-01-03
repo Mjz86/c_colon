@@ -33,7 +33,7 @@ the formatting of this document is currently not very well, under scores are not
 
 
 
----
+~~~~~~~
 
 
 
@@ -301,7 +301,7 @@ writing utilities that help automate rust, c++ and other language bindings and m
 
 
 
----
+~~~~~~~
 
 
 
@@ -335,7 +335,7 @@ its about using a regex without saying that PHP's regex is faster.
 
 
 
----
+~~~~~~~
 
 
 
@@ -353,7 +353,7 @@ this ABI aims to have minimal compatibility with the Itanium ABI , such that an 
 
 
 
----
+~~~~~~~
 
 
 
@@ -760,7 +760,7 @@ we can now declare a qualiexpr(bool sorted_flag=false) , (the empty qualiexpr be
 
 
 
----
+~~~~~~~
 
 
 
@@ -1085,7 +1085,7 @@ contract's code...
 
 
 
----
+~~~~~~~
 
 exact mechanism of return pointers:
 
@@ -1153,7 +1153,7 @@ exact mechanism of return pointers:
 
     
 
---- 
+~~~~~~~ 
 
 the symbol table and dynamic loader:
 
@@ -1183,17 +1183,12 @@ the symbol table and dynamic loader:
 
 
 
----
+~~~~~~~
 
  constant sharing :
 
  
-
- 
-
-- in function  arguments when a stable byte B with adresss A is triviality relocatable within its type,
-
-   if passed as a stable constant , we can trivialy copy it to address B , we know it will not get changed,  and we know the original value will not change until it gets relocated back ,
+- in function  arguments when a stable byte B with address A is trivially relocatable within its type, if passed as a stable constant , we can trivialy copy it to address B , we know it will not get changed,  and we know the original value will not change until it gets relocated back ,
 
    but, we can still use that byte B within other *constant* arguments,  thats because :
 
@@ -1201,11 +1196,11 @@ the symbol table and dynamic loader:
 
    2. B will not change until the scope ends.
 
-   3. we can assume that each time    we access a copy of B , that its as if we triviality relocated it from the original.
+   3. we can assume that each time    we access a copy of B , that its as if we trivially relocated it from the original.
 
    4. its as if we propagate a const reference borrow without the stable address  
 
-   5. the callee will not drop the exclusive in prameters  in any code path.
+   5. the callee will not drop the exclusive in parameters  in any code path.
 
 
 
@@ -1251,7 +1246,7 @@ the symbol table and dynamic loader:
 
    
 
- --- 
+ ~~~~~~~ 
 
  coroutines:
 
@@ -1380,7 +1375,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 ```
 
 
-----
+~~~~~~~-
  allocation and the as if rule:
   
   the  allocators ( defined via the `std::allocator_c` concept(s)) in mcc followed the as if rule ,
@@ -1396,7 +1391,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
 
 
----
+~~~~~~~
 
  references( there are more combinations of qualifiers  , but the common ones include )
 
@@ -1408,7 +1403,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
 a value oriented reference-like type ,
 
-for function arguments,  these don't necessarily mean that T will have the same address,  unless T isnt triviality relocatable, which will make T relocate into the stack in the caller.
+for function arguments,  these don't necessarily mean that T will have the same address,  unless T isnt trivially relocatable, which will make T relocate into the stack in the caller.
 
 
 
@@ -1476,7 +1471,7 @@ are user defined types who's purpose is referencing variables.
 
 
 
----
+~~~~~~~
 
 
 
@@ -1784,7 +1779,7 @@ type pointer
 
     
 
----
+~~~~~~~
 
 
 
@@ -1828,7 +1823,7 @@ the context type is as if its an `inout` argument.
 
 
 
-the throw-value specified in the context type is as if its an out argument, this out argument  can overload with any other arguments except the context object, because this is the only out argument other than the context object that is preserved  in a unsuccessful call to a function, as a result  this often overlaps with the return argument, however a non triviality relocatable throw value will need to be passed via a non overlapping  throw-value-pointer input, for this reason it is discouraged that throw values be non triviality relocatable.
+the throw-value specified in the context type is as if its an out argument, this out argument  can overload with any other arguments except the context object, because this is the only out argument other than the context object that is preserved  in a unsuccessful call to a function, as a result  this often overlaps with the return argument, however a non trivially relocatable throw value will need to be passed via a non overlapping  throw-value-pointer input, for this reason it is discouraged that throw values be non trivially relocatable.
 
 
 
@@ -2204,7 +2199,7 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 
 
 
---- 
+~~~~~~~ 
 
  enum/pattern matching functions:
 
@@ -2238,7 +2233,7 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 
 
 
---- 
+~~~~~~~ 
 
 (de)initilization sequence of modules:
 the module constructor that runs :
@@ -2291,7 +2286,7 @@ program code:
 
 
 
----
+~~~~~~~
 
 
 
@@ -2319,7 +2314,7 @@ in general, API objects defined as part of this ABI are assumed to be extern "c:
 
 
 
----
+~~~~~~~
 
  module dependency resolutions:  
 
@@ -2427,7 +2422,7 @@ in general, API objects defined as part of this ABI are assumed to be extern "c:
 
   
 
----
+~~~~~~~
 
 
 
@@ -2537,7 +2532,7 @@ compatibility
 
 
 
----
+~~~~~~~
 
 
 
@@ -2676,7 +2671,7 @@ the lower the level the more debugging friendly is it.
 
 
 
----
+~~~~~~~
 
  contracts :
 
@@ -2791,7 +2786,7 @@ results in undefined behaviour.
 
 
 
----
+~~~~~~~
 
 
 
@@ -2941,7 +2936,7 @@ the special byte type with the alias set of all types (with non fractional align
 
   
 
-  ---
+  ~~~~~~~
 
 
 
@@ -2968,7 +2963,7 @@ any implementation may choose hashes with size bigger or smaller than 256 or 128
 
 
 
----
+~~~~~~~
    debugging  :
    
   with current debugger technology, if the context-type satisfied the debugging concept,  the compiler will make code much less optimized, 
@@ -2980,7 +2975,7 @@ any implementation may choose hashes with size bigger or smaller than 256 or 128
 
   
 
----
+~~~~~~~
 
 
 
@@ -3026,7 +3021,7 @@ gets the ABI hash off the inner expression.
 
 11. the ABI version number ( any changes to the ABI scheme in the standard will alter this number) 
 
-12. diffrent triviality properties of a type.
+12. diffrent trivially properties of a type.
 
 13. lifetimes of  arguments or members and their dependancies ( the tokens and their hash in the definition of templates , lifetimes, contracts and requirements)
 
@@ -3067,7 +3062,7 @@ the c colon linker only uses the ABI hashes as signaturs for linkage.
 
  
 
----
+~~~~~~~
 
 
 
@@ -3103,7 +3098,7 @@ the objective of a full ABI is to allow arbitrary mixing of object files produce
 
 
 
---- 
+~~~~~~~ 
 
 the mcc toolchain and ABI outside of c colon:
 
@@ -3132,7 +3127,7 @@ the mcc toolchain and ABI outside of c colon:
 
       
 
----
+~~~~~~~
 
 express colon  or "E:":
 
@@ -3468,7 +3463,7 @@ however E colon still recognizes these C colon constructs , allowing custom type
 
 
 
---- 
+~~~~~~~ 
 
 roadmap:
 
@@ -3518,7 +3513,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
 
 
---- 
+~~~~~~~ 
 
  improvments and advancements compared to cxx ( in the performance category):
   0. so maybe one day CPP can be as fast:
@@ -3559,7 +3554,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
 
 6. layout optimizations :
-  on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a sub-object is referenced in memory , the entire object does not need to be placed in memory,  but only that sub-object,  especially true for triviality relocatable types ,
+  on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a sub-object is referenced in memory , the entire object does not need to be placed in memory,  but only that sub-object,  especially true for trivially relocatable types ,
   for example  if i have an array of offset independent members,  and reference a member,  i can just only use the memory of that member and other members may not be in ajason stack memory , also it might help in making array of structures to structure of array
   on the stack ,  reflection also can help with this
   
@@ -3583,7 +3578,7 @@ while doing so , we can spot all duplicate symbols if any and do the appropriate
 by enabling cancelation in the ABI of coroutines we can swiftly do many structural concurrency patterns, 
 std primitives such as tasks , channels,schedulers,  promises etc help here .
 
----
+~~~~~~~
 
     Copyright (C) 2025 Mjz86 
 
@@ -3609,7 +3604,7 @@ std primitives such as tasks , channels,schedulers,  promises etc help here .
 
 
 
----
+~~~~~~~
 
 
 
@@ -3701,5 +3696,5 @@ CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()
 
 
 
----
+~~~~~~~
 
