@@ -1157,31 +1157,27 @@ exact mechanism of return pointers:
 
 the symbol table and dynamic loader:
 
- any c colon symbol with dllimport or dllexport qualifier has its cryptographic 256 bit hash stored in the binary, 
+ any c colon symbol with `dllimport` or `dllexport` qualifier has its cryptographic 256 bit hash stored in the binary, 
 
- this is for dynamic linking and the dynamic loader to be able to load the dll.
-
-
+ this is for dynamic linking and the dynamic loader to be able to load the DLL.
 
 
 
-- c colon symbols are *not* interpositioned by default :
 
-0. we do not want the overhead of the global offset table(GOT) by default, as it takes a toll on all calls from shared libraries even thoes thar are never interpositioned (see the shared libraries cppcon video).
+
+- c colon symbols are *not* interposition-ed by default :
+
+0. we do not want the overhead of the global offset table(GOT) by default, as it takes a toll on all calls from shared libraries even thoes thar are never interposition-ed (see the shared libraries `CppCon` video).
 
 1.  it has an uneasy coexistence with the c colon ODR.
 
-2. it is rarely used and can be mimicked by a macanism like cxx `set_terminate`.
+2. it is rarely used and can be mimicked by a mechanism like cxx `set_terminate`.
 
 3. GOT being writable during the execution of the program is a security  problem because of being able to change the common functions to do something malicious( glaring attack surface).
 
 4. we do not want the overhrad of the procedural lookup table by default.
 
  
-
-
-
-- c colon sym
 
 
 
