@@ -2733,6 +2733,7 @@ usually the contract calling code is only repeated once in  the call site if any
 
 in a  operation that might result in assertion like  a/0,a<<-1,a+maxint
 note that this contract code is under the callee context-type  if its in a post or pre condition.
+if the contract is implicit and not assumed or enforced, the value given after is an erroneous value, it is explicitly not correct,  however its not UB to read.
 
 
 
@@ -2754,7 +2755,7 @@ results in calling the terminate function.
 
 does nothing.
 
-4. observe:
+4. observe :
 
 results in calling the operator `contract_assert`.
 
