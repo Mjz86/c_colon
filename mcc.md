@@ -794,8 +794,8 @@ an `effectless`  expression must be composed of only other `effectless`  express
 
 - `weak_idempotent`:
 
-an evaluation e is `weak_idempotent` if a second evaluation of e can be sequenced immediately after the original one without changing the resulting value, if any, or the important observable state of the execution.
-any expression can be declared `weak_idempotent`, declaring the side effect as non important in logic .
+an evaluation e is `weak_idempotent` if a second evaluation of e can be sequenced immediately after the original one without changing the resulting value, if any, and the program will behave as if the repeated count of this evaluation was irrelevant( in terms of contract assertions,  logging is a side effect that isnt relevant to the program flow).
+any expression can be declared `weak_idempotent`.
 however, the one qualifier per expression  on rule must still hold , meaning that a second evaluation of an `weak_idempotent` expression must result in the same qualifiers as the first one, adding to contract assertion safety .
 
 
@@ -3693,4 +3693,5 @@ CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()
 
 
 ---
+
 
