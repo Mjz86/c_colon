@@ -1382,14 +1382,14 @@ the promise cache is an object only visible in the promise, with lifetime betwee
 ```
 
 
-~~~~~~~-
+~~~~~~~
  allocation and the as if rule:
   
   the  allocators ( defined via the `std::allocator_c` concept(s)) in mcc followed the as if rule ,
   if multiple allocations can be elided safety, they will,
   the allocators fall into two categories,  the ones that are thread-safe and the ones that aren't,
   thread-safe allocators are more expensive to use , although non thread-safe allocators can be used via channels , its still not a good choice.
- its similar to how cxx does coroutine frame Ellison, but this time the stack frame is allso available. 
+ its similar to how cxx does coroutine frame Ellison, but this time the stack frame is also available. 
 
 
 
@@ -1415,18 +1415,18 @@ for function arguments,  these don't necessarily mean that T will have the same 
 
 
  T&:
-(lvaluexpr is default)
+(`lvaluexpr` is default)
 
 
 a typical l-value reference like rust , and if unrestricted , like c++.
 
-its like `inout`,for passing around T without potentially changing the adresss of T , unlike `inout`.
+its like `inout`,for passing around T without potentially changing the address of T , unlike `inout`.
 
 
 its const is used in the copy constructors.
 
 
-rvaluexpr T&:
+`rvaluexpr T&`:
 
 
 
@@ -1439,15 +1439,15 @@ its mut is used in the move constructors.
  
 
 
-iovaluexpr T&:
+`iovaluexpr T&`:
 
 
-a typical l-value reference like `inout` , this is the awnser to `inout` like semantics without the intent to steal.
+a typical l-value reference like `inout` , this is the answer to `inout` like semantics without the intent to steal.
 
-its like `inout`,for passing around T without potentially changing the adresss of T , unlike `inout`.
+its like `inout`,for passing around T without potentially changing the address of T , unlike `inout`.
 
 
-if a function throws by exception,  this value is considered dropped/uninitilized if T is mutable .
+if a function throws by exception,  this value is considered dropped/uninitialized if T is mutable .
 
 however if returned,  this value would still be considered in its lifetime. 
 
@@ -1456,7 +1456,7 @@ however if returned,  this value would still be considered in its lifetime.
 
 
 
-xvaluexpr T&:
+`xvaluexpr T&`:
 
 
 
@@ -1466,7 +1466,7 @@ used in the relocation constructors.
 
 
 
-non forceref user defined references:
+non `forceref` user defined references:
 
 
 
@@ -1580,7 +1580,7 @@ the descriptions below make use of the following definitions:
 
     - this definition, as applied to class types, a type which is trivial for the purposes of the ABI will be passed and returned according to the rules of the base mcc ABI , e.g. in registers; often this has the effect of performing a trivial reallocation of the type.
 
-    - if non trivial,  it is passed as if it had a stable forceref (i)(o)valuexpr qualifier, as if  passed by reference,  the relocation is allowed to be optimized out if the passed variable is (i)(o)valuexpr qualified or is a temporary at the call site, note that if the variable has internal mutability  as an input , it is ill formed to pass it by value ( input) and its relocation constructors cannot be trivial.
+    - if non trivial,  it is passed as if it had a stable `forceref` (i)(o)valuexpr qualifier, as if  passed by reference,  the relocation is allowed to be optimized out if the passed variable is (i)(o)valuexpr qualified or is a temporary at the call site, note that if the variable has internal mutability  as an input , it is ill formed to pass it by value ( input) and its relocation constructors cannot be trivial.
 
 
 
@@ -1782,6 +1782,8 @@ type pointer
     if the number of bases are less than 64 , we most likely have only 3 cache lookups ( 1 for the first search step , and assume the first step is successful, another one for the  v table lockup  , and last one for check and pointer offset lookup)
     
     in practice most structures have less than astronomical base counts , truncated-count helps to reduce all that 256 of precision,  untill we reach a  sorted set that will lose uniqueness as soon as we truncade more , gaining  the same speed with  equivalent functionality and practically fewer bytes in the table.
+
+    truncated-count is the minimum value that it can be , while having each truncated-hash in the table unique.
    
 
     
@@ -1862,7 +1864,7 @@ like itanum
 
 
 
-the return adress to the happy path section in the caller.
+the return address to the happy path section in the caller.
 
  if specified `enum` return , its the table pointer to the table of return entries corresponding  to each `enum` entry.
 
@@ -2061,7 +2063,7 @@ a registers who's observed values before the call might be different after the c
 
 - dynamic function contract tracking:
 
-any dyncontract function who's adresss is captured for dynamic calls must have a pointer-sized function pointer before the function's code itself. 
+any dyncontract function who's address is captured for dynamic calls must have a pointer-sized function pointer before the function's code itself. 
 
 this function pointer is the contract checked F pointer , it points to the contract handler,
 
@@ -2215,7 +2217,7 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 
  - `enum` control flow:
 
-  the `enum` type returned dictates what caller return adress entry the callee jumps to .
+  the `enum` type returned dictates what caller return address entry the callee jumps to .
 
   this is especially useful because many throw-values are enums of :
 
@@ -2572,7 +2574,7 @@ a `constexpr` function that makes the meta type based on static reflection infor
 it also can be used to insert canaries and other safety features in debugging,  the output is given to runtime to be used .
 
 - operator  meta ( meta-input )callee-context-type :
- just right after the callee operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations( almost having very value an exact adress offset to the stack pointer or heap allocation begin),  but with immense debugging knowledge),  giving rich debug info to the context type.
+ just right after the callee operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations( almost having very value an exact address offset to the stack pointer or heap allocation begin),  but with immense debugging knowledge),  giving rich debug info to the context type.
 
 
 
@@ -3281,7 +3283,7 @@ the express colon language also tends to look more functional than its c colon c
 
  
 
- the function argument flow specifiers ( like a reference  but without stable adress on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitilized& ) and `inout` (akin to mutable& ) prameters are all trivial reallocation and register passed, 
+ the function argument flow specifiers ( like a reference  but without stable address on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitialized& ) and `inout` (akin to mutable& ) prameters are all trivial reallocation and register passed, 
 
  however because of the ABI nature they will remain valid for the duration of the function call so they are inheritly safe. 
 
@@ -3563,7 +3565,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
  8.  less interposition depending dynamic dispatch  :
    when code is similar and linked together, it can be sometimes de duplicated,
-also if a function's adress is not taken or exported it doesn't need a fixed adress, also the relaxed function addresss help in dew duplicated code.
+also if a function's address is not taken or exported it doesn't need a fixed address, also the relaxed function addresss help in dew duplicated code.
 also static data like strings would be able to merge better with  valexpr ( because  no null termination,  sub string merge is safe)
 
 9.  fast program and dll loader:
