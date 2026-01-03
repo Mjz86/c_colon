@@ -3226,7 +3226,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     however,  an extreme measure against all cycles is  making the use of `abi=` as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and etc , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
 
-    ( this is the default therefore  any use of `abi=` is unsafe and so E colon programs cannot have memory leaks by default,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via `abi=` , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust `enum` or CPP std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
+    any use of `abi=` is unsafe and so E colon programs cannot have memory leaks and need to drop to c colon for creating such structures,   the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via `abi=` , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust `enum` or CPP std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
 
     arguably this is extreme , and we cant always grantee that no open-set type erasure will be provided from c colon,   but i would say that if E colon developers want to make a self referential type, it would be more elegant in C colon , and probably there are graph, linked list  and tree libraries that can do that.
 
@@ -3235,7 +3235,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
     for this reason,  all forms of non trivial type erasure ( erasure of a type with non trivial destructor) is unsafe ,
 
     for example , E colon can only do bitcast if and only if the type of source and dest are trivially relocatable and trivially destructable and have no pointer/references in their layouts ( to prevent memory leak via type erasure), but in C colon , we can do unsafe(bit-cast) to do any form of bit cast( or other casts) . also , beacuse making a thread is unsafe(threads) , the async scheduler is in c colon and E colon remains free of its compications.
-
+    this makes E colon not need any garbage collector for leak prevention,  and because of the hidden thread safety qualifiers ,  e colon can use non atomic refrence counters and only use atomic ones when necessary 
     
 
 4. speed :
