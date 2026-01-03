@@ -393,7 +393,7 @@ a change, read or write in a mutable region of memory is allowed
 
 unstable / stable
 
-
+ the stable qualifier is statically proven when paired with restricted via the borrow checker , otherwise the program is ill-formed. 
 
 
 
