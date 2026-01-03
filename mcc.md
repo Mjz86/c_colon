@@ -156,9 +156,11 @@ if there's a cycle in the hash dependency chain, the problem is ill formed and n
 although  a rare occurrence might be that  the f() , `abi=(f())`  when calling the `constexpr` f , itself needs f, so , while such issues cannot be avoided due to the halting problem,  its still relatively easy to fix when noticing the `constexpr` max evaluation steps has been reached. 
 
 also , using `abi=` on a member doesn't change the members real type and hash , and even if in some cases it  does, its still possible  to `unsafe(abi-cast)` the hash to the original type's hash ( variable definition having the type be type1 `abi=(abiof(type2))` or at most an unsafe `reinterpret_cast` known as pointer-cast or a bit cast)
+ 
+ there's also an optimization i call hash Ellison,  under the as if rule ( as if the hash was calculated even if the calculation didn't happen) ,
+ note that the visibles symbols in the binary are  all fixed size 256bit backend hashes 
 
-
-
+also for common graphs where the dependancy chain of the abi can be resolved without using max evaluation,  the compiler gives the heuristically best point in the cycle to do the breaking , also patterns prone to hit the max evaluation ( doing a complex calculation to get the value of `abi=`) generate a warning.
 
 
  * as a gist :
@@ -195,7 +197,8 @@ the reflection functions work on the AST , after all the de reflection Operation
 
 these operations can happen in parallel,  if they are located in separate dependency chains .
 
-similarly the ABI hashing is also done in parallel  and cashed once completed based on dependency chain, although the `abiof` operator might make it happen sooner than usual. 
+similarly the ABI hashing is also done in parallel but is lazy hashes and cashed once completed based on dependency chain, although the `abiof` operator might make it happen sooner than usual. 
+
 
 
 
@@ -2564,13 +2567,15 @@ in a debugging environment,  this can have conditional trap instructions.
  * note: caller and callee are both protective in the caller and callee respectively.
  
  
- - operator  caller (  callee-pointer or backend-hash  (depending on  dynamic call vs static call), stack-size,stack-pointer, instruction-pointer, argument-sttack-size)callee-context-type :
+ - operator  caller (   argument-sttack-size( optional),stack-pointer( optional), instruction-pointer( optional), callee-pointer or backend-hash  (depending on  dynamic call vs static call) ( optional) )callee-context-type :
 in the caller , before the call , the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
+note that caputure of backend-hash makes compilation slower because of non elided hash  
 in a debugging environment,  this can have conditional trap instructions. 
 
  
-- operator  callee  (  backend-hash , stack-size,stack-pointer, instruction-pointer )callee-context-type :
+- operator  callee  (  stack-size( optional),stack-pointer( optional), instruction-pointer ( optional),backend-hash ( optional) )callee-context-type :
 in the callee , before the callee code and stack get initialized, the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
+note that caputure of backend-hash makes compilation slower because of non elided hash  
 in a debugging environment,  this can have conditional trap instructions. 
 
 - `operator make_meta ( inout std::meta )->meta-input `, `operator make_meta ( inout std::debug_meta )->meta-input`:
@@ -2866,7 +2871,7 @@ the special byte type with the alias set of all types (with non fractional align
 
  its a 128 bit uuid , it doesn't support any operations outside of the ABI operators,  other than the usual load and store or casts.
 
- for example,  the hash given by xxhash128. 
+ for example,  the hash given by xxhash128 or a better architecture dependent implementation. 
 
   this is good enough,  because the linker already has to append the cxx-style name mangle to the hash .
 
@@ -2971,7 +2976,15 @@ any implementation may choose hashes with size bigger or smaller than 256 or 128
 
 
 
- ABI  and compatibility
+ ABI  and compatibility:
+ 
+ 
+ 
+ - hash Ellison:
+ the hash calculation is only preformed when an externally visible/ v-table dependent symbol of 256 bit backend mangle needs calculation, 
+ however because of the as if rule , we have a null hash function that gives the output as 0 , so any front-end mangle without a calculated hash is known to need a hash if its hash  is 0 , and the 0 is replaced with the actual  hash when its backend mangle is stored.
+ also , the hash captured by the `abiof` operator is  eagerly calculated, and must not be 0 because of the as if rule.
+ a hash of 0 given in `abi=` is ill-formed.
 
 
 
