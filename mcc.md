@@ -694,19 +694,19 @@ an owned object can use and must drop after use.
 
 determines the general usage and call convention in a function argument.
 
-- `valuexpr` ( translates to `mut ivaluexpr`  or the in-val register):
+- `valuexpr` ( translates to `mut ivaluexpr`  or the `in-val` register):
 
 a stable  mutable value that is initialized on the call site. the value qualification
 
-- ivaluexpr:
+- `ivaluexpr`:
 
 a stable const value. the input qualification
 
-- ovaluexpr:
+- `ovaluexpr`:
 
-a stable uninitilized mutable value that will initilize the caller argument after a succsesfful call. the ouput qualification
+a stable uninitialized mutable value that will initialize the caller argument after a successful call. the output qualification
 
-- iovaluexpr:
+- `iovaluexpr`:
 
 a stable mutable value. the `inout` qualification
  
@@ -716,15 +716,15 @@ a stable mutable value. the `inout` qualification
 
 
 
-qualiexpr(T V)/qualiexpr() ( default):
+`qualiexpr(T V)/qualiexpr()` ( default):
 
 an special qualifier.
 
  V itself has a type with its qualifiers, 
 
- the value of V can be changed by the `constexpr` code section by qualiexprof(indentifier)  that accecess the V inside (needs to have unsafe(qualiexprof) , beacuse E colon does not need this level of power).
+ the value of V can be changed by the `constexpr` code section by `qualiexprof(identifier)`  that access the V inside (needs to have `unsafe(qualiexprof)` , because E colon does not need this level of power).
 
- any function attempting to caputure this qualifier inside its scope needs to be a template,
+ any function attempting to capture this qualifier inside its scope needs to be a template,
 
  however , the outside of scope qualifier checks can still be there without changing the function signature;
 
@@ -742,13 +742,13 @@ template<autoexpr T-inside>
 
  ...f( T-outside (<-optional) name (<-optional):T-inside,... )...;
 
-T-outside is the complete outside type, the checks of the outside , however the T-inside is what the function body actually gets as the atgument type of name, 
+T-outside is the complete outside type, the checks of the outside , however the T-inside is what the function body actually gets as the argument type of name, 
 
 however if there is a dependency from T-inside to T-outside, the function is considered fully templated , but if not , the function body is considered to be non templated , but the function call site still does execute the requires clause, which may contain checks or info about the type,
 
-for example , a safe function may need to get a sorted vector ,  but the vector cant really prove without O(n) ops that it is sorted ,  and we really dont want static overhead , 
+for example , a safe function may need to get a sorted vector ,  but the vector cant really prove without O(n) ops that it is sorted ,  and we really don't want static overhead , 
 
-we can now declare a qualiexpr(bool sorted_flag=false) , (the empty qualiexpr being recognized as not sorted), and dclare that the class member has qualiexpr(bool sorted_flag=true) and any operation that preserves that invariant are valid, and therfore we can statically assert that a binary search is not undefined behaviour.
+we can now declare a qualiexpr(bool sorted_flag=false) , (the empty qualiexpr being recognized as not sorted), and declare that the class member has qualiexpr(bool sorted_flag=true) and any operation that preserves that invariant are valid, and therefore we can statically assert that a binary search is not undefined behavior.
 
 
 
@@ -772,61 +772,84 @@ function qualifiers
 these don't really mean anything to the compiler , the are not  relevant to ODR ( the declaration is allowed to not include these while  the definition may) in c colon ,( not even used in the ABI hash), however E colon can put these, to allow the context-type to be implicitly changed via reflection to reflect that functions intent 
  for example  debug(std::debug::obfuscated) to do debugging in release or debug(std::debug::unwind) , to debug during unwind. 
 
+- none(default on dynamic calls or declared non visible symbols):
+not having anything fancy at all.
+
+- synth( the implicit is default on static definitions):
+only static definitions can have synth qualification , after the compile , the synth engine also spits out an info dump on every explicit (not implicit) synth it made  ,
+explicit synth puts more effort to synthesize the best it can , while implicit synth involves less trial and is more conservative if the heuristics show its not looking good.
+synth analyzes the function body and does the purity qualification automatically , however its purity is easily breakable if the developer just  does a single wrong thing.
 
 
+- `effectless`:
 
-- effectless:
+an evaluation of a function call is `effectless` if any store operation that is sequenced during the call is the modification of an object that synchronizes with the call; if additionally the operation is observable, all access to the object must be based on a unique pointer parameter of the function.
+an `effectless`  expression must be composed of only other `effectless`  expressions.
 
-an evaluation of a function call is effectless if any store operation that is sequenced during the call is the modification of an object that synchronizes with the call; if additionally the operation is observable, all access to the object must be based on a unique pointer parameter of the function.
+
+- `weak_idempotent`:
+
+an evaluation e is `weak_idempotent` if a second evaluation of e can be sequenced immediately after the original one without changing the resulting value, if any, or the important observable state of the execution.
+any expression can be declared `weak_idempotent`, declaring the side effect as non important in logic .
+however, the one qualifier per expression  on rule must still hold , meaning that a second evaluation of an `weak_idempotent` expression must result in the same qualifiers as the first one, adding to contract assertion safety .
+
 
 - idempotent:
 
-an evaluation e is idempotent if a second evaluation of e can be sequenced immediately after the original one without changing the resulting value, if any, or the observable state of the execution.
+an evaluation e is idempotent if a second evaluation of e can be sequenced immediately after the original one without changing the resulting value, if any, or the observable state of the execution, an idempotent expression is also an `weak_idempotent` expression.
 
-- viewstate:
+an `idempotent`  expression must be composed of only other `idempotent`  expressions OR must be casted via unsafe(as-idempotent) ( because some code that looks like it modifies really dose not, for example an i++ in an internal for loop) OR in the case of paring synth(idempotent) via compiler proof that it's IR block was idempotent , if none were true , the program is ill-formed
+
+
+
+- `viewstate`:
 
 a function f is stateless if any definition of an object of static or thread storage duration in f or in a function that is called by f is stable but not volatile qualified, 
-
 no modifications to these values are allowed. 
+an `viewstate`  expression must be composed of only other `viewstate`  expressions.
 
 - stateless:
 
-a function f is stateless if any definition of an object of static or thread storage duration in f or in a function that is called by f is const+stable but not volatile qualified.
+a function f is stateless if any definition of an object of static or thread storage duration in f or in a function that is called by f is const+stable but not volatile qualified, and is `viewstate`.
 
- and is viewstate.
+an `stateless`  expression must be composed of only other `stateless`  expressions.
 
 - independent:
 
-a function f is independent if for any object x that is observed by a call to f through an lvalue that is not based on a parameter of the call, all accesses to x in all calls to f during the same program execution observe the same value; otherwise if the access is based on a pointer parameter, there shall be a unique such pointer parameter p such that any access to x shall be to an lvalue that is based on p.
+a function f is independent if for any object x that is observed by a call to f through an l-value that is not based on a parameter of the call, all accesses to x in all calls to f during the same program execution observe the same value; otherwise if the access is based on a pointer parameter, there shall be a unique such pointer parameter p such that any access to x shall be to an l-value that is based on p.
 
 an object x is observed by a function call if both synchronize, if x is not local to the call, if x has a lifetime that starts before the function call, and if an access of x is sequenced during the call; the last value of x, if any, that is stored before the call is said to be the value of x that is observed by the call.
 
 
+an `independent`  expression must be composed of only other `independent`  expressions.
 
 
 
 
 
-- unsequenced:
 
-indicates that a function is effectless, idempotent, stateless, and independent.
+- `unsequenced`:
+
+indicates that a function is `effectless`, idempotent, stateless, and independent.
+
+an `unsequenced`  expression must be composed of only other `unsequenced` expressions.
 
 - reproducible :
 
-indicates that a function is effectless and idempotent.
+indicates that a function is `effectless` and idempotent.
+
+an `reproducible`  expression must be composed of only other `reproducible` expressions.
 
 
 
 - `mostly_functional`: 
 
- a function f is `mostly_functional` if The    returned or outputed value ( via  out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
+ a function f is `mostly_functional` if The    returned or output'ed value ( via  out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
 
   f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and `inout` argument's value. 
-
   and f performs no write accesses to volatile-qualified objects.
-
-  viewstate and idempotent .
-
+  `viewstate` and idempotent .
+  a `mostly_functional`  expression must be composed of only other `mostly_functional`  expressions.
 ( basically gnu::pure if no `inout` is used) 
 
 
@@ -2661,7 +2684,7 @@ the lower the level the more debugging friendly is it.
 
  
 
-- a contract is an idempotent expression that is used as a way to show validity of the current environment state.
+- a contract is an `weak_idempotent` expression that is used as a way to show validity of the current environment state.
 
 
 
