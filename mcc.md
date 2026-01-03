@@ -457,7 +457,7 @@ these types must be representable under the Itanium spec, for example virtual cl
 this deep divide between these two ecosystem's ABI is limiting performance for mixed language code ,
 however , if we did use cxx, cxx did use lib unwind , so we paid for cxx and lib unwind and the whole std cxx lib. 
 using cxx FFI is already unsafe , however mixing cxx and c colon types is highly discouraged.
-and needs `unsafe(represent_cxx)`
+and needs `unsafe(represent_cxx)`,  another thing is that the `abiof` operator cannot work on these types , the inclusion of these types in a non `represent_cxx` abi dependancy  mandates the use of `abi=`
 
 
 
@@ -781,9 +781,11 @@ these don't really mean anything to the compiler , the are not  relevant to ODR 
 not having anything fancy at all.
 
 - synth( the implicit is default on static definitions):
-only static definitions can have synth qualification , after the compile , the synth engine also spits out an info dump on every explicit (not implicit) synth it made  ,
-explicit synth puts more effort to synthesize the best it can , while implicit synth involves less trial and is more conservative if the heuristics show its not looking good.
-synth analyzes the function body and does the purity qualification automatically , however its purity is easily breakable if the developer just  does a single wrong thing.
+only static definitions can have synth qualification , the synth qualification either is ill-formed or transformed into the appropriate qualification on the abi hash, after the compile , the synth engine also spits out an info dump on every explicit (not implicit) synth it made  ,
+explicit synth puts more effort to synthesize the best it can , if the step limit is exceed the program is ill-formed, while implicit synth involves less trial and is more conservative if the heuristics show its not looking good.
+synth analyzes the function body and does the purity qualification automatically , however its purity is easily breakable if the developer just  does a single wrong thing,
+the explicit synth is more appropriate for formal proof engines or similar things,
+there can be a compiler flag to also info dump on implicit synth and that hits at missed static optimizations opertonities.
 
 
 - `effectless`:
@@ -1627,16 +1629,21 @@ the target function.
 
 - memory orders( similar to cxx) :
 
-1. relaxed 
+The default behavior of all atomic operations in the library provides for sequentially consistent ordering . That default can hurt performance, but the library's atomic operations can be given an additional `std::memory_order` argument to specify the exact constraints, beyond atomicity, that the compiler and processor must enforce for that operation.
 
-2. aquire 
 
-3. release 
+1. Relaxed : there are no synchronization or ordering constraints imposed on other reads or writes, only this operation's atomicity is guaranteed (see Relaxed ordering below). 
 
-4. aquire release 
+2. Acquire: A load operation with this memory order performs the acquire operation on the affected memory location: no reads or writes in the current thread can be reordered before this load. All writes in other threads that release the same atomic variable are visible in the current thread (see Release-Acquire ordering below).
 
-5. sequencal consistency.
+3. Release :A store operation with this memory order performs the release operation: no reads or writes in the current thread can be reordered after this store. All writes in the current thread are visible in other threads that acquire the same atomic variable (see Release-Acquire ordering below) .
 
+4. acquire release :A read-modify-write operation with this memory order is both an acquire operation and a release operation. No memory reads or writes in the current thread can be reordered before the load, nor after the store. All writes in other threads that release the same atomic variable are visible before the modification and the modification is visible in other threads that acquire the same atomic variable.
+
+5. sequencal consistency :A load operation with this memory order performs an acquire operation, a store performs a release operation, and read-modify-write performs both an acquire operation and a release operation, plus a single total order exists in which all threads observe all modifications in the same order (see Sequentially-consistent ordering below).
+
+
+no changes  were really made  from [the c++26 definitions](https://en.cppreference.com/w/cpp/atomic/memory_order.html) , as its a great well-defined memory model that c colon stands on.
 
 
 
@@ -2542,7 +2549,8 @@ context object:
  the context-type is implicitly initialized by the callees context type via,
  in the debugging environment  every action , would probably have to go through the context-type, but this really helps make everything that is implicit controlled and optimized.
   almost all of these are inlined , especially the ones handeled in the callee. 
- 
+  if the type of context-type  of an inlined callee function maches the caller,  and the context satisfies the elidable context concept,  the compiler is allowed to treat the callee context as if it was the caller context, and not call the context making or checking operators,
+  debugging contexts however cannot be inlined.
  
  
  - operator context( out callee-context-type )caller-context-type :
@@ -2571,7 +2579,7 @@ it also can be used to insert canaries and other safety features in debugging,  
 
 - operator  meta ( meta-input )callee-context-type :
  just right after the callee operator this will execute if defined ( if the debug meta is captured,  the context becomes a debugging context , with limited optimizations( almost having very value an exact address offset to the stack pointer or heap allocation begin),  but with immense debugging knowledge),  giving rich debug info to the context type.
-
+in a debugging environment,  this can have conditional trap instructions. 
 
 
 there is an operator to declare a new context for a code block,
@@ -2611,47 +2619,26 @@ the value that is returned via the catching return address.
 - operator throw(self,...) noexcept -> throw-value:
 
 this operator is used when the contexts scope uses the throw operator.
-
-
-
 its mandatory that this function is noexcept beacuse, only the void context object can be in the throw signature, although, the throw has access to its context object by a function pram.
-
-
-
 this function generates the throw object that is propagated to thr callers catch.
-
+in a debugging environment,  this can have conditional trap instructions. 
 
 
 - operator catch(self,callee-throw-value,...) context-type:
 
-
-
 this operator is used when the contexts scope has an expression resulting in a call that might unwind by exception.
-
-
-
 it is usual for this operation to throw an exception to the outer context object , note that , if a destructor throws in an unwind , the context-type may have been already filled with exception information , it is rare that this happens but often implementors terminate in such cases.
-
-
-
 uaually specified noreturn, if not the user might struggle writing code.
-
+in a debugging environment,  this can have conditional trap instructions. 
 
 
 - operator try (out catched-value-in-catch-scope)context-type:
-
- 
-
  often if the value is not convertable to be catched in the scope , it will throw to unwind to the rest of the code/ catch blocks.
-
-
-
-
-
 the two standard context types are :
 default support is for common exception string and `enum` categories , and   the common cancelation  and violation tokens,
 however on lower levels , stack traces would get richer , and the exceptions would be paired with origin and specific lines of unwind it went through,
 what objects did the violation and more 
+in a debugging environment,  this can have conditional trap instructions. 
 
 -`std::context_t<optimization-level>` :
 this context type is used in synchronous programming,  specifically designed for an optimization level,
@@ -2662,7 +2649,13 @@ this context type is used in asynchronous programming ( paired with the std::sch
 the lower the level the more debugging friendly is it.
 
 
-
+- `std::debugging_trap_handler( std::trapped_debbug_info_t info)fastdyncaller noexcept `: 
+ captures standardized  debugging info on the trap instruction ,
+ then hands control flow to the debugger, this symbol is `unsafe(interpositioned)`  .
+ the debugger  may use `set_interposition(std::debugging_trap_handler,address)`  in a concurrent debugging thread , to overridde this symbol,
+ the debugger may pause the execution of only this or all thread, to inspect the debug context,
+ or if the debugging has specific conditions for triggering , overring this with the checker vs trigger  for those conditions is an excellent choice to not slow down all execution.
+ 
 
 
 
@@ -2755,7 +2748,7 @@ results in calling the terminate function.
 
 3. ignore ( unsafe(contract-ignore)):
 
-does nothing.
+does nothing,  the check is elided at runtime however implicit contracts might not be elided perfectly because of erroneous behavior.
 
 4. observe :
 
@@ -2763,7 +2756,7 @@ results in calling the operator `contract_assert`.
 
 5. assume( unsafe(contract-UB) ):
 
-results in undefined behaviour.
+results in undefined behaviour on violation, but the benefit  is that the check is elided at runtime and leads to compiler optimizations in compile time.
 
 
 
@@ -3532,12 +3525,13 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
  all the arguments and their data flow in registers also helps significantly.
  also , i doubt that even asm experts can track register allocation across all programs , its too much mental overhead for humans.
-
+ 
 
 
  3. dynamic cast:
 
-   bigger rtti sizes but much faster cast with less cache miss.
+   bigger v-table sizes but much faster cast with less cache miss.
+   smaller object size because of the v-table pointer only being in the refrence type.
 
 
 
@@ -3690,8 +3684,8 @@ CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()
 [link](https://www.youtube.com/watch?v=dOfucXtyEsU)
 
 
-
-
+memory order:
+[link](https://en.cppreference.com/w/cpp/atomic/memory_order.html)
 
 
 
