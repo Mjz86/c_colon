@@ -372,7 +372,7 @@ volatile / nonvolatile
 a change, read or write in a volatile used region of memory may not be optimized out.
 
  volatile has to come with the unstable+unrestricted qualifiers , similar to other unsafe qualifiers , it is incompatible with them by design,
- reason being, what does even an  stable volatile value even mean? its praradoxical 
+ reason being, what does even an  stable volatile value even mean? its paradoxical 
 
 
 
@@ -688,7 +688,7 @@ an owned object can use and must drop after use.
 
 
  `drop_on_throw/presist_on_throw,drop_on_ret/presist_on_ret,xvaluexpr, rvaluexpr/lvaluexpr , (i)(o)valuexpr`(function arguments qualifiers): 
- drop on X makes it so that the object is  when X , (`xvaluexpr` is unconditional drop),`rvaluexpr` premotes move semantics.
+ drop on X makes it so that the object is  when X , (`xvaluexpr` is unconditional drop),`rvaluexpr` promotes move semantics.
  `(i)(o)valuexpr` does the automatic `in(i)/out(o)/inout(io)/inval(none)` dropping semantic to the current reference or if trivial , via register 
  
 
@@ -974,7 +974,7 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
  ```txt 
 
  
-// the enum ret and catch are similar , however they have a secondary lookup( often deduplicated across the link-unit )    table with all the offsets+ret pointing to RC ,then RC finally does a secondary jump lookup to the caller table  , this is only one of the many ways of doing this , and we havent even done callee-inlining the thrunk yet. 
+// the `enum` ret and catch are similar , however they have a secondary lookup( often deduplicated across the link-unit )    table with all the offsets+ret pointing to RC ,then RC finally does a secondary jump lookup to the caller table  , this is only one of the many ways of doing this , and we havent even done callee-inlining the thrunk yet. 
     RC:
 
     
@@ -1101,7 +1101,7 @@ exact mechanism of return pointers:
 
  
 
-0. no tables( enum ret) :
+0. no tables( `enum` ret) :
 
  `return_ptr`= the absolute pointer to the return path, calculated via instruction pointer in caller.
 
@@ -1111,7 +1111,7 @@ exact mechanism of return pointers:
 
  
 
-1. enum normal return table, catching return:
+1. `enum` normal return table, catching return:
 
 `return_ptr`= the absolute pointer to the first return path. 
 
@@ -1125,7 +1125,7 @@ exact mechanism of return pointers:
 
      
 
-2. enum catching table, normal return:
+2. `enum` catching table, normal return:
 
 `return_ptr`= the absolute pointer to the return path.
 
@@ -1139,7 +1139,7 @@ exact mechanism of return pointers:
 
  
 
-3. enum catching table, enum normal return table:
+3. `enum` catching table, `enum` normal return table:
 
 `return_ptr`= the absolute pointer to the first return path.
 
@@ -1705,7 +1705,7 @@ virtual table layout contains:
 
   we have the search table , to do a binary search,  for each type , there might be a different lookup table depending on class visibility and the highariachy,
 
-  but , for this type , all the accessible types are in the lookup, this , although taking up more space,  is more efficient than a graph traversal algorithm at runtime,  either way, it is already a bad practice to do dynamic inheritance, and most things would be resolved via enum types anyway, with simplicity , and more safety
+  but , for this type , all the accessible types are in the lookup, this , although taking up more space,  is more efficient than a graph traversal algorithm at runtime,  either way, it is already a bad practice to do dynamic inheritance, and most things would be resolved via `enum` types anyway, with simplicity , and more safety
 
   
 
@@ -1866,7 +1866,7 @@ like itanum
 
 the return adress to the happy path section in the caller.
 
- if specified enum return , its the table pointer to the table of return entries corresponding  to each enum entry.
+ if specified `enum` return , its the table pointer to the table of return entries corresponding  to each `enum` entry.
 
 
 
@@ -1876,7 +1876,7 @@ the return adress to the happy path section in the caller.
 
 the return address to the unwind/sad path code section in the caller.
 
-if specified enum return , its the table pointer to the table of return entries corresponding  to each enum entry catch path.
+if specified `enum` return , its the table pointer to the table of return entries corresponding  to each `enum` entry catch path.
 
 
 
@@ -2212,19 +2212,19 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 
  enum/pattern matching functions:
 
- a function returning an enum type , depending on the enum-type's properties can fall into two categories:
+ a function returning an `enum` type , depending on the enum-type's properties can fall into two categories:
 
  
 
  - normal control flow: 
 
- the enum type doesn't have any match specifier 
+ the `enum` type doesn't have any match specifier 
 
  
 
- - enum control flow:
+ - `enum` control flow:
 
-  the enum type returned dictates what caller return adress entry the callee jumps to .
+  the `enum` type returned dictates what caller return adress entry the callee jumps to .
 
   this is especially useful because many throw-values are enums of :
 
@@ -2660,7 +2660,7 @@ uaually specified noreturn, if not the user might struggle writing code.
 
 
 the two standard context types are :
-default support is for common exception string and enum categories , and   the common cancelation  and violation tokens,
+default support is for common exception string and `enum` categories , and   the common cancelation  and violation tokens,
 however on lower levels , stack traces would get richer , and the exceptions would be paired with origin and specific lines of unwind it went through,
 what objects did the violation and more 
 
@@ -3230,7 +3230,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     however,  an extreme measure against all cycles is  making the use of `abi=` as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and etc , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
 
-    ( this is the default therfore any use of `abi=` is unsafe and so E colon programs cannot have memory leaks by default,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via `abi=` , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust enum or CPP std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
+    ( this is the default therfore any use of `abi=` is unsafe and so E colon programs cannot have memory leaks by default,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via `abi=` , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust `enum` or CPP std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
 
     arguably this is extreme , and we cant always grantee that no open-set type erasure will be provided from c colon,   but i would say that if E colon developers want to make a self referential type, it would be more elegant in C colon , and probably there are graph, linked list  and tree libraries that can do that.
 
@@ -3408,7 +3408,7 @@ return...;
 
  while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the referenced ban ( or completely disallowed because of the `abi=` ban) .
 
- however rust-like enum types with pattern matching  are still very performant and value oriented .
+ however rust-like `enum` types with pattern matching  are still very performant and value oriented .
 
  and object oriented ( without inheritance) would still be whidly used ,
 
@@ -3551,7 +3551,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
 
 
- 4. fast exception paths, fast happy path,fast enum types :
+ 4. fast exception paths, fast happy path,fast `enum` types :
 
  all with the split return channel, no if on the happy path , no cxx lib unwind on the sad path , just caller code, i envision compilers even collapsing offsets to particular values to avoid table duplication.
 
