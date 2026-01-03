@@ -821,7 +821,7 @@ a function f is independent if for any object x that is observed by a call to f 
 an object x is observed by a function call if both synchronize, if x is not local to the call, if x has a lifetime that starts before the function call, and if an access of x is sequenced during the call; the last value of x, if any, that is stored before the call is said to be the value of x that is observed by the call.
 
 
-an `independent`  expression must be composed of only other `independent`  expressions.
+an `independent`  expression must be composed of only other `independent`  expressions or is casted as `independent` via `unsafe(as-independent)`.
 
 
 
@@ -844,7 +844,7 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
 
 - `mostly_functional`: 
 
- a function f is `mostly_functional` if The    returned or output'ed value ( via  out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
+ a function f is `mostly_functional` if The    returned or output-ed value ( via out )  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
 
   f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and `inout` argument's value. 
   and f performs no write accesses to volatile-qualified objects.
@@ -856,7 +856,7 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
 
 - `purely_functional`: 
 
- a function f is purely functional if The  returned or outputed value ( via  out) by a call to f depends exclusively on The values of its direct function arguments , and   The values of any non-volatile stable constant  global or static objects observed
+ a function f is purely functional if The  returned or output-ed value ( via  out) by a call to f depends exclusively on The values of its direct function arguments , and   The values of any non-volatile stable constant  global or static objects observed
 
  and   f performs no read operations from non-volatile global, static, or thread-local memory that is mutable
 
@@ -866,7 +866,9 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
 
  and f and its callees performs no accesses to volatile-qualified objects.
 
- and f is unsequenced  .
+ and f is `unsequenced`  .
+
+   a `purely_functional`  expression must be composed of only other `purely_functional`  expressions.
 
  ( basically gnu::const if no `inout` is used) 
 
@@ -882,9 +884,9 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
 
 
 
-- enumret&enumcatch( this is implicitly given based on the type of the return,  if its an enum type with this specifier , then the function returning it would have this property)( function or enum qualifier):
+- `enumret`&`enumcatch`( this is implicitly given based on the type of the return,  if its an `enum` type with this specifier , then the function returning it would have this property)( function or `enum` type qualifier):
 
- enumret and enumcatch are similar to each other , but one applies to the normal return type , and one applies to the throw-value ( catching return type) ,
+ `enumret` and `enumcatch` are similar to each other , but one applies to the normal return type , and one applies to the throw-value ( catching return type) ,
 
  both return pointers can have this property. 
 
