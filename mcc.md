@@ -890,31 +890,31 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
 
  both return pointers can have this property. 
 
- any function with these qualifiers  necceceraly has to have a match expression in the call site ( ot the catch site)( if throw-value  is this way , via operator catch(auto) , auto corresponding to the enum entries) 
+ any function with these qualifiers  necessarily has to have a match expression in the call site ( or the catch site)( if throw-value  is this way , via operator catch(auto) , auto corresponding to the  `enum` entries) 
  
-  * restrictions for enums specified of this use :
-   all enum entries must be continuous ,( if the number is specified) ,
-   warnings or errors will be given in cases where big number of entries generate massive jump tables or missed performance. 
+  * restrictions for  `enum`s specified of this use :
+   all  `enum` entries must be continuous,if not the biggest and smallest one should not be more than 255 values apart  ,( if the number is specified) ,
+   warnings or errors will be given in cases where big number of entries generate massive jump tables or missed performance, typically anything more than 32  entries gives a warning and anything more than 256 table entries ( accounting for both `enum`s of throw and return together) is ill-formed, not because of could , but should , if we need 2 lookups (only 1 if continuous) and more than 8*255+255 bytes ( non continuous max before ill-formed) ... we really aren't fast are we. 
   
 
 
- * definition of what enum return and call means:
+ * definition of what  `enum` return and call means:
 
-   the return pointer of that specific channle ( return or throw) would not be a pointer to the return address , instead,  it will point to a lookup table of return addresses,  corresponding to the enum declaration order, that is handled in the return path.
+   the return pointer of that specific channel ( return or throw) would not be a pointer to the return address , instead,  it will point to a lookup table of return addresses,  corresponding to the `enum`  declaration order, that is handled in the return path.
 
-   the way these functions are called ( necceceraly having a match expression on the call site) makes it so that the return jump is to the match path corresponding to the enum type,
+   the way these functions are called ( necessarily having a match expression on the call site) makes it so that the return jump is to the match path corresponding to the `enum`  type,
 
-   the table will be as big as the number of enum entries.
+   the table will be as big as the number of `enum`  entries.
 
 
 
-- noexcept/throws:
+- `noexcept/throws`:
 
-noexcept means the behaviour is undefined if the function returns to the caller using the catching return register.
+`noexcept` means the behavior is undefined if the function returns to the caller using the catching return register.
 
-- noreturn/mayreturn:
+-  `noreturn/mayreturn`:
 
-noreturn means the behaviour is undefined if the function returns to the caller using the normal return register.
+`noreturn` means the behavior is undefined if the function returns to the caller using the normal return register.
 
 
 
@@ -940,13 +940,13 @@ noreturn means the behaviour is undefined if the function returns to the caller 
 
 
 
-- fastdyncaller/fastdyncallee:
+- `fastdyncaller/fastdyncallee`:
 
-  functions are fastdyncaller by default, 
+  functions are `fastdyncaller` by default, 
 
-  a fastdyncaller qualifier makes the dynamic call,  have no variables in the used set.
+  a `fastdyncaller` qualifier makes the dynamic call,  have no variables in the used set.
 
-  a fastdyncallee doesn't do much to the function's dynamic signature,  but  the registers in the used set increase a lot.
+  a `fastdyncallee` doesn't do much to the function's dynamic signature,  but  the registers in the used set increase a lot.
 
  
 
