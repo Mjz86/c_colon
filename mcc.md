@@ -1317,7 +1317,7 @@ if a promise wants ( decided in the `awaiter` suspension via returned `transfere
 
 - promise-cache :
 
-the promise cache is an object only visible in the promise, with lifetime of the promise itself, as if an stack variable on the promises function's stack, its accessible as an `inout` like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle 
+the promise cache is an object only visible in the promise, with lifetime between resume and suspend ( therefore  may flow in registers), its accessible as an `inout` like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle , 
 
 
 
@@ -1387,7 +1387,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
   
   the  allocators ( defined via the `std::allocator_c` concept(s)) in mcc followed the as if rule ,
   if multiple allocations can be elided safety, they will,
-  the allocators fall into two categories,  the ones that are thread-safe and the ones that arent,
+  the allocators fall into two categories,  the ones that are thread-safe and the ones that aren't,
   thread-safe allocators are more expensive to use , although non thread-safe allocators can be used via channels , its still not a good choice.
  its similar to how cxx does coroutine frame Ellison, but this time the stack frame is allso available. 
 
@@ -1715,7 +1715,7 @@ struct {
 
 
 
-// the 256 bit hashes arent 256 values , instead we have a martrix pointer , truncated-count ( max of 32) arrays of  big endian bytes , the reason for this is presented in the dynamic cast spec.
+// the 256 bit hashes aren't 256 values , instead we have a martrix pointer , truncated-count ( max of 32) arrays of  big endian bytes , the reason for this is presented in the dynamic cast spec.
 
 (sorted-cryptographic-256bit-hash-of-dest-types-name-mangle-byte(*)[number-of-types])  [32/* hash bytes*/];// note , if the hashes are unique when truncated ( very often the case ) the least amount of bytes of hash is used while still keeping every hash's value in the table is unique 
  bit pack of <number-of-types, truncated-count>;// between 1 and 32 is truncated-count, as a 5 bit , and rest of the bits are for number-of-type
@@ -2005,7 +2005,7 @@ in , out, and `inout` registers.
 
 
 * the unsafe(dyn-args) dynamic variading functions  :
- printf in C is one of the examples, although these functions are unsafe and therfore bad practice to write.
+ printf in C is one of the examples, although these functions are unsafe and therefore  bad practice to write.
 
 
 
@@ -2852,7 +2852,7 @@ type of a nullptr, its size is similar to a byte pointer.
 
 -  `std::bit_t`:
 
-the special bit type with special pointers and references , `sizeof(bit_t)` and any types with fractional alignments ( and therfore sizes) are ill-formed,  instead,  `bit_sizeof(T)`,`bit_alignof(T)`can be used, also , the bit can alias all types with any  alignment.
+the special bit type with special pointers and references , `sizeof(bit_t)` and any types with fractional alignments ( and therefore  sizes) are ill-formed,  instead,  `bit_sizeof(T)`,`bit_alignof(T)`can be used, also , the bit can alias all types with any  alignment.
 
  
 
@@ -3195,7 +3195,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
 
 
-     the reason for safety being granteed for express colon, ( if the c colon libraries  used internally are well written and safe ) is that there is no referencing to begin with,  imagine using a member from a vector,  you arent using a reference to it , so you must copy it ,so you will never worry if the vector reallocation will invalidate anything,  because you do not have any reference to begin with. 
+     the reason for safety being granteed for express colon, ( if the c colon libraries  used internally are well written and safe ) is that there is no referencing to begin with,  imagine using a member from a vector,  you aren't using a reference to it , so you must copy it ,so you will never worry if the vector reallocation will invalidate anything,  because you do not have any reference to begin with. 
 
      you dont need to borrow anything because you only need to change its value,  most functions can use either full value semantics or fall into using a reference-counted variable if they truly need multiple ownership.
 
@@ -3221,7 +3221,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     however,  an extreme measure against all cycles is  making the use of `abi=` as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and etc , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
 
-    ( this is the default therfore any use of `abi=` is unsafe and so E colon programs cannot have memory leaks by default,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via `abi=` , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust `enum` or CPP std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
+    ( this is the default therefore  any use of `abi=` is unsafe and so E colon programs cannot have memory leaks by default,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via `abi=` , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust `enum` or CPP std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
 
     arguably this is extreme , and we cant always grantee that no open-set type erasure will be provided from c colon,   but i would say that if E colon developers want to make a self referential type, it would be more elegant in C colon , and probably there are graph, linked list  and tree libraries that can do that.
 
@@ -3355,7 +3355,7 @@ return...;
 
 // theres an implicit  transformation for these code , to make it able to do either a ,co await , co return or a throw or simply  continue execution .
 
- for co_await (auto [`inout` a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const unstable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
+ for co_await (auto [`inout` a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const unstable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therefore  its valid for it to modify its members even tho it looks constant. 
 
 // can modify a c and d , but cannot modify other variables outside of the for loop , however mutexes can still be modified beacuse they can be modified when constant.
 
@@ -3409,7 +3409,7 @@ return...;
 
  the destructor would also use in-val ( no specifier) to relocate the object for final destruction. 
 
-  these arent just safe , these are also fast , because trivial values are passed by registers , and this language mostly operates on trivial values 
+  these aren't just safe , these are also fast , because trivial values are passed by registers , and this language mostly operates on trivial values 
 
 
 
