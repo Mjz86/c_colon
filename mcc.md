@@ -2241,6 +2241,14 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 
 --- 
 
+program initialization:
+when c colon initialization  is activated for the initial  binary components,  the loader loads the dynamic data structures for that components, 
+then initilizes the root module of that component.
+
+on de-initialization,  the dll de initilizer is called.
+
+
+
 (de)initilization sequence of modules:
 the module constructor that runs :
 0. fetch add 1  to the initilization atomic  and if it was not 0 at the beginning, return.
@@ -2270,11 +2278,58 @@ program code:
 
  
 
+
+--- 
+read only dynamic  symbol table layout:
+
+
+```
+// constant read only global section.
+// at offset  0 
+size_t  symbol_count;
+// padding
+// this is the sorted 256bit hash back-end mangle , stored in 32 byte arrays ( big endian  ):
+ uint256_t  symbol_fragment[symbol_count];
+// this is the corresponding symbol data to the symbol mangle.
+ uintptr_t symbol_ptr_offset_and_mask[symbol_count]
+ ...
+ //the symbol_ptr_offset_and_mask's value is defined  with (uintptr_t(pointer)<<3) | viability,
+ // the viability mask only can use 3 bits :
+ // 1 : dll_comparable_address vs no_dll_comparable_address 
+ // 2 : interpositioned vs no-interposition
+ // 3 : dllimport vs dllexport
+  //if  no-interposition and dllexport pointer is the offset of the function adress reletive  to offset 0  
+ //  if its interpositioned and dllexport, pointer is the offset of the reserved static atomic storage for the address of the function reletive  to offset 0
+ // if no-interposition and dllimport  pointer is the offset of the function pointer reletive  to offset 0  
+ //  if its interpositioned and dllimport, pointer is the offset of the reserved static atomic storage pointer for the address of the function reletive  to offset 0
  
-
  
+ // write only once in initilization, then make readonly section: 
+
+global_loader_t*const global_loader;
+const fn**const  imported_interposition_fnptr_ptrs[....]; // the pointers to the interpositioned function pointers.
+const fn* const imported_non_interposition_fnptrs[....];// the pointer to the imported function.
+...
+  
+  // read-write section, note that based on compiler flags each of these can be aligned to the destructive interfaces size.
+void* exported_interposition_fnptrs[....];
+...
 
 
+
+
+
+
+
+// if the binary definition has the entrey point:
+// read write section global loader 
+mutex ;
+size_t total_symbol_count;
+uint256_t  sorted_symbol_fragments(*)[total_symbol_count];
+uintptr_t   symbol_ptr_and_mask(*)[total_symbol_count];
+// symbol_ptr_and_mask is just like symbol_ptr_offset_and_mask, but it has absolute addresses calculated from those offsets.
+
+```
 
  
 
@@ -2913,6 +2968,9 @@ the special byte type with the alias set of all types (with non fractional align
 
  these are typically cxx pointer sized 
 
+
+note that almost all pointer used to store data are non fractional, heap allocators or stack allocators or coroutine  frame or static symbol allocator are all non fractional,
+using fractional types in some contexts  adds padding to the end of them to align them to at least a byte.
  
 
  2.   c colon fractional pointers: 
