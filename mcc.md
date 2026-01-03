@@ -488,17 +488,17 @@ a value declared `constexpr` is known at compile time.
 
 this means that all linkable binaries with this qualifier  must be available when the program starts.
 
-the adresses of these variables is overriden at load time , and the memory  section is set to read execute for the duration of the program. 
+the addresses of these variables is overridden at load time , and the memory  section is set to read execute for the duration of the program. 
 
 
 
- dllhidden/dllexport/dllimport,interpositioned( only on static symbols,  like functions or static variables): 
+ `dllhidden(default)/dllexport/dllimport,interpositioned`( only on static symbols,  like functions or static variables): 
 
-   makes the symbol an export/import for dll linking by providing a symbol hash.
+   makes the symbol an export/import for DLL linking by providing a symbol hash.
 
-   also dllhidden is the default and removes the symbol  hash in the binary .
-   there is an unsafe(interpositioned) qualifier that can use `set_interposition(fn,address)` to store ( memory  order release) function address on a global atomic static , using  the addressof on this symbol will load by a memory order of aquire,
-   therfore the address  is controlled by developers.
+   also `dllhidden` is the default and removes the symbol  hash in the binary .
+   there is an `unsafe(interpositioned)` qualifier that can use `set_interposition(fn,address)` to store ( memory  order release) function address on a global atomic static , using  the address-of on this symbol will load by a memory order of acquire,
+   therefore the address  is controlled by developers.
 
 
 
@@ -515,11 +515,11 @@ the storage semantic is unknown.
 
 - static storage:
 
-this value is valid for the entier program.
+this value is valid for the entire program.
 
 - `thread_local` storage:
 
-this value is valid while the currunt thread of execution is alive.
+this value is valid while the current thread of execution is alive.
 
 - automatic storage:
 
@@ -531,13 +531,13 @@ value is in heap, manually destroyed.
 
 - register storage:
 
-value's storage is valid in the currant expression, but the address may change at any time with rellocation, but for a given uniqe owning refrence to the register its the same
+value's storage is valid in the currant expression, but the address may change at any time with relocation, but for a given unique owning reference to the register its the same
 
 - opaque storage:
 
 value's storage is somewhere , but its valid at least till the current block ends
 
-- nostorage storage:
+- `nostorage` storage:
 
 no address is given for the value
 
@@ -545,19 +545,19 @@ no address is given for the value
 
 
 
-refexpr / valexpr
+`refexpr` / `valexpr`
 
 
 
-the address of a valexpr value may not be uniqe, the state may be used to represent other objects as well ,
+the address of a `valexpr` value may not be unique, the state may be used to represent other objects as well ,
 
 its like `no_unique_address` in c++:
 
-makes this member subobject potentially-overlapping, i.e., allows this member to be overlapped with other non-static data members or base class subobjects of its class. this means that if the member has an empty class type (e.g. stateless allocator), the compiler may optimise it to occupy no space, just like if it were an empty base. if the member is not empty, any tail padding in it may be also reused to store other data members.
+makes this member sub-object potentially-overlapping, i.e., allows this member to be overlapped with other non-static data members or base class sub-objects of its class. this means that if the member has an empty class type (e.g. stateless allocator), the compiler may optimize it to occupy no space, just like if it were an empty base. if the member is not empty, any tail padding in it may be also reused to store other data members.
 
 also if reorder is possible , any padding bytes or invalid state may be used to represent such object,
 
-if its a bitset , even more possibilities are made , as long as other dclared object's are preserved
+if its a `std::flag_t` , even more possibilities are made , as long as other declared object's are preserved
 
 
 
@@ -573,9 +573,9 @@ we can do rust-like reorder optimization if this enabled
 
 
 
-a `not_offset_dependant` type is a type whoes inner structs can be scattered in memory when accessed,
+a `not_offset_dependant` type is a type whose inner structs can be scattered in memory when accessed,
 
- specifically ,a pointer to a sub object cannot be used to reliably get to the main object by a subtraction of the offset (other than a base class to drived class cast).
+ specifically ,a pointer to a sub object cannot be used to reliably get to the main object by a subtraction of the offset (other than a base class to derived class cast).
 
  but `offset_dependant` objects can use the offset to gain a pointer to the main object.
 
@@ -589,13 +589,13 @@ a `not_offset_dependant` type is a type whoes inner structs can be scattered in 
 
 
 
-forceref / unforceref
+`forceref` / `unforceref`
 
 
 
-forceref makes the refrence a pointer-like type that hold the address of the refrenced type ,
+`forceref`  makes the reference a pointer-like type that hold the address of the referenced type ,
 
-unforceref allows the refrence to be a custom type , for example a const str& is more appropriate as a string-view like type than a refrence to a string.
+`unforceref` allows the reference to be a custom type , for example a const str& is more appropriate as a string-view like type than a reference to a string.
 
 
 
@@ -631,21 +631,21 @@ interface / final / virtual / nonvirtual
 
  a type pointer + virtual table pointer.
 
- any virtual inheritance , polymorphism and etc, has an owner , but every other refrence to it's sub types is virtually qualified.
+ any virtual inheritance , polymorphism and etc., has an owner , but every other reference to it's sub types is virtually qualified.
 
- beacuse there are no virtual table/base pointers in the type, but offsets and function pointers in the table.
+ because there are no virtual table/base pointers in the type, but offsets and function pointers in the table.
 
-- nonvirtual:
+- `nonvirtual`:
 
  a type with no v-table
 
 - interface:
 
- an empty type with a vtable and/or virtual bases
+ an empty type with a v-table and/or virtual bases
 
 - final:
 
- a type with a v-table who's dynamic refrence type maches the static type.
+ a type with a v-table who's dynamic reference type matches the static type.
 
 
 
@@ -668,11 +668,11 @@ for example `intn_t` can alias the `uintn_t` and `mintn_t` types , but `noaliass
 
 
 
-borrowed / refrenced / owned
+borrowed / referenced / owned
 
 
 
-- refrenced:
+- referenced:
 
 object is borrowed elsewhere,object cannot be used.
 
@@ -687,14 +687,14 @@ an owned object can use and must drop after use.
 
 
 
- `drop_on_throw/presist_on_throw,drop_on_ret/presist_on_ret,xvaluexpr, rvaluexpr/lvaluexpr , (i)(o)valuexpr`(function arg qualifiers): 
- drop on X makes it so that the object is  when X , (xvaluexpr is unconditional drop),rvaluexpr premotes move semantics.
- (i)(o)valuexpr does the automatic in(i)/out(o)/`inout`(io)/inval(none) dropping semantic to the current refrence or if trivial , via register 
+ `drop_on_throw/presist_on_throw,drop_on_ret/presist_on_ret,xvaluexpr, rvaluexpr/lvaluexpr , (i)(o)valuexpr`(function arguments qualifiers): 
+ drop on X makes it so that the object is  when X , (`xvaluexpr` is unconditional drop),`rvaluexpr` premotes move semantics.
+ `(i)(o)valuexpr` does the automatic `in(i)/out(o)/inout(io)/inval(none)` dropping semantic to the current reference or if trivial , via register 
  
 
 determines the general usage and call convention in a function argument.
 
-- valuexpr ( translates to mut ivaluexpr  or the in val register):
+- `valuexpr` ( translates to `mut ivaluexpr`  or the in-val register):
 
 a stable  mutable value that is initialized on the call site. the value qualification
 
@@ -928,7 +928,7 @@ noreturn means the behaviour is undefined if the function returns to the caller 
  - nodyncontract/ dyncontract:
 
  dyncontract ( default) allows a function's contract to execute in the call site based on the callers contract evaluation requirements. 
- an in val argument is implicitly passed to make contract violation controlled. 
+ an in-val argument is implicitly passed to make contract violation controlled. 
 
 
 
@@ -1182,7 +1182,7 @@ the symbol table and dynamic loader:
 
    3. we can assume that each time    we access a copy of B , that its as if we triviality relocated it from the original.
 
-   4. its as if we propagate a const refrence borrow without the stable address  
+   4. its as if we propagate a const reference borrow without the stable address  
 
    5. the callee will not drop the exclusive in prameters  in any code path.
 
@@ -1377,7 +1377,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
 ---
 
- refrences( there are more combinations of qualifiers  , but the common ones include )
+ references( there are more combinations of qualifiers  , but the common ones include )
 
  
 
@@ -1392,7 +1392,7 @@ for function arguments,  these don't necessarily mean that T will have the same 
 
 
  T&:
-(lvaluexpr is defualt)
+(lvaluexpr is default)
 
 
 a typical l-value reference like rust , and if unrestricted , like c++.
@@ -1443,11 +1443,11 @@ used in the relocation constructors.
 
 
 
-non forceref user defined refrences:
+non forceref user defined references:
 
 
 
-are user defined types who's purpose is refrencing variables. 
+are user defined types who's purpose is referencing variables. 
 
 
 
@@ -1515,15 +1515,15 @@ the descriptions below make use of the following definitions:
 
 
 
-- inheritance graph: a graph with nodes representing a class and all of its subobjects, and arcs connecting each node with its direct bases.
+- inheritance graph: a graph with nodes representing a class and all of its sub-objects, and arcs connecting each node with its direct bases.
 
 
 
-- inheritance graph order: the ordering on a class object and all its subobjects obtained by a depth-first traversal of its inheritance graph, from the most-derived class object to base objects, where:
+- inheritance graph order: the ordering on a class object and all its sub-objects obtained by a depth-first traversal of its inheritance graph, from the most-derived class object to base objects, where:
 
-    - no node is visited more than once. (so, a virtual base subobject, and all of its base subobjects, will be visited only once.)
+    - no node is visited more than once. (so, a virtual base sub-object, and all of its base sub-objects, will be visited only once.)
 
-    - the subobjects of a node are visited in the order in which they were declared. (so, given class a : public b, public c, a is walked first, then b and its subobjects, and then c and its subobjects.)
+    - the sub-objects of a node are visited in the order in which they were declared. (so, given class a : public b, public c, a is walked first, then b and its sub-objects, and then c and its sub-objects.)
 
     - note that the traversal may be preorder or postorder. unless otherwise specified, preorder (derived classes before their bases) is intended.
 
@@ -1533,7 +1533,7 @@ the descriptions below make use of the following definitions:
 
 
 
-- morally virtual: a subobject x is a morally virtual base of y if x is either a virtual base of y, or the direct or indirect base of a virtual base of y.
+- morally virtual: a sub-object x is a morally virtual base of y if x is either a virtual base of y, or the direct or indirect base of a virtual base of y.
 
 
 
@@ -1561,7 +1561,7 @@ the descriptions below make use of the following definitions:
 
 
 
-- potentially-overlapping subobject: a base class subobject or a non-static data member declared with the valexpr qualifier.
+- potentially-overlapping sub-object: a base class sub-object or a non-static data member declared with the valexpr qualifier.
 
 - primary base class: for a dynamic class, the unique base class (if any) with which it shares the virtual pointer at offset 0.
 
@@ -1634,7 +1634,7 @@ the target function.
 
 
 
-- virtual table (or vtable): a dynamic class has an associated table (often several instances, but not one per object) which contains information about its dynamic attributes, e.g. virtual function pointers, virtual base class offsets, etc.
+- virtual table (or v-table): a dynamic class has an associated table (often several instances, but not one per object) which contains information about its dynamic attributes, e.g. virtual function pointers, virtual base class offsets, etc.
 
 - virtual table group: the primary virtual table for a class along with all of the associated secondary virtual tables for its proper base classes.
 
@@ -1674,7 +1674,7 @@ virtual table layout contains:
 
 
 
-- type-vtable( 64 byte aligned) :
+- type-v-table( 64 byte aligned) :
 
   0. castation-table( used in dynamic cast) :
 
@@ -1696,7 +1696,7 @@ struct {
 
 (sorted-cryptographic-256bit-hash-of-dest-types-name-mangle-byte(*)[number-of-types])  [32/* hash bytes*/];// note , if the hashes are unique when truncated ( very often the case ) the least amount of bytes of hash is used while still keeping every hash's value in the table is unique 
  bit pack of <number-of-types, truncated-count>;// between 1 and 32 is truncated-count, as a 5 bit , and rest of the bits are for number-of-type
-type-vtable-of-dest-types* (*)[number-of-types]
+type-v-table-of-dest-types* (*)[number-of-types]
 
 } 
 
@@ -1712,11 +1712,9 @@ type-vtable-of-dest-types* (*)[number-of-types]
 
   5. virtual-base-objects-offsets.
 
-  6. pointer-to-type-vtable-of-virtual-bases.
+  6. pointer-to-type-v-table-of-virtual-bases.
 
-  7. pointer-to-type-vtable-of-non-virtual-bases.
-
-  
+  7. pointer-to-type-v-table-of-non-virtual-bases.
 
   
 
@@ -1724,7 +1722,9 @@ type-vtable-of-dest-types* (*)[number-of-types]
 
   
 
-  a virtual refrence is :
+  
+
+  a virtual reference is :
 
 virtual table pointer
 
@@ -1873,7 +1873,7 @@ cannot  be written to by callee, only read from .
 
  
 
-2.  in val ( mut in argument ) :
+2.  in-val ( mut in argument ) :
 
 
 
@@ -1957,7 +1957,7 @@ in , out, and `inout` registers.
 
 2.  all out registers. 
 
-3.  all in val registers. 
+3.  all in-val registers. 
 
 4. all in registers. 
 
@@ -2049,7 +2049,7 @@ any dyncontract function who's adresss is captured for dynamic calls must have a
 
 this function pointer is the contract checked F pointer , it points to the contract handler,
 
-the contact handler checkes the pre or post conditions of a function, based on an implicit  in val argument  that contains:
+the contact handler checkes the pre or post conditions of a function, based on an implicit  in-val argument  that contains:
 
 0. check the pre vs check the post bit.
 
@@ -2322,13 +2322,13 @@ in general, API objects defined as part of this ABI are assumed to be extern "c:
 
   2. import identifiers:
 
-  lists all the identifiers and a refrence to their relevant AST/IR code exported from this file.
+  lists all the identifiers and a reference to their relevant AST/IR code exported from this file.
 
   
 
   3. export identifiers:
 
-  lists all the identifiers and a refrence to their relevant AST/IR code  imported from this file.
+  lists all the identifiers and a reference to their relevant AST/IR code  imported from this file.
 
   
 
@@ -2338,7 +2338,7 @@ in general, API objects defined as part of this ABI are assumed to be extern "c:
 
  also , each of the identifiers lists who their dependancies. 
 
- this includes but is not limited to : call graph, refrence graph,  ABI graph, static variables used, register pressure, optimization qualifier and  etc.
+ this includes but is not limited to : call graph, reference graph,  ABI graph, static variables used, register pressure, optimization qualifier and  etc.
 
  
 
@@ -3185,7 +3185,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     any unsafe code is delt with in the internal c colon libraries,  freeing the burden of safety concers from the developers.
 
-    refrences being disallowed means that express colon by definition cannot use after free, cannot use invalid state,  cannot even intract with dead state, 
+    references being disallowed means that express colon by definition cannot use after free, cannot use invalid state,  cannot even intract with dead state, 
 
     because the only thing allowed to be modified is the value of objects,
 
@@ -3221,7 +3221,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
 
 
- even in value oriented code,  functions can throw errors with ease and speed , the values often flow in registers and they are optimized well beacuse of lack of aliases .
+ even in-value oriented code,  functions can throw errors with ease and speed , the values often flow in registers and they are optimized well beacuse of lack of aliases .
 
  happy path often has less branches compared to using optional/expected/result types, and sad path is more performant than cxx-throw or rust panic, and as performant as optional types.
 
@@ -3255,7 +3255,7 @@ users don't need to worry about using old or vulnerable code , or complex buildi
 
 
 
-theres no traditional borrowing in express colon , because refrences aren't allowed,  only value oriented reference-like alternatives are, this is because most simple objectives can be achieved soly via containers, dynamic refrencing containers and value types,
+theres no traditional borrowing in express colon , because references aren't allowed,  only value oriented reference-like alternatives are, this is because most simple objectives can be achieved soly via containers, dynamic referencing containers and value types,
 
 the express colon language also tends to look more functional than its c colon counterparts,  many changes to heap variables happening in monadic like fashion if they are garded via a mutex, or value based of they are easily movable and copyable, while the underlying c colon has borrowing rules,  express colon programs still dont need lifetime anotations ( the c colon libraries however probably do)
 
@@ -3265,13 +3265,13 @@ the express colon language also tends to look more functional than its c colon c
 
  
 
- the function argument flow specifiers ( like a refrence  but without stable adress on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitilized& ) and `inout` (akin to mutable& ) prameters are all trivial reallocation and register passed, 
+ the function argument flow specifiers ( like a reference  but without stable adress on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitilized& ) and `inout` (akin to mutable& ) prameters are all trivial reallocation and register passed, 
 
  however because of the ABI nature they will remain valid for the duration of the function call so they are inheritly safe. 
 
- the in val ( no specifier) does a copy or a drop/relocation  on most occasions .
+ the in-val ( no specifier) does a copy or a drop/relocation  on most occasions .
 
- these are ideal for register usage ,  but they introduce more copying and occasionally the need for refrence counting if dynamic  refrencing is necessary, 
+ these are ideal for register usage ,  but they introduce more copying and occasionally the need for reference counting if dynamic  referencing is necessary, 
 
 although this is fast enough so its good enough,  if not , c colon can be used to optimize  it more.
 
@@ -3305,7 +3305,7 @@ although this is fast enough so its good enough,  if not , c colon can be used t
 
 for ( auto [`inout` a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the state and has an multiple argument provided in the iterator internals.
 
-// d is copied , a , b and c are "refrenced" via value input outputs
+// d is copied , a , b and c are "referenced" via value input outputs
 
 // modify outputs.
 
@@ -3381,7 +3381,7 @@ return...;
 
 
 
- while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the refrenced ban ( or completely disallowed because of the `abi=` ban) .
+ while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the referenced ban ( or completely disallowed because of the `abi=` ban) .
 
  however rust-like enum types with pattern matching  are still very performant and value oriented .
 
@@ -3391,7 +3391,7 @@ return...;
 
  copy would use the in parameter and moving/ relocation would be automatically generated(  not using any references would make types trivial to automatically relocate if inner c colon types are trivial) . 
 
- the destructor would also use in val ( no specifier) to relocate the object for final destruction. 
+ the destructor would also use in-val ( no specifier) to relocate the object for final destruction. 
 
   these arent just safe , these are also fast , because trivial values are passed by registers , and this language mostly operates on trivial values 
 
@@ -3415,7 +3415,7 @@ most template specifications can just be ignored by default in express colon,  h
 
 however E colon still recognizes these C colon constructs , allowing custom types like `std::(u)intdyn_t` ( similar to python's big integer types) to be used by their overloaded operators.
 
- similarly, common pitfalls like cyclic object hash dependency chains have relatively good information on their errors " it seems that your building a graph like structure within your types , however types dependent on themselves tend to be error prone , firstly,  use `abi=` operators to resolve the cyclic hash , secondly,  if dynamic refrencing is involved,  consider using weak pointers as well, because it would help avoid leaks".
+ similarly, common pitfalls like cyclic object hash dependency chains have relatively good information on their errors " it seems that your building a graph like structure within your types , however types dependent on themselves tend to be error prone , firstly,  use `abi=` operators to resolve the cyclic hash , secondly,  if dynamic referencing is involved,  consider using weak pointers as well, because it would help avoid leaks".
 
  
 
@@ -3429,9 +3429,9 @@ however E colon still recognizes these C colon constructs , allowing custom type
 
  although this means that often containers who have a single incomplete value would also get dropped or put in an empty state ,
 
- for example  what happens if an exception happens in a refrence counted mutex modification lambda , that mutex would need to be put in an error state , this way , any later code that attempts to access that mutex would throw an incomplete mutex error.
+ for example  what happens if an exception happens in a reference counted mutex modification lambda , that mutex would need to be put in an error state , this way , any later code that attempts to access that mutex would throw an incomplete mutex error.
 
- in my opinion,  this is a good thing,  even rust panics dont have such properties,  because if a value is modified through a refrence then it throws and attems to catch a panic ,  the previous value is gone! , it is memory safe to access it yes , but it might be incomplete so its s logic error.
+ in my opinion,  this is a good thing,  even rust panics dont have such properties,  because if a value is modified through a reference then it throws and attems to catch a panic ,  the previous value is gone! , it is memory safe to access it yes , but it might be incomplete so its s logic error.
 
  also , in my view, it is bad to assume panic safety is something obscure, 
 
@@ -3538,8 +3538,8 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
 
 6. layout optimizations :
-  on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a subobject is referenced in memory , the entire object does not need to be placed in memory,  but only that subobject,  especially true for triviality relocatable types ,
-  for example  if i have an array of offset independent members,  and refrence a member,  i can just only use the memory of that member and other members may not be in ajason stack memory , also it might help in making array of structures to structure of array
+  on top of rust like memory reorder , c colon has non `not_offset_dependant` qualifiers,  meaning that if a sub-object is referenced in memory , the entire object does not need to be placed in memory,  but only that sub-object,  especially true for triviality relocatable types ,
+  for example  if i have an array of offset independent members,  and reference a member,  i can just only use the memory of that member and other members may not be in ajason stack memory , also it might help in making array of structures to structure of array
   on the stack ,  reflection also can help with this
   
  7. allocation Ellison :
@@ -3592,7 +3592,7 @@ std primitives such as tasks , channels,schedulers,  promises etc help here .
 
 
 
-refrences
+references
 
 
 
