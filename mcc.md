@@ -1,4 +1,5 @@
 
+
 c colon lang , its brothers and the mcc ABI 
 
 
@@ -397,15 +398,12 @@ unstable / stable
 
 
 
-for a pointer p declared within its lifetime L ,   to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of L , the expression `std::memcmp(std::addressof(v),a,sizeof(v))==0` must be true( the values at that memory  region must not be modified) , otherwise the behavior is undefined( the definition is not in terms of pointer being unique , but in terms of meaning ).
+for a pointer p declared within its lifetime L ,   to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of L , the expression `std::memcmp(std::addressof(v),a,sizeof(v))==0` must be true( the values at that memory  region must not be modified) , otherwise the behavior is undefined.
 
 
 
  for a pointer p declared within a code  lifetime L , to an stable mut region of memory r, if a stable byte/bit const v stored to address a originating from p is used , then until the end of L , the expression `v== (byte/bit)*a` must be true , if not , a value has been stored to address a originating from p in L or by a function called in L who is given a non const-stable pointer originating from p , otherwise the behavior is undefined
- ( the definition is not in terms of pointer being unique, but the store permission,
- being unique to a group of pointers ).
-
-
+ 
 
 
  note:
