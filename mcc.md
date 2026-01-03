@@ -878,6 +878,8 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
  ( basically gnu::const if no `inout` is used) 
 
 
+* note: throwing a trivially relocatable throw-value via a special hand crafted functional supporting context-types can still allow the throw expression to be `purely_functional` if the function is not `represent_cxx`, 
+this is because  throw is not unwind based and doesn't use globals at all , and  can be used without any side effects nor pointer usage, if an exception is not possible , then use noexcept to complete the purity qualifications.
 
  
 
