@@ -1522,7 +1522,7 @@ the descriptions below make use of the following definitions:
 
 
 
-- diamond-shaped inheritance: a class has diamond-shaped inheritance iff it has a virtual base class that can be reached by distinct inheritance graph paths through more than one direct base.
+- diamond-shaped inheritance: a class has diamond-shaped inheritance if it has a virtual base class that can be reached by distinct inheritance graph paths through more than one direct base.
 
 
 
@@ -1530,11 +1530,11 @@ the descriptions below make use of the following definitions:
 
 
 
-- empty class: a class with no non-static data members other than empty data members, no unnamed bit-fields other than zero-width bit-fields, no virtual functions, no virtual base classes, and no non-empty non-virtual proper base classes. such type can be dclarared with no-strorage qualifier.
+- empty class: a class with no non-static data members other than empty data members, no unnamed bit-fields other than zero-width bit-fields, no virtual functions, no virtual base classes, and no non-empty non-virtual proper base classes. such type can be declared with no-storage qualifier.
 
 
 
-- empty data member: a potentially-overlapping non-static data member of empty class type. such type can be dclarared with no-strorage qualifier.
+- empty data member: a potentially-overlapping non-static data member of empty class type. such type can be declared with no-storage qualifier.
 
 
 
@@ -1542,17 +1542,19 @@ the descriptions below make use of the following definitions:
 
 
 
-- inheritance graph order: the ordering on a class object and all its sub-objects obtained by a depth-first traversal of its inheritance graph, from the most-derived class object to base objects, where:
+- idea of the inheritance graph order:
+when making the `castation-table` in the compiler we need to generate it via a graph treversal, to make it as if we did that treversal at runtime.
+ the ordering on a class object and all its sub-objects obtained by a depth-first traversal of its inheritance graph, from the most-derived class object to base objects, where:
 
     - no node is visited more than once. (so, a virtual base sub-object, and all of its base sub-objects, will be visited only once.)
 
     - the sub-objects of a node are visited in the order in which they were declared. (so, given class a : public b, public c, a is walked first, then b and its sub-objects, and then c and its sub-objects.)
 
-    - note that the traversal may be preorder or postorder. unless otherwise specified, preorder (derived classes before their bases) is intended.
+    - note that the traversal may be pre order or post order. unless otherwise specified, preorder (derived classes before their bases) is intended.
 
 
 
-- instantiation-dependent: an expression is instantiation-dependent if it is type-dependent or value-dependent, or it has a subexpression that is type-dependent or value-dependent. for example, if p is a type-dependent identifier, the expression sizeof(sizeof(p)) is neither type-dependent, nor value-dependent, but it is instantiation-dependent (and could turn out to be invalid if after substitution of template arguments p turns out to have an incomplete type). similarly, a type expressed in source code is instantiation-dependent if the source form includes an instantiation-dependent expression. for example, the type form double[sizeof(sizeof(p))] (with p a type dependent identifier) is instantiation-dependent.
+- instantiation-dependent: an expression is instantiation-dependent if it is type-dependent or value-dependent, or it has a subexpression that is type-dependent or value-dependent. for example, if p is a type-dependent identifier, the expression `sizeof(sizeof(p))` is neither type-dependent, nor value-dependent, but it is instantiation-dependent (and could turn out to be invalid if after substitution of template arguments p turns out to have an incomplete type). similarly, a type expressed in source code is instantiation-dependent if the source form includes an instantiation-dependent expression. for example, the type form `double[sizeof(sizeof(p))]` (with p a type dependent identifier) is instantiation-dependent.
 
 
 
@@ -1673,21 +1675,13 @@ in what follows, we define the memory layout for c colon data objects. specifica
 
 
 
-- the size of an object, sizeof(o);
+- the bit-size of an object, `bit_sizeof(o)`;
 
-- the alignment of an object, align(o); and
+- the bit-alignment of an object, `bit_alignof(o)`; and
 
-- the offset within o, offset(c), of each data component c, i.e. base or member.
+- the bit-offset within o, `bit_offsetof(c)`, of each data component c, i.e. base or member,
+note that a dynamic class cannot have fractional alignment  for its bases, if it does , the program is ill-formed 
 
-for purposes internal to the specification, we also specify:
-
-
-
-- dsize(o): the data size of an object, which is the size of o without tail padding.
-
-- nvsize(o): the non-virtual size of an object, which is the size of o without virtual bases.
-
-- nvalign(o): the non-virtual alignment of an object, which is the alignment of o without virtual bases.
 
 
 
