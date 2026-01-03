@@ -1693,9 +1693,9 @@ virtual table layout contains:
 
 - type-v-table( 64 byte aligned) :
 
-  0. castation-table( used in dynamic cast) :
+  0. `castation-table`( used in dynamic cast) :
 
-  we have the search table , to do a binary search,  for each type , there might be a different lookup table depending on class visibility and the highariachy,
+  we have the search table , to do a binary search,  for each type , there might be a different lookup table depending on class visibility and the hagiarchy,
 
   but , for this type , all the accessible types are in the lookup, this , although taking up more space,  is more efficient than a graph traversal algorithm at runtime,  either way, it is already a bad practice to do dynamic inheritance, and most things would be resolved via `enum` types anyway, with simplicity , and more safety
 
@@ -3565,7 +3565,7 @@ also static data like strings would be able to merge better with  valexpr ( beca
 9.  fast program and dll loader:
 all mcc symbols have two kinds of name mangles , the front-end mangle and the back-end mangle ,
 the front-end one is like cxx but with the ABI hash appended , the back-end mangle is a 256bit hash of the front-end mangle ,
-this is to make all symbols have a fixed size and to be able to store all symbols needing work on startup or dll load in an  array of sorted hashes ( 32 arrayes of bytes beacuse of 256 bit nature) ( similar layout to what mcc dynamic cast castation-tables had)
+this is to make all symbols have a fixed size and to be able to store all symbols needing work on startup or dll load in an  array of sorted hashes ( 32 arrayes of bytes beacuse of 256 bit nature) ( similar layout to what mcc dynamic cast `castation-tables` had)
 , ( because of the hashed  nature we can use the fast radix sort to make this array in backend in the linker) this helps along side the interposition less code , to help reduce start up times.
 when loading a dll , those sorted arrays of hashes combine into one array , similar to the merge (O(n)) in merge sort ,
 while doing so , we can spot all duplicate symbols if any and do the appropriate thing accordingly 
