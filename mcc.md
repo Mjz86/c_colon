@@ -189,13 +189,13 @@ because the function either throws or initializes them, if not initialized it is
 
 each namespace has an special function, implemented by default, it adds context objects to functions, and automates many of the verbose writing
 
-for example  a var is stable const restricted safe and ect by default,  no need to opt in , 
+for example  a var is stable const restricted safe and etc. by default,  no need to opt in , 
 
-the reflection functions work on the ast , after all the de reflection Operations are completed,  the ast can fully turn into IR,
+the reflection functions work on the AST , after all the de reflection Operations are completed,  the AST can fully turn into IR,
 
 these operations can happen in parallel,  if they are located in separate dependency chains .
 
-similarly the ABI hashing is also done in parallel  and cashed once completed based on dependency chain, although the abiof operator might make it happen sooner than usual. 
+similarly the ABI hashing is also done in parallel  and cashed once completed based on dependency chain, although the `abiof` operator might make it happen sooner than usual. 
 
 
 
@@ -205,11 +205,11 @@ similarly the ABI hashing is also done in parallel  and cashed once completed ba
 
 9. JIT `constexpr` code execution:
 
-each function  even in its template form can be turned into IR , because mcc IR is different,  it has two types , `constexpr` IR and mutexpr IR ,
+each function  even in its template form can be turned into IR , because mcc IR is different,  it has two types , `constexpr` IR and `mutexpr` IR ,
 
 the borrow checking and lifetime management itself is `constexpr` IR with assertions.
 
-`constexpr` IR is necceceraly  ran in the compiler , so , even if the template types are unknown,  the IR is generated to  reterive the template type then de-reflect the type away in just-in-time generated IR.
+`constexpr` IR is necessary  ran in the compiler , so , even if the template types are unknown,  the IR is generated to  retrieve the template type then de-reflect the type away in just-in-time generated IR.
 
 
 
@@ -221,9 +221,9 @@ the borrow checking and lifetime management itself is `constexpr` IR with assert
 
 The debugging would be in the context types ,
 
-Async debugging is hard in other languages,  but seemless in c colon because the stack trace is automatically build in the context functions for debugability when we unwind,
+Async debugging is hard in other languages,  but seamless in c colon because the stack trace is automatically build in the context functions for debuggability when we unwind,
 
-the explicit allocator problem in c++ is also eliminated , making using debug alloctors easier, 
+the explicit allocator problem in c++ is also eliminated , making using debug allocators easier, 
 
 the contract violations are captured in the context object,  vs the static global violation handler function 
 
@@ -239,11 +239,11 @@ async destructors work with the `co_value` keyword  and much more.
 
 like cargo , c colon has a package management system integrated in the tool chain ,
 
-unlike hedaer files and CPP files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
+unlike header files and CPP files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
 
 each module has hashes of its dependent modules, to help cashing and compile times ,
 
-because the ast can be converted to IR via JIT , the compiler can  use many cashing schemes for templated entities and namespaces 
+because the AST can be converted to IR via JIT , the compiler can  use many cashing schemes for templated entities and namespaces 
 
 , each component and modules in the package management system have precompiled some IR and AST steps , that make it easier for compilers to use them if more download speeds result in faster compilations , if not the compiler can do it by hand without IRs.
 
@@ -259,11 +259,11 @@ what i think will be the strategy in this language to make it easy
 
 
 
-begginners:
+beginners:
 
 avoiding most qualifiers and completely, sticking to using mut when necessary, 
 
-sticking to value semantics, for functions,  `inout` , in , out  and non reference,  reference-like alternative that dont cause much confusion, 
+sticking to value semantics, for functions,  `inout` , in , out  and non reference,  reference-like alternative that don't cause much confusion, 
 
 and coping most things , occasionally using more complex code.
 
@@ -273,7 +273,7 @@ avoiding any borrowing and  unsafe.
 
 developers who use libraries:
 
-writing value oriented,  functional-like mutibility avoiding code , knowing how to design easy to use apis , with OOP and more to use 
+writing value oriented,  functional-like mutability avoiding code , knowing how to design easy to use APIs , with OOP and more to use 
 
 
 
@@ -305,27 +305,27 @@ writing utilities that help automate rust, c++ and other language bindings and m
 
 
 
-a note from mjz on what to do in "c:":
+a note from Mjz on what to do in "c:":
 
 
 
 try not to get boggled down with ways to make it faster,
 
-it is rewarding,  but its hard, the easiest way to write safe code in both rust and c: is to do more functional programming,
+it is rewarding,  but its hard, the easiest way to write safe code in both rust and c: is to do more functional programming ( E colon ),
 
 try only focusing on what needs to be optimized before making it hard for yourself, 
 
-the compiler isnt there to demand the best code ,  it's not bad to mostly write value oriented code,
+the compiler isn't there to demand the best code ,  it's not bad to mostly write value oriented code,
 
-those who get boggled down in mcc or rust lifetimes want speed , but c: isnt just about speed,
+those who get boggled down in mcc or rust lifetimes want speed , but c: isn't just about speed,
 
 its about speed if you want it , yes, but its about easier libraries , and not needing to link everything statically like rust,
 
-its about writing embedded code knowning that your const declared variable wont change or be casted to mutable ,
+its about writing embedded code knowing that your const declared variable wont change or be casted to mutable ,
 
-and about moving away from the burden of ABI legacy , from killing the standard library's networking preposal because its not gonna be ABI stable,
+and about moving away from the burden of ABI legacy , from killing the standard library's networking proposal because its not gonna be ABI stable,
 
-its about using a regex without saying that php's regex is faster.
+its about using a regex without saying that PHP's regex is faster.
 
 
 
@@ -339,15 +339,15 @@ its about using a regex without saying that php's regex is faster.
 
 
 
-considrations
+considerations
 
 
 
-with these goals in mind , i aim to improve this spec , to make it practical, i often start with over engineering things , then chop unnecessary additions, to make it more practical, as of rn , were in over engineering phase.
+with these goals in mind , i aim to improve this spec , to make it practical, i often start with over engineering things , then chop unnecessary additions, to make it more practical, as of right now , were in over engineering phase.
 
 this ABI aims to have minimal compatibility with the Itanium ABI , such that an extern "c++" statement can make most code usable in a c++ platform,
 
- some concepts may be excluded from such inclutions , for instance , a c++ type's dclaration must be expressable in c colon and vise versa .
+ some concepts may be excluded from such inclusions , for instance , a c++ type's declaration must be expressible in c colon and vise versa .
 
 
 
@@ -369,9 +369,10 @@ volatile / nonvolatile
 
 
 
-a change, read or write in a volatile-ly used region of memory may not be optimized out.
+a change, read or write in a volatile used region of memory may not be optimized out.
 
- volatile often has to come with the unstable+unrestricted qualifiers so thet need explicit mention.
+ volatile has to come with the unstable+unrestricted qualifiers , similar to other unsafe qualifiers , it is incompatible with them by design,
+ reason being, what does even an  stable volatile value even mean? its praradoxical 
 
 
 
@@ -391,11 +392,13 @@ unstable / stable
 
 
 
-for a pointer p declared within a code block b to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of b , the expression std::memcmp(std::addressof(v),a,sizeof(v))==0 must be true , otherwise the behaviour is undefined.
+for a pointer p declared within a code block b to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of b , the expression `std::memcmp(std::addressof(v),a,sizeof(v))==0` must be true , otherwise the behavior is undefined( the definition is not in terms of pointer being unique , but in terms of meaning ).
 
 
 
- for a pointer p declared within a code block b to an stable mut region of memory r, if a stable byte const v stored to address a originating from p is used , then until the end of b , the expression `v== (byte)*a` must be true , if not , a value has been stored to address a originating from p in b or by a function called in b who is given a non const-stable pointer originating from p , otherwise the behaviour is undefined.
+ for a pointer p declared within a code block b to an stable mut region of memory r, if a stable byte const v stored to address a originating from p is used , then until the end of b , the expression `v== (byte)*a` must be true , if not , a value has been stored to address a originating from p in b or by a function called in b who is given a non const-stable pointer originating from p , otherwise the behavior is undefined
+ ( the definition is not in terms of pointer being unique, but the store permission,
+ being unique to a group of pointers ).
 
 
 
@@ -403,7 +406,7 @@ for a pointer p declared within a code block b to an stable const region of memo
 
  1. mut-stable is like restrict in c, but a const-stable is like a rust constant
 
- 2. its dangerous for stable values to be declared unrestricted, it is as if a c restrict aliases
+ 2. its dangerous ( unsafe(unrestricted-stable)) for stable values to be declared unrestricted, it is as if a c restrict isn't proven to not alias.
 
 
 
@@ -411,15 +414,15 @@ for a pointer p declared within a code block b to an stable const region of memo
 
  these qualifiers are typically used as indicators of whether or not something is safe to pass and use between threads , the default is , any stable variable is thread safe and otherwise  unsafe, the stable mut is exclusively owned , and so safe to pass around, however,  `std::rc_t<T>` overrides that , so in any async boundaries the c colon libraries can notice via reflection that a mutable thread unsafe variable is used, so they can disallow it.
 
- also , if a member  is thread unsafe in E: ( not C:) , because of the qualifier visibility ban , that qualifier cannot be overriden by using a thread safe type with an aliasset.
+ also , if a member  is thread unsafe in E: ( not C:) , because of the qualifier visibility ban , that qualifier cannot be overridden by using a thread safe type with an `aliasset`.
 
 
 
-uninitilized / initilized
+uninitialized /initialized
 
 
 
-a read from uninitilized valued via unsafe pointer  is undefined and without it  ill formed, but an store is valid, and will make  the qualifier go away.
+a read from uninitialized valued via unsafe pointer  is undefined and without it  ill formed, but an store is valid, and will make  the qualifier go away.
 
 
 
@@ -429,39 +432,41 @@ unrestricted / restricted
 
 
 
-unrestricted disables the exclusive mutibility borrow rule in the compiler.
+unrestricted disables the exclusive mutability borrow rule in the compiler.
 
- unrestricted often has to come with the unstable qualifier so explicit stable xor unstable qualification is required.
-
-
+ unrestricted often has to come with the unstable qualifier so explicit stable exclusive or unstable qualification is required.
 
 
 
 
 
-`represent_cxx` ( default only in fundemental  `cxx_T_t`)/ `no_represent_cxx`(default in any other type):
+
+
+`represent_cxx` ( default only in fundamental  `cxx_T_t`)/ `no_represent_cxx`(default in any other type):
 
 for this to be used  many rules need to be checked  to have a cxx compatible type , 
 
 for example  the alignment must not be fractional and must be at least `alignof(cxx_char_t)`, 
 
-these types 
+these types must be representable under the Itanium spec, for example virtual classes with `represent_cxx` must follow the Itanium spec for ABI layout,this requires some nasty trade-offs, for example , supporting unsafe interposition C colon and allowing two stage dynamic loaders ( the cxx one ignores mcc binary , the mcc one independently loads),
+this deep divide between these two ecosystem's ABI is limiting performance for mixed language code ,
+however , if we did use cxx, cxx did use lib unwind , so we paid for cxx and lib unwind and the whole std cxx lib. 
 
 
 
 
 
-noaliastype / aliastype
+`noaliastype` / `aliastype`
 
 
 
-aliastype means that any store/load/modification throgh this type can influence types outside the alias set.
+`aliastype` means that any store/load/modification through this type can influence types outside the alias set.
 
 
 
 
 
-mutexpr / `constexpr`
+`mutexpr` / `constexpr`
 
 
 
@@ -626,7 +631,7 @@ interface / final / virtual / nonvirtual
 
  a type pointer + virtual table pointer.
 
- any virtual inheritance , polymorphism and ect, has an owner , but every other refrence to it's sub types is virtually qualified.
+ any virtual inheritance , polymorphism and etc, has an owner , but every other refrence to it's sub types is virtually qualified.
 
  beacuse there are no virtual table/base pointers in the type, but offsets and function pointers in the table.
 
@@ -646,11 +651,11 @@ interface / final / virtual / nonvirtual
 
 
 
-noaliasset / usealiasset
+`noaliasset`/ `usealiasset`
 
 
 
-noaliasset means the alias set of the type cannot alias the type,
+`noaliasset` means the alias set of the type cannot alias the type,
 
 for example `intn_t` can alias the `uintn_t` and `mintn_t` types , but `noaliasset intn_t` cannot.
 
@@ -2333,7 +2338,7 @@ in general, API objects defined as part of this ABI are assumed to be extern "c:
 
  also , each of the identifiers lists who their dependancies. 
 
- this includes but is not limited to : call graph, refrence graph,  ABI graph, static variables used, register pressure, optimization qualifier and  ect.
+ this includes but is not limited to : call graph, refrence graph,  ABI graph, static variables used, register pressure, optimization qualifier and  etc.
 
  
 
@@ -3057,7 +3062,7 @@ the objective of a full ABI is to allow arbitrary mixing of object files produce
 
  1. determine the dependency graph of the mcc files, irs and modules ( to help realize parallelization opertonities, and determine if some steps are not neccecery if the result is cached and valid).
 
- 2. compile to the ast object/modules.
+ 2. compile to the AST object/modules.
 
  3. compile the asts to mcc ir-0 .
 
@@ -3198,7 +3203,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     or your just trying to implement a tree , graph or linked list , which you can do via reference counted variables , but your notified of its potential for a self reference when you used `abi=` to make it compile again. 
 
-    however,  an extreme measure against all cycles is  making the use of `abi=` as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and ect , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
+    however,  an extreme measure against all cycles is  making the use of `abi=` as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and etc , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
 
     ( this is the default therfore any use of `abi=` is unsafe and so E colon programs cannot have memory leaks by default,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via `abi=` , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust enum or CPP std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
 
@@ -3555,7 +3560,7 @@ while doing so , we can spot all duplicate symbols if any and do the appropriate
 
 10. more parrarelized code  and structured concurrency:
 by enabling cancelation in the ABI of coroutines we can swiftly do many structural concurrency patterns, 
-std primitives such as tasks , channels,schedulers,  promises ect help here .
+std primitives such as tasks , channels,schedulers,  promises etc help here .
 
 ---
 
