@@ -392,14 +392,19 @@ unstable / stable
 
 
 
-for a pointer p declared within a code block b to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of b , the expression `std::memcmp(std::addressof(v),a,sizeof(v))==0` must be true , otherwise the behavior is undefined( the definition is not in terms of pointer being unique , but in terms of meaning ).
+
+
+for a pointer p declared within a code region b to an stable const region of memory r, if a stable value const v loaded from address a originating from p is loaded from memory , then until the end of b , the expression `std::memcmp(std::addressof(v),a,sizeof(v))==0` must be true , otherwise the behavior is undefined( the definition is not in terms of pointer being unique , but in terms of meaning ).
 
 
 
- for a pointer p declared within a code block b to an stable mut region of memory r, if a stable byte const v stored to address a originating from p is used , then until the end of b , the expression `v== (byte)*a` must be true , if not , a value has been stored to address a originating from p in b or by a function called in b who is given a non const-stable pointer originating from p , otherwise the behavior is undefined
+ for a pointer p declared within a code  region b to an stable mut region of memory r, if a stable byte const v stored to address a originating from p is used , then until the end of b , the expression `v== (byte)*a` must be true , if not , a value has been stored to address a originating from p in b or by a function called in b who is given a non const-stable pointer originating from p , otherwise the behavior is undefined
  ( the definition is not in terms of pointer being unique, but the store permission,
  being unique to a group of pointers ).
 
+
+ region b:
+ for address P while P is within its lifetime L , B is over the lifetime L
 
 
  note:
@@ -1224,17 +1229,17 @@ the symbol table and dynamic loader:
 
    in C colon,  each string has to have an encoding, 
 
-   the most common encoding is the utf8 encoding, the standard library  should strive to support this encoding and be up to date on the unicode standard.
+   the most common encoding is the utf8 encoding, the standard library  should strive to support this encoding and be up to date on the Unicode standard.
 
   because of the language safety rules,  we have both thread unsafe string types for single-threaded like strings and we also have thread safe strings, 
 
-   however,  constant strings are different from mutable strings , so , these are specilizations on the common standard basic string type,
+   however,  constant strings are different from mutable strings , so , these are specializations on the common standard basic string type,
 
    the format includes `std::(m)(z)(u)string` , for the:
 
    0. m:
 
-   mutibility, it is not allowed for this string type to use copy on Write on the current buffer of text.
+   mutability , it is not allowed for this string type to use copy on Write on the current buffer of text.
 
    1. z:
 
@@ -1258,13 +1263,15 @@ instead of the default `std::context_t<optimization-level>`  use `std::async_con
 
  
 
-0.  has to have a noop coroutine function  :
+0.  has to have a `noop` coroutine function  :
 
-   `context-type-coro-return noop_resume( context-type-coro-input) context-type;`
+   ```
+   context-type-coro-return noop_resume( context-type-coro-input) context-type;
+   ```
 
-1. has to have a promise-type ( dependent on function signature ) declared inside it , the promise type is the callee facing context type ( because the callee always knows its coroutine status, it can always know if its the context type or the promise type as the context type , on each resume , the promise type is refreshed with new caller facing context types , but the promise within manages the callee.
+1. has to have a promise-type ( dependent on function signature ) declared inside it , the promise type is the callee facing context type , because the callee always knows its coroutine status, it can always know if its the context type or the promise type as the context type , on each resume , the promise type is refreshed with new caller facing context types , but the promise within manages the callee.
 
-2. has to have a context-type-coro-return and context-type-coro-input ( independant of the function signature) to be returned from a resume.
+2. has to have a `context-type-coro-return` and `context-type-coro-input` ( independent of the function signature) to be returned from a resume.
 
 
 
@@ -1286,9 +1293,9 @@ instead of the default `std::context_t<optimization-level>`  use `std::async_con
 
  
 
-- (a)symetric transfer:
+- (a)symmetric transfer:
 
-if a promise wants ( decided in the awaiter suspension via returned `transfered_handle` being noop or not ) to do a asymetric transfer , instead of the `promise_suspend` , the `promise_transfer` is called, they should have the same context-type to be compatible, the return value is typically the  coroutine handle and other information:
+if a promise wants ( decided in the `awaiter` suspension via returned `transfered_handle` being `noop` or not ) to do a asymmetric transfer , instead of the `promise_suspend` , the `promise_transfer` is called, they should have the same context-type to be compatible, the return value is typically the  coroutine handle and other information:
 
 `promise_transfer(this promise& self,promise-cache ,in transfered_handle,bool& is_cancled )context-type->transfered-context-type-coro-input;`
 
@@ -1298,7 +1305,7 @@ if a promise wants ( decided in the awaiter suspension via returned `transfered_
 
 - cancelation grantees: 
 
- an error type in the catch scope is either a base of the empty cancelation token type , or its a base of the common violation token or isnt either , for cancelation and violation catches ( a catch with these types) unsafe(ignore-cancelation) and unsafe(ignore-violation) is applied , but otherwise its safe to do in the coroutine,  also the  catch(throw-value), equivalent to catch(...) in c++  is also unsafe(catch-all-tokens).
+ an error type in the catch scope is either a base of the empty cancelation token type , or its a base of the common violation token or isn't either , for cancelation and violation catches ( a catch with these types) unsafe(ignore-cancelation) and unsafe(ignore-violation) is applied , but otherwise its safe to do in the coroutine,  also the  catch(throw-value), equivalent to catch(...) in c++  is also unsafe(catch-all-tokens).
 
  so , the c colon libraries can distinguish if the throw is a cancelation or not and do the appropriate safe thing for E:
 
@@ -1310,7 +1317,7 @@ if a promise wants ( decided in the awaiter suspension via returned `transfered_
 
 - promise-cache :
 
-the promise cache is an object only visible in the promise, with lifetime of the promise itself, as if an stack variable on the promisesl function's stack, its accessible as an `inout` like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle 
+the promise cache is an object only visible in the promise, with lifetime of the promise itself, as if an stack variable on the promises function's stack, its accessible as an `inout` like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle 
 
 
 
@@ -1334,7 +1341,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
   
 
-  // the fastdyncaller transformation is a bit different for asymetric transfer,  each jump to a sibling restores the used set as if it was a return. 
+  // the fastdyncaller transformation is a bit different for asymmetric transfer,  each jump to a sibling restores the used set as if it was a return. 
 
 
 
@@ -1403,7 +1410,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
 a value oriented reference-like type ,
 
-for function arguments,  these don't necessarily mean that T will have the same address,  unless T isnt trivially relocatable, which will make T relocate into the stack in the caller.
+for function arguments,  these don't necessarily mean that T will have the same address,  unless T isn't trivially relocatable, which will make T relocate into the stack in the caller.
 
 
 
@@ -1573,7 +1580,7 @@ the descriptions below make use of the following definitions:
 
     - this definition, as applied to class types, a type which is trivial for the purposes of the ABI will be passed and returned according to the rules of the base mcc ABI , e.g. in registers; often this has the effect of performing a trivial reallocation of the type.
 
-    - if non trivial,  it is passed as if it had a stable forceref (i)(o)valuexpr qualifier, as if  passed by reference,  the relocation is allowed to be optimized out if the passed variable is (i)(o)valuexpr qualified or is a temporary at the call site, note that if the variable has internal mutibility as an input , it is ill formed to pass it by value ( input) and its relocation constructors cannot be trivial.
+    - if non trivial,  it is passed as if it had a stable forceref (i)(o)valuexpr qualifier, as if  passed by reference,  the relocation is allowed to be optimized out if the passed variable is (i)(o)valuexpr qualified or is a temporary at the call site, note that if the variable has internal mutability  as an input , it is ill formed to pass it by value ( input) and its relocation constructors cannot be trivial.
 
 
 
@@ -1839,7 +1846,7 @@ there are special registers:
 
 
 
-stack pointer is like itanum , except the base pointer is a register, the caller can assume its value is the same after the call, usually some optimizations might use other stratch registers as base pointer as well ,but this one is special because it isnt used through a fastdyncallee dynamic call.
+stack pointer is like itanum , except the base pointer is a register, the caller can assume its value is the same after the call, usually some optimizations might use other stratch registers as base pointer as well ,but this one is special because it isn't used through a fastdyncallee dynamic call.
 
 
 
@@ -1984,22 +1991,12 @@ in , out, and `inout` registers.
 
 
  - the responsibility of cleanup of stack variables:
-
- 1. `inout` and out:
-
  these arguments are cleaned up by the caller. 
 
- the reason is that the caller might read these so they do  need cleanup by the caller.
+ the reason is that the caller might read these `inout/out` ( while in and in value are unneeded, its faster if there was only one responsibility ) so they do  need cleanup by the caller.
 
  these arguments are allocated on the stack before assignments of the stack pointer  to the base pointer of the callee.
-
-2. in:
-
-these arguments are cleaned up by the callee.
-
-the reason is that the caller will not read these so they do not need cleanup. 
-
-these arguments are allocated on the stack  after assignments of the stack pointer  to the base pointer of the callee.
+ 
 
 
 
@@ -2007,7 +2004,10 @@ these arguments are allocated on the stack  after assignments of the stack point
 
 
 
-* the unsafe(dyn-args) dynamic variading functions  ( printf in C is one of the examples, although these functions are unsafe and therfore bad practice to write) implicitly treat the underlying in registers that weren't overlapping  with outs as `inout` for the ABI to be able to clean it up by the caller side.
+* the unsafe(dyn-args) dynamic variading functions  :
+ printf in C is one of the examples, although these functions are unsafe and therfore bad practice to write.
+
+
 
 
 
@@ -2392,7 +2392,7 @@ in general, API objects defined as part of this ABI are assumed to be extern "c:
 
     
 
-    2. partial template specilizations:
+    2. partial template specializations:
 
     these are similar to that of an overload set.
 
@@ -3015,7 +3015,7 @@ gets the ABI hash off the inner expression.
 
 8. abi+(...) es ABI hash and dclaration order
 
-9. qualifiers of a type , but order independant
+9. qualifiers of a type , but order independent
 
 10. throw-value  and promise-type and input and output of async/sync functions of the context
 
@@ -3421,9 +3421,9 @@ i pridict that the worst common error is an easy "must initialized an out pramet
 
 or at most a " the catch block cannot caputure a variable that might be dropped in the try block , try copying that variable before the try block to ensure it will not be an output of a throwing function"( the `inout` or out function  arguments  will  have an uninitialized state or qualifier  on that functios throw path in the caller, when used , the same qualifier set per expression rule will make that expression ill formed).
 
-in contrast to C colon ( which allows all of these c++ style things) , Express colon does not have operator overloadding,and also function overloadding,  and template specilizations, and only allows simple template declarations ( like the c++ auto concept constraint prameters),
+in contrast to C colon ( which allows all of these c++ style things) , Express colon does not have operator overloadding,and also function overloadding,  and template specializations, and only allows simple template declarations ( like the c++ auto concept constraint prameters),
 
-this isnt really a safety problem,  but an error massage problem,  
+this isn't really a safety problem,  but an error massage problem,  
 
 if express colon wants readable error massages in its express colon module,  it needs to have less type anotations necessary to show that error message,  and therefore,  much type information would not be shown because the function name and at most the namespace would be sufficient for its detection. 
 
