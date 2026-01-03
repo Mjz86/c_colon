@@ -305,7 +305,7 @@ writing utilities that help automate rust, c++ and other language bindings and m
 
 
 
-a note from Mjz on what to do in "c:":
+a note from Mjz86 on what to do in "c:":
 
 
 
@@ -442,15 +442,17 @@ unrestricted disables the exclusive mutability borrow rule in the compiler.
 
 
 
-`represent_cxx` ( default only in fundamental  `cxx_T_t`)/ `no_represent_cxx`(default in any other type):
+`represent_cxx` ( default only in fundamental types  `cxx_T_t`)/ `no_represent_cxx`(default in any other type):
 
 for this to be used  many rules need to be checked  to have a cxx compatible type , 
 
 for example  the alignment must not be fractional and must be at least `alignof(cxx_char_t)`, 
 
-these types must be representable under the Itanium spec, for example virtual classes with `represent_cxx` must follow the Itanium spec for ABI layout,this requires some nasty trade-offs, for example , supporting unsafe interposition C colon and allowing two stage dynamic loaders ( the cxx one ignores mcc binary , the mcc one independently loads),
+these types must be representable under the Itanium spec, for example virtual classes with `represent_cxx` must follow the Itanium spec for ABI layout, and functions with this qualifier (such as virtual functions in the Itanium style v-table) must follow Itanium compatible calling conventions ,this requires some nasty trade-offs, for example , supporting unsafe interposition C colon and allowing two stage dynamic loaders ( the cxx one ignores mcc binary , the mcc one independently loads),
 this deep divide between these two ecosystem's ABI is limiting performance for mixed language code ,
 however , if we did use cxx, cxx did use lib unwind , so we paid for cxx and lib unwind and the whole std cxx lib. 
+using cxx FFI is already unsafe , however mixing cxx and c colon types is highly discouraged.
+and needs `unsafe(represent_cxx)`
 
 
 
@@ -470,7 +472,7 @@ however , if we did use cxx, cxx did use lib unwind , so we paid for cxx and lib
 
 
 
-a value dcalared `constexpr` is known at compile time.
+a value declared `constexpr` is known at compile time.
 
 
 
@@ -478,9 +480,7 @@ a value dcalared `constexpr` is known at compile time.
 
 `no_dll_comparable_address`(default)/`dll_comparable_address`(dynamic loader used Function and variable ( any symbol) qualifier):
 
- a function,  variable or storage space,  used in the dynamic shared  library, may have a different address to the static function,
-
- a `dll_comparable_address` mandates that the storage adress is unique,
+ a function,  variable or storage space,  used in the dynamic shared  library, may have a different address to the static function, a `dll_comparable_address` mandates that the storage address is unique,
 
  comparing two variables with  `no_dll_comparable_address` may or may not change during the execution , also interposition is not allowed for these values.
 
