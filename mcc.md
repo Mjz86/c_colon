@@ -2770,9 +2770,9 @@ this context type is used in asynchronous programming ( paired with the std::sch
 the lower the level the more debugging friendly is it.
 
 
-- `std::debugging_trap_handler( std::trapped_debbug_info_t info)fastdyncaller noexcept `: 
+- `std::debugging_trap_handler( std::trapped_debbug_info_t info)fastdyncaller dll_comparable_address interpositioned dllexport noexcept=0; `: 
  captures standardized  debugging info on the trap instruction ,
- then hands control flow to the debugger, this symbol is `unsafe(interpositioned)`  .
+ then hands control flow to the debugger, this symbol is `unsafe(interpositioned)`   and .
  the debugger  may use `set_interposition(std::debugging_trap_handler,address)`  in a concurrent debugging thread , to overridde this symbol,
  the debugger may pause the execution of only this or all thread, to inspect the debug context,
  or if the debugging has specific conditions for triggering , overring this with the checker vs trigger  for those conditions is an excellent choice to not slow down all execution.
