@@ -772,7 +772,7 @@ function qualifiers
 these don't really mean anything to the compiler , the are not  relevant to ODR ( the declaration is allowed to not include these while  the definition may) in c colon ,( not even used in the ABI hash), however E colon can put these, to allow the context-type to be implicitly changed via reflection to reflect that functions intent 
  for example  debug(std::debug::obfuscated) to do debugging in release or debug(std::debug::unwind) , to debug during unwind. 
 
-- none(default on dynamic calls or declared non visible symbols):
+- none(in terms of purity,default on dynamic calls or declared non visible symbols):
 not having anything fancy at all.
 
 - synth( the implicit is default on static definitions):
@@ -950,22 +950,22 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
 
  
 
- - nodyncontract/ dyncontract:
+ - `nodyncontract/dyncontract`:
 
- dyncontract ( default) allows a function's contract to execute in the call site based on the callers contract evaluation requirements. 
- an in-val argument is implicitly passed to make contract violation controlled. 
+ `dyncontract` ( default) allows a function's contract to execute in the call site based on the callers contract evaluation requirements. 
+ an `in-val` argument is implicitly passed to make contract violation controlled. 
 
 
 
-  * the fastdyncaller transformation :
+  * the `fastdyncaller` transformation :
 
  this is intended  for functions that want minimal register usage in the functions who use the dynamic call,
 
- usually smaller functions with less used  registers benefit from the fastdyncaller specification, but those with many moving parts who already have large register usage are better used with the fastdyncallee qualifier. 
+ usually smaller functions with less used  registers benefit from the `fastdyncaller` specification, but those with many moving parts who already have large register usage are better used with the `fastdyncallee` qualifier. 
 
- if F's adress isnt stored or used , then the transformation code  is optimized away.
+ if F's address isn't stored or used , then the transformation code  is optimized away.
 
- the fastdyncallee , on the other hand  doesn't have a transformation in the function's assembly.
+ the `fastdyncallee` , on the other hand  doesn't have a transformation in the function's assembly.
 
 
 
@@ -974,7 +974,7 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
  ```txt 
 
  
-
+// the enum ret and catch are similar , however they have a secondary lookup( often deduplicated across the link-unit )    table with all the offsets+ret pointing to RC ,then RC finally does a secondary jump lookup to the caller table  , this is only one of the many ways of doing this , and we havent even done callee-inlining the thrunk yet. 
     RC:
 
     
@@ -1047,7 +1047,7 @@ an `reproducible`  expression must be composed of only other `reproducible` expr
 
 
 
-the difference to fastdyncallee is :
+the difference to `fastdyncallee` is :
 
 ```txt
 
@@ -1097,7 +1097,7 @@ exact mechanism of return pointers:
 
  however,  most of these are offsets, 
 
- the real way we store them is in 4 cases( 2 and 0 being thr most common) :
+ the real way we store them is in 4 cases( 2 and 0 being the most common) :
 
  
 
