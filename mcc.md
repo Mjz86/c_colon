@@ -27,7 +27,7 @@ also, this is generally incomplete, the c colon spec and mcc ABI of that spec wi
 
 
 
-the formatting of this document is currently not very well, under scores are not ment for italic.
+the formatting of this document is currently not very well, under scores are not meant for italic.
 
 
 
@@ -107,11 +107,11 @@ c: would use and be written with functional looking defaults,
 
 for example a variable with no qualifier would be implicitly stable , const , safe and etc..
 
-or an in-out would be implicitly mutable , and so on,
+or an `inout` would be implicitly mutable , and so on,
 
 these would make most code value oriented and functional,  
 
-and a code similar to Cpp with rust like safety would be achieved. 
+and a code similar to CPP with rust like safety would be achieved. 
 
 
 
@@ -123,7 +123,7 @@ and a code similar to Cpp with rust like safety would be achieved.
 
 4. compile time code:
 
-the c colon spec aims to use way more compike time code.
+the c colon spec aims to use way more compile time code.
 
 
 
@@ -139,23 +139,23 @@ its like c++ but the legacy has been striped away.
 
 6. ABI stability with ever changing libraries:
 
-the recursive hash ABI aims to tag each component with all the dependancies with a hash, without the need for inline namespaces, and it even propagates.
+the recursive hash ABI aims to tag each component with all the dependencies with a hash, without the need for inline namespaces, and it even propagates.
 
-this property of propagation through every type, function and namespace, makes us able to link everything old with everything new without odr violations, and new components can just use a middle api to interface to new code.
+this property of propagation through every type, function and namespace, makes us able to link everything old with everything new without ODR violations, and new components can just use a middle API to interface to new code.
 
 imagine a world were the old std::regex was used for old code and the same std regex was 10 times faster when used new code both coexisting.
 
-this truly makes it paying for what we used. the old programer payed for old slow usage, but new code did not have to pay for the burdens in old code.
+this truly makes it paying for what we used. the old programmer paid for old slow usage, but new code did not have to pay for the burdens in old code.
 
-and each independent code that stayed unchanged did not need duplications, a dream for the Cpp committee, and a possibility in mcc, the c colon ABI .
+and each independent code that stayed unchanged did not need duplications, a dream for the CPP committee, and a possibility in mcc, the c colon ABI .
 
-the hashes although not cryptographically secure are big enough to be unique, basically like a uuid (because its just a name mangling scheme).
+the hashes although not cryptographically secure are big enough to be unique, basically like a UUID (because its just a name mangling scheme).
 
-if theres a cycle in the hash dependancy chain, the problem is ill formed and notified of the need to use the `abi=` operator that doesn't rely on something  else at least one node in that cycle,
+if there's a cycle in the hash dependency chain, the problem is ill formed and notified of the need to use the  `abi=`  operator that doesn't rely on something  else at least one node in that cycle,
 
-although  a rare occurrence might be that  the f() abi=(f())  when calling the constexpr f , itself needs f, so , while such issues cannot be avoided due to the halting problem,  its still relatively easy to fix when noticing the constexpr max evaluation steps has been reached. 
+although  a rare occurrence might be that  the f() , `abi=(f())`  when calling the `constexpr` f , itself needs f, so , while such issues cannot be avoided due to the halting problem,  its still relatively easy to fix when noticing the `constexpr` max evaluation steps has been reached. 
 
-also , using abi= on a member doesn't change the members real type and hash , and even if in some cases it  does, its still possible  to "unsafe(abi-cast)" the hash to the original type's hash ( variable definition having the type be type1 abi=(abiof(type2)) or at most an unsafe `reinterpret_cast` known as pointer-cast or a bit cast)
+also , using `abi=` on a member doesn't change the members real type and hash , and even if in some cases it  does, its still possible  to `unsafe(abi-cast)` the hash to the original type's hash ( variable definition having the type be type1 `abi=(abiof(type2))` or at most an unsafe `reinterpret_cast` known as pointer-cast or a bit cast)
 
 
 
@@ -165,21 +165,21 @@ also , using abi= on a member doesn't change the members real type and hash , an
 
 It's similar to Itanium,  however, 
 
-The name has an appended xxhash128 , of its signature, 
+The name has an appended `xxhash128` , of its signature, 
 
-Every type function and namespace has these hashes , and they recursively depend on each other ( for a cycle,  like in a graphs node type , there are operators such as abi=,abi+,abiof that operate on the 128 hashes)
+Every type function and namespace has these hashes , and they recursively depend on each other ( for a cycle,  like in a graphs node type , there are operators such as `abi=,abi+,abiof` that operate on the 128 hashes)
 
 This makes the language entirely ABI stable , at least within the ecosystem
 
 
 
-7. type qualifier deriven optimizations:
+7. type qualifier driven optimizations:
 
-the qualifiers change throughout the code, the same expression have lead to diffrent qualifiers, its ill-formed, but this makes uninitilized variables truly safe to use.
+the qualifiers change throughout the code, the same expression have lead to different qualifiers, its ill-formed, but this makes uninitialized variables truly safe to use.
 
-because the function either throws or initilizes them, if not initilized it is an error.
+because the function either throws or initializes them, if not initialized it is an error.
 
-(this will be clarifed more in next revisions...)
+
 
 
 
@@ -187,29 +187,29 @@ because the function either throws or initilizes them, if not initilized it is a
 
 8. reflection the verbosity away:
 
-each namespace has an special function, implemented defaultly, it addes context objects to functions, and automates many of the verbose writing
+each namespace has an special function, implemented by default, it adds context objects to functions, and automates many of the verbose writing
 
-for example  a var is stable const restricted safe and ect by deafult,  no need to opt in , 
+for example  a var is stable const restricted safe and ect by default,  no need to opt in , 
 
 the reflection functions work on the ast , after all the de reflection Operations are completed,  the ast can fully turn into IR,
 
-these operations can happen in parallel,  if they are located in separate dependancy chains .
+these operations can happen in parallel,  if they are located in separate dependency chains .
 
-similarly the ABI hashing is also done in parallel  and cashed once completed based on dependancy chain, although the abiof operator might make it happen sooner than usual. 
-
-
+similarly the ABI hashing is also done in parallel  and cashed once completed based on dependency chain, although the abiof operator might make it happen sooner than usual. 
 
 
 
 
 
-9. JIT constexpr code execution:
 
-each function  even in its template form can be turned into IR , because mcc IR is different,  it has two types , constexpr IR and mutexpr IR ,
 
-the borrow checking and lifetime management itself is constexpr IR with assertions.
+9. JIT `constexpr` code execution:
 
-constexpr IR is necceceraly  ran in the compiler , so , even if the template types are unknown,  the IR is generated to  reterive the template type then de-reflect the type away in just-in-time generated IR.
+each function  even in its template form can be turned into IR , because mcc IR is different,  it has two types , `constexpr` IR and mutexpr IR ,
+
+the borrow checking and lifetime management itself is `constexpr` IR with assertions.
+
+`constexpr` IR is necceceraly  ran in the compiler , so , even if the template types are unknown,  the IR is generated to  reterive the template type then de-reflect the type away in just-in-time generated IR.
 
 
 
@@ -235,11 +235,11 @@ async destructors work with the `co_value` keyword  and much more.
 
 
 
-11. easy to use package management with Cpp like compile times:
+11. easy to use package management with CPP like compile times:
 
 like cargo , c colon has a package management system integrated in the tool chain ,
 
-unlike hedaer files and Cpp files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
+unlike hedaer files and CPP files, c colon aims to be more modular , each file being a module, like c++ modules,  while allowing for static and dynamic linking of libraries like in c++,
 
 each module has hashes of its dependent modules, to help cashing and compile times ,
 
@@ -263,7 +263,7 @@ begginners:
 
 avoiding most qualifiers and completely, sticking to using mut when necessary, 
 
-sticking to value semantics, for functions,  in-out , in , out  and non reference,  reference-like alternative that dont cause much confusion, 
+sticking to value semantics, for functions,  `inout` , in , out  and non reference,  reference-like alternative that dont cause much confusion, 
 
 and coping most things , occasionally using more complex code.
 
@@ -439,7 +439,7 @@ unrestricted disables the exclusive mutibility borrow rule in the compiler.
 
 
 
-`represent_cxx` ( deafult only in fundemental  `cxx_T_t`)/ `no_represent_cxx`(deafult in any other type):
+`represent_cxx` ( default only in fundemental  `cxx_T_t`)/ `no_represent_cxx`(default in any other type):
 
 for this to be used  many rules need to be checked  to have a cxx compatible type , 
 
@@ -461,11 +461,11 @@ aliastype means that any store/load/modification throgh this type can influence 
 
 
 
-mutexpr / constexpr
+mutexpr / `constexpr`
 
 
 
-a value dcalared constexpr is known at compile time.
+a value dcalared `constexpr` is known at compile time.
 
 
 
@@ -491,7 +491,7 @@ the adresses of these variables is overriden at load time , and the memory  sect
 
    makes the symbol an export/import for dll linking by providing a symbol hash.
 
-   also dllhidden is the deafult and removes the symbol  hash in the binary .
+   also dllhidden is the default and removes the symbol  hash in the binary .
    there is an unsafe(interpositioned) qualifier that can use `set_interposition(fn,address)` to store ( memory  order release) function address on a global atomic static , using  the addressof on this symbol will load by a memory order of aquire,
    therfore the address  is controlled by developers.
 
@@ -564,7 +564,7 @@ we can do rust-like reorder optimization if this enabled
 
 
 
-`offset_dependant/not_offset_dependant(deafult)/member_offset_dependant/member_not_offset_dependant(deafult)`(struct/class qualifier,and type qualifier):
+`offset_dependant/not_offset_dependant(default)/member_offset_dependant/member_not_offset_dependant(default)`(struct/class qualifier,and type qualifier):
 
 
 
@@ -574,7 +574,7 @@ a `not_offset_dependant` type is a type whoes inner structs can be scattered in 
 
  but `offset_dependant` objects can use the offset to gain a pointer to the main object.
 
-`member_offset_dependant` objects are the ones that specifically can be used for casts by offset , base classes are `member_offset_dependant` by deafult.
+`member_offset_dependant` objects are the ones that specifically can be used for casts by offset , base classes are `member_offset_dependant` by default.
 
 
 
@@ -684,7 +684,7 @@ an owned object can use and must drop after use.
 
  `drop_on_throw/presist_on_throw,drop_on_ret/presist_on_ret,xvaluexpr, rvaluexpr/lvaluexpr , (i)(o)valuexpr`(function arg qualifiers): 
  drop on X makes it so that the object is  when X , (xvaluexpr is unconditional drop),rvaluexpr premotes move semantics.
- (i)(o)valuexpr does the automatic in(i)/out(o)/in-out(io)/inval(none) dropping semantic to the current refrence or if trivial , via register 
+ (i)(o)valuexpr does the automatic in(i)/out(o)/`inout`(io)/inval(none) dropping semantic to the current refrence or if trivial , via register 
  
 
 determines the general usage and call convention in a function argument.
@@ -703,7 +703,7 @@ a stable uninitilized mutable value that will initilize the caller argument afte
 
 - iovaluexpr:
 
-a stable mutable value. the in-out qualification
+a stable mutable value. the `inout` qualification
  
 
 
@@ -711,13 +711,13 @@ a stable mutable value. the in-out qualification
 
 
 
-qualiexpr(T V)/qualiexpr() ( deafult):
+qualiexpr(T V)/qualiexpr() ( default):
 
 an special qualifier.
 
  V itself has a type with its qualifiers, 
 
- the value of V can be changed by the constexpr code section by qualiexprof(indentifier)  that accecess the V inside (needs to have unsafe(qualiexprof) , beacuse E colon does not need this level of power).
+ the value of V can be changed by the `constexpr` code section by qualiexprof(indentifier)  that accecess the V inside (needs to have unsafe(qualiexprof) , beacuse E colon does not need this level of power).
 
  any function attempting to caputure this qualifier inside its scope needs to be a template,
 
@@ -739,7 +739,7 @@ template<autoexpr T-inside>
 
 T-outside is the complete outside type, the checks of the outside , however the T-inside is what the function body actually gets as the atgument type of name, 
 
-however if there is a dependancy from T-inside to T-outside, the function is considered fully templated , but if not , the function body is considered to be non templated , but the function call site still does execute the requires clause, which may contain checks or info about the type,
+however if there is a dependency from T-inside to T-outside, the function is considered fully templated , but if not , the function body is considered to be non templated , but the function call site still does execute the requires clause, which may contain checks or info about the type,
 
 for example , a safe function may need to get a sorted vector ,  but the vector cant really prove without O(n) ops that it is sorted ,  and we really dont want static overhead , 
 
@@ -816,13 +816,13 @@ indicates that a function is effectless and idempotent.
 
  a function f is `mostly_functional` if The    returned or outputed value ( via  out)  by a call to f depends exclusively on, The values of its direct function arguments,The values of any non-volatile global, static, or thread-local memory observed at the time of the call, The values of any memory locations pointed to by its arguments (provided those locations are not volatile).
 
-  f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and in-out argument's value. 
+  f performs no write operations to any memory location visible outside its own activation record, including, global, static, or thread-local objects, Memory pointed to by its arguments (even if the arguments are non-const pointers), but excluding out and `inout` argument's value. 
 
   and f performs no write accesses to volatile-qualified objects.
 
   viewstate and idempotent .
 
-( basically gnu::pure if no in-out is used) 
+( basically gnu::pure if no `inout` is used) 
 
 
 
@@ -834,13 +834,13 @@ indicates that a function is effectless and idempotent.
 
  and f performs no write operations to any memory location visible outside its own activation record, including Global, static, or thread-local objects and Memory pointed to by its arguments ,even if the arguments are non-const pointers, 
 
- only the in-out and out arguments are modifiable reference like arguments.
+ only the `inout` and out arguments are modifiable reference like arguments.
 
  and f and its callees performs no accesses to volatile-qualified objects.
 
  and f is unsequenced  .
 
- ( basically gnu::const if no in-out is used) 
+ ( basically gnu::const if no `inout` is used) 
 
 
 
@@ -922,7 +922,7 @@ noreturn means the behaviour is undefined if the function returns to the caller 
 
  - nodyncontract/ dyncontract:
 
- dyncontract ( deafult) allows a function's contract to execute in the call site based on the callers contract evaluation requirements. 
+ dyncontract ( default) allows a function's contract to execute in the call site based on the callers contract evaluation requirements. 
  an in val argument is implicitly passed to make contract violation controlled. 
 
 
@@ -1135,17 +1135,17 @@ the symbol table and dynamic loader:
 
 
 
-- c colon symbols are *not* interpositioned by deafult :
+- c colon symbols are *not* interpositioned by default :
 
-0. we do not want the overhead of the global offset table(GOT) by deafult, as it takes a toll on all calls from shared libraries even thoes thar are never interpositioned (see the shared libraries cppcon video).
+0. we do not want the overhead of the global offset table(GOT) by default, as it takes a toll on all calls from shared libraries even thoes thar are never interpositioned (see the shared libraries cppcon video).
 
-1.  it has an uneasy coexistence with the c colon odr.
+1.  it has an uneasy coexistence with the c colon ODR.
 
 2. it is rarely used and can be mimicked by a macanism like cxx `set_terminate`.
 
 3. GOT being writable during the execution of the program is a security  problem because of being able to change the common functions to do something malicious( glaring attack surface).
 
-4. we do not want the overhrad of the procedural lookup table by deafult.
+4. we do not want the overhrad of the procedural lookup table by default.
 
  
 
@@ -1259,7 +1259,7 @@ instead of the default `std::context_t<optimization-level>`  use `std::async_con
 
 - last function that is called resulting in suspension: 
 
-  note that the reason for using references instead of in-out here is because the callee will probably throw , resulting in the drop of in-out , but references don't drop self on throw.
+  note that the reason for using references instead of `inout` here is because the callee will probably throw , resulting in the drop of `inout` , but references don't drop self on throw.
 
   `promise_suspend(this promise& self, promise-cache,bool& is_cancled )context-type->context-type-coro-return;`
 
@@ -1289,7 +1289,7 @@ if a promise wants ( decided in the awaiter suspension via returned `transfered_
 
 - promise-cache :
 
-the promise cache is an object only visible in the promise, with lifetime of the promise itself, as if an stack variable on the promisesl function's stack, its accessible as an in-out like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle 
+the promise cache is an object only visible in the promise, with lifetime of the promise itself, as if an stack variable on the promisesl function's stack, its accessible as an `inout` like object to most inner functions , its mostly because the promise type's storage is hard to optimize because the caller can get it, therefore,  this can be used for intermediate variables in the coroutine,  for example the caller handle 
 
 
 
@@ -1376,7 +1376,7 @@ the promise cache is an object only visible in the promise, with lifetime of the
 
  
 
- out/in/in-out T:
+ out/in/`inout` T:
 
  
 
@@ -1392,7 +1392,7 @@ for function arguments,  these don't necessarily mean that T will have the same 
 
 a typical l-value reference like rust , and if unrestricted , like c++.
 
-its like in-out,for passing around T without potentially changing the adresss of T , unlike in-out.
+its like `inout`,for passing around T without potentially changing the adresss of T , unlike `inout`.
 
 
 its const is used in the copy constructors.
@@ -1414,9 +1414,9 @@ its mut is used in the move constructors.
 iovaluexpr T&:
 
 
-a typical l-value reference like in-out , this is the awnser to in-out like semantics without the intent to steal.
+a typical l-value reference like `inout` , this is the awnser to `inout` like semantics without the intent to steal.
 
-its like in-out,for passing around T without potentially changing the adresss of T , unlike in-out.
+its like `inout`,for passing around T without potentially changing the adresss of T , unlike `inout`.
 
 
 if a function throws by exception,  this value is considered dropped/uninitilized if T is mutable .
@@ -1625,7 +1625,7 @@ the target function.
 
 
 
-- vague linkage: the treatment of entities -- e.g. inline functions, templates, virtual tables -- with external linkage that can be defined in multiple translation units, while the odr requires that the program behave as if there were only a single definition.
+- vague linkage: the treatment of entities -- e.g. inline functions, templates, virtual tables -- with external linkage that can be defined in multiple translation units, while the ODR requires that the program behave as if there were only a single definition.
 
 
 
@@ -1790,7 +1790,7 @@ a mcc signature has:
 
 
 
-return-type function-mangled-name ( arg-type-(in/out/in-out) args... ) context-type (noexcept/throws) (noreturn/mayreturn) ( other-function-qualifiers);
+return-type function-mangled-name ( arg-type-(in/out/`inout`) args... ) context-type (noexcept/throws) (noreturn/mayreturn) ( other-function-qualifiers);
 
 
 
@@ -1798,7 +1798,7 @@ return-type function-mangled-name ( arg-type-(in/out/in-out) args... ) context-t
 
 
 
-the context type is as if its an in-out argument.
+the context type is as if its an `inout` argument.
 
 
 
@@ -1894,7 +1894,7 @@ and must be written to at some point in callee.
 
 
 
-4.  in-out:
+4.  `inout`:
 
 
 
@@ -1922,7 +1922,7 @@ important note:
 
 
 
- in and out registers may overlap in the calling convention , this doesn't mean that they will be in-out , only that the registers who are used for input purposes, will have output purposes after the call,  because its faster as an in-out amd has less register pressure.
+ in and out registers may overlap in the calling convention , this doesn't mean that they will be `inout` , only that the registers who are used for input purposes, will have output purposes after the call,  because its faster as an `inout` amd has less register pressure.
 
 
 
@@ -1936,19 +1936,19 @@ for example if i do a call to a fastdyncallee dynamic function in an almost empt
 
 a function signature , or a function pointer type will determine the :
 
-in , out, and in-out registers.
+in , out, and `inout` registers.
 
 
 
 
 
-- in the rare occasion  of using all registers for parameter passing , the caller pushes arguments to the stack , the caller is responsible for the cleanup of the out and in-out parameters,  but the callee is responsible for the in parameter cleanup. 
+- in the rare occasion  of using all registers for parameter passing , the caller pushes arguments to the stack , the caller is responsible for the cleanup of the out and `inout` parameters,  but the callee is responsible for the in parameter cleanup. 
 
 
 
 - the registers allocator priority goes like( lower means more priority for being in a registers):
 
-1.   all in-out registers  ( including the ones made implicitly via the overloap of in and out registers).
+1.   all `inout` registers  ( including the ones made implicitly via the overloap of in and out registers).
 
 2.  all out registers. 
 
@@ -1958,13 +1958,13 @@ in , out, and in-out registers.
 
 
 
-- after stable sorting of arguments based on in/out/in-out the stack arguments are pushed onto the stack from right to left.
+- after stable sorting of arguments based on in/out/`inout` the stack arguments are pushed onto the stack from right to left.
 
 
 
  - the responsibility of cleanup of stack variables:
 
- 1. in-out and out:
+ 1. `inout` and out:
 
  these arguments are cleaned up by the caller. 
 
@@ -1986,7 +1986,7 @@ these arguments are allocated on the stack  after assignments of the stack point
 
 
 
-* the unsafe(dyn-args) dynamic variading functions  ( printf in C is one of the examples, although these functions are unsafe and therfore bad practice to write) implicitly treat the underlying in registers that weren't overlapping  with outs as in-out for the ABI to be able to clean it up by the caller side.
+* the unsafe(dyn-args) dynamic variading functions  ( printf in C is one of the examples, although these functions are unsafe and therfore bad practice to write) implicitly treat the underlying in registers that weren't overlapping  with outs as `inout` for the ABI to be able to clean it up by the caller side.
 
 
 
@@ -2281,7 +2281,7 @@ these apis will be placed in a namespace `__mccabiv1`. the header file will also
 
 
 
-in general, api objects defined as part of this ABI are assumed to be extern "c:". however, some (many?) are specified to be extern "c" or extern "c++" if they:
+in general, API objects defined as part of this ABI are assumed to be extern "c:". however, some (many?) are specified to be extern "c" or extern "c++" if they:
 
 
 
@@ -2295,7 +2295,7 @@ in general, api objects defined as part of this ABI are assumed to be extern "c:
 
 ---
 
- module dependancy resolutions:  
+ module dependency resolutions:  
 
   each file , has many kind of cached compiler outputs relevant to it in the build directory.
 
@@ -2381,7 +2381,7 @@ in general, api objects defined as part of this ABI are assumed to be extern "c:
 
      because templates in c++  and similarly C colon are turning complete  , we cannot determine if the template graphes will end their cycles or not ,
 
-     so , for the resolution of this , we first need to resolve all the dependancies by execution of the constexpr IR-JIT code, the IR code will build the graph during its execution, 
+     so , for the resolution of this , we first need to resolve all the dependancies by execution of the `constexpr` IR-JIT code, the IR code will build the graph during its execution, 
 
      if the step count doesn't exceed,  then we have the  the graph in all templates being specialized,  and so being usable.
 
@@ -2391,11 +2391,11 @@ in general, api objects defined as part of this ABI are assumed to be extern "c:
 
   dependency graph building:
 
-   for each part of the system,  we have a node in a dependancy graph ,
+   for each part of the system,  we have a node in a dependency graph ,
 
-   we start from parts where theres  no dependancy and propagate to the nodes where the dependancies are resolved, 
+   we start from parts where theres  no dependency and propagate to the nodes where the dependancies are resolved, 
 
-   each time a template's full non template/specialized dependancies are resolved,  it  tries to resolve the rest via constexpr execution,
+   each time a template's full non template/specialized dependancies are resolved,  it  tries to resolve the rest via `constexpr` execution,
 
    this is repeated till we either reach max evaluation step or we resolve all identifiers to move to the next step.
 
@@ -2546,8 +2546,8 @@ in a debugging environment,  this can have conditional trap instructions.
 in the callee , before the callee code and stack get initialized, the context-type gets a chance to caputure the protection information of the function if it wants to, to protect against stack overflow, and a minimalistic debug info for the stack trace.
 in a debugging environment,  this can have conditional trap instructions. 
 
-- `operator make_meta ( in-out std::meta )->meta-input `, `operator make_meta ( in-out std::debug_meta )->meta-input`:
-a constexpr function that makes the meta type based on static reflection information, 
+- `operator make_meta ( inout std::meta )->meta-input `, `operator make_meta ( inout std::debug_meta )->meta-input`:
+a `constexpr` function that makes the meta type based on static reflection information, 
 it also can be used to insert canaries and other safety features in debugging,  the output is given to runtime to be used .
 
 - operator  meta ( meta-input )callee-context-type :
@@ -2630,7 +2630,7 @@ uaually specified noreturn, if not the user might struggle writing code.
 
 
 the two standard context types are :
-deafult support is for common exception string and enum categories , and   the common cancelation  and violation tokens,
+default support is for common exception string and enum categories , and   the common cancelation  and violation tokens,
 however on lower levels , stack traces would get richer , and the exceptions would be paired with origin and specific lines of unwind it went through,
 what objects did the violation and more 
 
@@ -2889,7 +2889,7 @@ the special byte type with the alias set of all types (with non fractional align
 
 
 
-0. c colon typical pointers( deafult ) : 
+0. c colon typical pointers( default ) : 
 
  these point to types with non fractional alignments
 
@@ -3055,17 +3055,17 @@ the objective of a full ABI is to allow arbitrary mixing of object files produce
 
 - there are 8 main steps( might ):
 
- 1. determine the dependancy graph of the mcc files, irs and modules ( to help realize parallelization opertonities, and determine if some steps are not neccecery if the result is cached and valid).
+ 1. determine the dependency graph of the mcc files, irs and modules ( to help realize parallelization opertonities, and determine if some steps are not neccecery if the result is cached and valid).
 
  2. compile to the ast object/modules.
 
  3. compile the asts to mcc ir-0 .
 
- 4. for every constexpr ir-0 path , evaluate all constexpr code and generate mcc ir-1 files.
+ 4. for every `constexpr` ir-0 path , evaluate all `constexpr` code and generate mcc ir-1 files.
 
  5. for every ir-1 file , optimize the code to ir-2 files.
 
- 6.  using all of the summary and dependancy graph information,  we make an ir-3 file for each partially-independent unit of execution in the graph to be optimized , we do the processing of these files then we, link all ir-3 files in the mcc linker to an ir-4 file, this is  ThinLTO style .
+ 6.  using all of the summary and dependency graph information,  we make an ir-3 file for each partially-independent unit of execution in the graph to be optimized , we do the processing of these files then we, link all ir-3 files in the mcc linker to an ir-4 file, this is  ThinLTO style .
 
  7. map ir-4 the code to the target assembly, while optimizing unnececery register usage , for example by register allocation optimizations and generate an object file( also happens with the previous step).
 
@@ -3089,7 +3089,7 @@ the mcc toolchain and ABI outside of c colon:
 
  
 
-  1. the mcc-Cpp transpiler: 
+  1. the mcc-CPP transpiler: 
 
       a rust compiler that compiles c++ into mcc-ir.
 
@@ -3158,7 +3158,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
   most complex code are implicit ,
 
-  for example instead of references , developers use in/in-out/out and values , 
+  for example instead of references , developers use in/`inout`/out and values , 
 
   this makes this code readable and object oriented while being very safe and optimizable.
 
@@ -3194,13 +3194,13 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     while,like rust , its still possible to make a self referential  reference counter `std::rc_t`/`std::arc_t` who will be "leaked", this is not a common issue and not a memory unsafty,  it still can be resolved with `std::weak_rc_t` or `std::weak_arc_t` ( proving this will not happen  by the compiler is very hard , and resolution of this issue requires a garbage collector and graph traversal,  which is not what we want, but a memory leak is still not a security exploit but a programmer bug , similar to a deadlock)
 
-    also,  if you noticed that you need an abi= in a structure, because the hash of the internal reference needs the hash of the external loop , congratulations, you've found the part that needs a weak reference, this is because the hash dependancy chain created via a dependancy  of T to its arc<T> and arc<T> to T is exactly the thing that makes arc<T> a candidate for a self referential reference. 
+    also,  if you noticed that you need an `abi=` in a structure, because the hash of the internal reference needs the hash of the external loop , congratulations, you've found the part that needs a weak reference, this is because the hash dependency chain created via a dependency  of T to its arc<T> and arc<T> to T is exactly the thing that makes arc<T> a candidate for a self referential reference. 
 
-    or your just trying to implement a tree , graph or linked list , which you can do via reference counted variables , but your notified of its potential for a self reference when you used abi= to make it compile again. 
+    or your just trying to implement a tree , graph or linked list , which you can do via reference counted variables , but your notified of its potential for a self reference when you used `abi=` to make it compile again. 
 
-    however,  an extreme measure against all cycles is  making the use of abi= as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and ect , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
+    however,  an extreme measure against all cycles is  making the use of `abi=` as unsafe(abi=) , this makes any E colon code unable to make any liked list , graph or tree like structure and ect , and severly limits many forms of inheritance,  but it grantees that all reference counters will be freed .
 
-    ( this is the deafult therfore any use of abi= is unsafe and so E colon programs cannot have memory leaks by deafult,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via abi= , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust enum or Cpp std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
+    ( this is the default therfore any use of `abi=` is unsafe and so E colon programs cannot have memory leaks by default,  unless the feature flag is altered,  the reason fot this is , lets assume T has a storage mechanism to a tree , this tree either doesn't have T ( which means no cycles to T) or it does , if it does , T's ABI hash would become dependent  on the graph that is itself dependent on T , and because we cannot type erase T to not depend on itself , and  we cannot cause a brake in the ABI chain via `abi=` , then we really cant form a cycle ( assuming c colon libraries dont provide any type erasure primitives , but only sum types ( like rust enum or CPP std variant) ) ( because  the virtual table ABI is dependent on the type of the  class argument,and the class  is dependent on the virtual table), ( and std::any like types are not provided to E colon because its too low level for it) 
 
     arguably this is extreme , and we cant always grantee that no open-set type erasure will be provided from c colon,   but i would say that if E colon developers want to make a self referential type, it would be more elegant in C colon , and probably there are graph, linked list  and tree libraries that can do that.
 
@@ -3260,7 +3260,7 @@ the express colon language also tends to look more functional than its c colon c
 
  
 
- the function argument flow specifiers ( like a refrence  but without stable adress on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitilized& ) and in-out (akin to mutable& ) prameters are all trivial reallocation and register passed, 
+ the function argument flow specifiers ( like a refrence  but without stable adress on trivial reallocation) the in (akin to const & )  , out (akin to mutable uninitilized& ) and `inout` (akin to mutable& ) prameters are all trivial reallocation and register passed, 
 
  however because of the ABI nature they will remain valid for the duration of the function call so they are inheritly safe. 
 
@@ -3290,7 +3290,7 @@ although this is fast enough so its good enough,  if not , c colon can be used t
 
  ``` 
 
-  for ( in-out variable: iteration-primitive) {// function body beginning, the function captues the sate and has an in-out argument 
+  for ( `inout` variable: iteration-primitive) {// function body beginning, the function captues the sate and has an `inout` argument 
 
 // modify variable.
 
@@ -3298,7 +3298,7 @@ although this is fast enough so its good enough,  if not , c colon can be used t
 
 
 
-for ( auto [in-out a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the state and has an multiple argument provided in the iterator internals.
+for ( auto [`inout` a, in b, out c, d ]: iteration-primitive){// function body beginning, the function captues the state and has an multiple argument provided in the iterator internals.
 
 // d is copied , a , b and c are "refrenced" via value input outputs
 
@@ -3334,7 +3334,7 @@ return...;
 
 // theres an implicit  transformation for these code , to make it able to do either a ,co await , co return or a throw or simply  continue execution .
 
- for co_await (auto [in-out a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const unstable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
+ for co_await (auto [`inout` a, in b, out c, d ]: parallel-iteration-primitive){// the iteration primitives may restrict the lambda to only caputure stable and thread_safe constant state if it wants to do parallelization , a const unstable mutex<T> however has internal  unrestricted unstable qualification of its members, some even atomic, therfore its valid for it to modify its members even tho it looks constant. 
 
 // can modify a c and d , but cannot modify other variables outside of the for loop , however mutexes can still be modified beacuse they can be modified when constant.
 
@@ -3376,7 +3376,7 @@ return...;
 
 
 
- while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the refrenced ban ( or completely disallowed because of the abi= ban) .
+ while  more restricted values would result OOP virtual inheritance  being more heap and mutext based use because of the refrenced ban ( or completely disallowed because of the `abi=` ban) .
 
  however rust-like enum types with pattern matching  are still very performant and value oriented .
 
@@ -3398,7 +3398,7 @@ return...;
 
 i pridict that the worst common error is an easy "must initialized an out prameter" or "make a copy of a variable and use that instead of passing itself to multiple function prameters"( the reason being that variables are relocated to the prameter when the prameter is created and will be relocated back when the prameter is "destroyed"  in c colon land , but , often the only use after-rellocation-error is these , which can be avoided  by declaration of a new variable  ), which is , simple and far better than lifetimes or memory bugs.
 
-or at most a " the catch block cannot caputure a variable that might be dropped in the try block , try copying that variable before the try block to ensure it will not be an output of a throwing function"( the in-out or out function  arguments  will  have an uninitialized state or qualifier  on that functios throw path in the caller, when used , the same qualifier set per expression rule will make that expression ill formed).
+or at most a " the catch block cannot caputure a variable that might be dropped in the try block , try copying that variable before the try block to ensure it will not be an output of a throwing function"( the `inout` or out function  arguments  will  have an uninitialized state or qualifier  on that functios throw path in the caller, when used , the same qualifier set per expression rule will make that expression ill formed).
 
 in contrast to C colon ( which allows all of these c++ style things) , Express colon does not have operator overloadding,and also function overloadding,  and template specilizations, and only allows simple template declarations ( like the c++ auto concept constraint prameters),
 
@@ -3406,11 +3406,11 @@ this isnt really a safety problem,  but an error massage problem,
 
 if express colon wants readable error massages in its express colon module,  it needs to have less type anotations necessary to show that error message,  and therefore,  much type information would not be shown because the function name and at most the namespace would be sufficient for its detection. 
 
-most template specifications can just be ignored by deafult in express colon,  however C colon errors may not have much clarity without those informations. 
+most template specifications can just be ignored by default in express colon,  however C colon errors may not have much clarity without those informations. 
 
 however E colon still recognizes these C colon constructs , allowing custom types like `std::(u)intdyn_t` ( similar to python's big integer types) to be used by their overloaded operators.
 
- similarly, common pitfalls like cyclic object hash dependency chains have relatively good information on their errors " it seems that your building a graph like structure within your types , however types dependent on themselves tend to be error prone , firstly,  use abi= operators to resolve the cyclic hash , secondly,  if dynamic refrencing is involved,  consider using weak pointers as well, because it would help avoid leaks".
+ similarly, common pitfalls like cyclic object hash dependency chains have relatively good information on their errors " it seems that your building a graph like structure within your types , however types dependent on themselves tend to be error prone , firstly,  use `abi=` operators to resolve the cyclic hash , secondly,  if dynamic refrencing is involved,  consider using weak pointers as well, because it would help avoid leaks".
 
  
 
@@ -3495,7 +3495,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 --- 
 
  improvments and advancements compared to cxx ( in the performance category):
-  0. so maybe one day Cpp can be as fast:
+  0. so maybe one day CPP can be as fast:
 
   i always have loved C++ , even seeing it now with all its legecy , cxx still can be like c colon , heck i wanted c colon to be a c++ superset , but i dont think i can change anything major in it anytime soon, in hopes that a std c++xx maybe powered by mcc  can be as fast as c colon  in the following decades
   
