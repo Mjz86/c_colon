@@ -484,28 +484,35 @@ a value declared `constexpr` is known at compile time.
 
 
 
-`no_dll_comparable_address`(default)/`dll_comparable_address`(dynamic loader used Function and variable ( any symbol) qualifier):
-
+`no_dll_comparable_address`/`interpositioned`/`dll_comparable_address`(default)(dynamic loader used Function and variable ( any symbol) qualifier):
+ this qualifier is not a contributer to the abi hash or the name mangle,
  a function,  variable or storage space,  used in the dynamic shared  library, may have a different address to the static function, a `dll_comparable_address` mandates that the storage address is unique,
 
- comparing two variables with  `no_dll_comparable_address` may or may not change during the execution , also interposition is not allowed for these values.
+ comparing two variables with  `no_dll_comparable_address` 
+ is dependent on dynamic execution order of the loader and its given priorities,
+ in a binary with  `dllexport` we will get that export's  address when we store it and  it can also be inlined freely ( because of modular builds with a single parallel translation unit we dont really have static linking odr violations in mcc because they are ill-formed).
+ however in a  build with `dllimport`   , we get the `dllexport` address with highest priority at dll initialization ,
+when using this qualifier ,  we must use `unsafe(no_dll_comparable_address)` .
 
- a symbol of `dll_comparable_address` definition  is required to be loaded before any c colon code executes,
-
-this means that all linkable binaries with this qualifier  must be available when the program starts.
-
+ a symbol of `dll_comparable_address` definition  is required to be loaded in start up and unloaded at exit,
+this means that all linkable binaries with this qualifier  must be available when the program starts,
+the program  will pick the highest priority between these , and also , 
+no inlining is allowed for any function called with this qualifier , except when `dllhidden`.
 the addresses of these variables is overridden at load time , and the memory  section is set to read execute for the duration of the program. 
+ 
+there is an `unsafe(interpositioned)` qualifier that can use `set_interposition(fn,address)` to store ( memory  order release) function address on a global atomic static , using  the address-of on this symbol will load by a memory order of acquire,
+therefore the address  is controlled by developers.
+also , an `interpositioned` function  when exported can be set to null, `...f(...)...=0;`.
+also , inlining is not allowed for these functions.
+ note that  paring both  `unsafe(no_dll_comparable_address,interpositioned)` , is doubly unsafe, and no inlining allowed. 
 
 
-
- `dllhidden(default)/dllexport/dllimport,interpositioned`( only on static symbols,  like functions or static variables): 
-
+ `dllhidden(default)/dllexport/dllimport`( only on static symbols,  like functions or static variables): 
+this qualifier is not a contributer to the abi hash or the name mangle,
    makes the symbol an export/import for DLL linking by providing a symbol hash.
 
    also `dllhidden` is the default and removes the symbol  hash in the binary .
-   there is an `unsafe(interpositioned)` qualifier that can use `set_interposition(fn,address)` to store ( memory  order release) function address on a global atomic static , using  the address-of on this symbol will load by a memory order of acquire,
-   therefore the address  is controlled by developers.
-
+   
 
 
 
@@ -2286,6 +2293,7 @@ read only dynamic  symbol table layout:
 ```
 // constant read only global section.
 // at offset  0 
+ global_loader_ptr_offset;
 size_t  symbol_count;
 // padding
 // this is the sorted 256bit hash back-end mangle , stored in 32 byte arrays ( big endian  ):
@@ -2298,10 +2306,13 @@ size_t  symbol_count;
  // 1 : dll_comparable_address vs no_dll_comparable_address 
  // 2 : interpositioned vs no-interposition
  // 3 : dllimport vs dllexport
-  //if  no-interposition and dllexport pointer is the offset of the function adress reletive  to offset 0  
- //  if its interpositioned and dllexport, pointer is the offset of the reserved static atomic storage for the address of the function reletive  to offset 0
- // if no-interposition and dllimport  pointer is the offset of the function pointer reletive  to offset 0  
- //  if its interpositioned and dllimport, pointer is the offset of the reserved static atomic storage pointer for the address of the function reletive  to offset 0
+  //if  no-interposition and dllexport and no_dll_comparable_address pointer is the offset of the function adress reletive  to offset 0  
+ //  if its interpositioned and dllexport and no_dll_comparable_address , pointer is the offset of the reserved static atomic storage for the address of the function reletive  to offset 0
+ //if  no-interposition and dllexport and dll_comparable_address pointer is the offset of the function pointer reletive  to offset 0  , this function pointer has the function adress reletive  to offset 0   
+ //  if its interpositioned and dllexport and dll_comparable_address ,   pointer is the offset of the reserved static atomic storage pointer for the address of the function reletive  to offset 0 , this storage pointer has the reserved static atomic storage for the address of the function reletive  to offset 0
+// if no-interposition and dllimport    pointer is the offset of the function pointer reletive  to offset 0  
+ //  if its interpositioned and dllimport  , pointer is the offset of the reserved static atomic storage pointer for the address of the function reletive  to offset 0
+ 
  
  
  // write only once in initilization, then make readonly section: 
@@ -2309,10 +2320,12 @@ size_t  symbol_count;
 global_loader_t*const global_loader;
 const fn**const  imported_interposition_fnptr_ptrs[....]; // the pointers to the interpositioned function pointers.
 const fn* const imported_non_interposition_fnptrs[....];// the pointer to the imported function.
+const fn**const  exported_interposition_dll_comp_address_fnptrs[....];// the pointer to the imported function, first having the offset to the current pointer .
 ...
   
   // read-write section, note that based on compiler flags each of these can be aligned to the destructive interfaces size.
-void* exported_interposition_fnptrs[....];
+void* exported_interposition_fnptrs[....]; // initilized  with the function definition 
+
 ...
 
 
@@ -2321,15 +2334,65 @@ void* exported_interposition_fnptrs[....];
 
 
 
-// if the binary definition has the entrey point:
-// read write section global loader 
-mutex ;
+// if the binary definition has the mcc dynamic  loader.
+// read write section global loader :
+mutex/ atomic flag ;
 size_t total_symbol_count;
 uint256_t  sorted_symbol_fragments(*)[total_symbol_count];
 uintptr_t   symbol_ptr_and_mask(*)[total_symbol_count];
+uint32_t priority(*)[total_symbol_count];
 // symbol_ptr_and_mask is just like symbol_ptr_offset_and_mask, but it has absolute addresses calculated from those offsets.
 
+
+
+// this is done before the module initilization 
+- dynamic load :
+0.make  lockgard mutex.
+1. inspect the list of given binaries meta datas and their priorities.
+2. allocate at least the size of all given symbols and ptr-masks.
+3. merge all sorted arrays of symbols in all the given binaries  into the region while also turning offsets into absolute values and assigning priorities( also sort based on the  priorities as if  the least significant sorting indicator, and because each binary is sorted and its indicator is constant, we can just do O(n) merge with this via a stable sort merge step).( either via  merge step or radix sort based on the appropriate heuristics) and while doing so , for all duplicate regions ( next to each other symbols of equal value)  do the duplication region check function and fail if it fails.
+4. if checks were not successful , then fail.
+5. assign all given libraries loader pointer to the address of global loader.
+6. do a scan to find  duplicate regions , then for each do the duplicate resolution function.
+7. freeze  the "write only once in initilization" section to readonly 
+8. return successfully ( and unlock)
+
+
+- duplication region check:
+0. get the M symbol masks
+1. count all the symbols that are dllimport, are interpositioned are dll_comparable_address. O(M)
+2. check that  all priorities between ajason external symbols is unique or not. O(M), the symbols must have unique dllexport priorities , if not we fail.
+3.   if the loader is not doing  a start up load , all dll_comparable_address counts must be from those qualified as dllimport.
+4.   if the loader has  imports but not any export,  we fail.
+5 . return successfully 
+
+
+// if the start  up loader failed in a duplication region check, the program is ill-formed  .
+
+
+
+- duplicate resolution :
+0. find the highest priority export adress .O(M).
+1. assign all the other adresss to this address.
+3 . return successfully 
+
+
+
+// this is done after the module deinitilization 
+- dynamic unload :
+0.make  lockgard mutex.
+1. get the beginning and end pointers for each binary that needs unloading.
+2. for all elements in symbol_ptr_and_mask:
+3. if element and its internal function and storage being pointed to  is not in range of any of the binary pointers , we continue  to next.
+4. if the element itself was not in binary unload range we fail  by termination ( try to unload symbol while its used ,obvious and easy to check use after free).
+5. remove this element  from the array ( std:: remove_if style removal over the entire loop) 
+6. continue till all are done.
+8. return successfully ( and unlock)
+
+
+
 ```
+
 
  
 
