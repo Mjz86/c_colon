@@ -33,7 +33,7 @@ the formatting of this document is currently not very well, under scores are not
 
 
 
-~~~~~~~
+---
 
 
 
@@ -301,7 +301,7 @@ writing utilities that help automate rust, c++ and other language bindings and m
 
 
 
-~~~~~~~
+---
 
 
 
@@ -335,7 +335,7 @@ its about using a regex without saying that PHP's regex is faster.
 
 
 
-~~~~~~~
+---
 
 
 
@@ -353,7 +353,7 @@ this ABI aims to have minimal compatibility with the Itanium ABI , such that an 
 
 
 
-~~~~~~~
+---
 
 
 
@@ -765,7 +765,7 @@ we can now declare a qualiexpr(bool sorted_flag=false) , (the empty qualiexpr be
 
 
 
-~~~~~~~
+---
 
 
 
@@ -1090,7 +1090,7 @@ contract's code...
 
 
 
-~~~~~~~
+---
 
 exact mechanism of return pointers:
 
@@ -1158,7 +1158,7 @@ exact mechanism of return pointers:
 
     
 
-~~~~~~~ 
+--- 
 
 the symbol table and dynamic loader:
 
@@ -1188,7 +1188,7 @@ the symbol table and dynamic loader:
 
 
 
-~~~~~~~
+---
 
  constant sharing :
 
@@ -1251,7 +1251,7 @@ the symbol table and dynamic loader:
 
    
 
- ~~~~~~~ 
+ --- 
 
  coroutines:
 
@@ -1382,7 +1382,7 @@ the promise cache is an object only visible in the promise, with lifetime betwee
 ```
 
 
-~~~~~~~
+---
  allocation and the as if rule:
   
   the  allocators ( defined via the `std::allocator_c` concept(s)) in mcc followed the as if rule ,
@@ -1398,7 +1398,7 @@ the promise cache is an object only visible in the promise, with lifetime betwee
 
 
 
-~~~~~~~
+---
 
  references( there are more combinations of qualifiers  , but the common ones include )
 
@@ -1478,7 +1478,7 @@ are user defined types who's purpose is referencing variables.
 
 
 
-~~~~~~~
+---
 
 
 
@@ -1782,7 +1782,7 @@ type pointer
 
     
 
-~~~~~~~
+---
 
 
 
@@ -2195,7 +2195,7 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 
 
 
-~~~~~~~ 
+--- 
 
  enum/pattern matching functions:
 
@@ -2229,7 +2229,7 @@ all we did was , for static calls, reduce the burden of the runtime to the link 
 
 
 
-~~~~~~~ 
+--- 
 
 (de)initilization sequence of modules:
 the module constructor that runs :
@@ -2282,7 +2282,7 @@ program code:
 
 
 
-~~~~~~~
+---
 
 
 
@@ -2310,7 +2310,7 @@ in general, API objects defined as part of this ABI are assumed to be extern "c:
 
 
 
-~~~~~~~
+---
 
  module dependency resolutions:  
 
@@ -2418,7 +2418,7 @@ in general, API objects defined as part of this ABI are assumed to be extern "c:
 
   
 
-~~~~~~~
+---
 
 
 
@@ -2528,7 +2528,7 @@ compatibility
 
 
 
-~~~~~~~
+---
 
 
 
@@ -2667,7 +2667,7 @@ the lower the level the more debugging friendly is it.
 
 
 
-~~~~~~~
+---
 
  contracts :
 
@@ -2782,7 +2782,7 @@ results in undefined behaviour.
 
 
 
-~~~~~~~
+---
 
 
 
@@ -2932,7 +2932,7 @@ the special byte type with the alias set of all types (with non fractional align
 
   
 
-  ~~~~~~~
+  ---
 
 
 
@@ -2959,7 +2959,7 @@ any implementation may choose hashes with size bigger or smaller than 256 or 128
 
 
 
-~~~~~~~
+---
    debugging  :
    
   with current debugger technology, if the context-type satisfied the debugging concept,  the compiler will make code much less optimized, 
@@ -2971,7 +2971,7 @@ any implementation may choose hashes with size bigger or smaller than 256 or 128
 
   
 
-~~~~~~~
+---
 
 
 
@@ -3058,7 +3058,7 @@ the c colon linker only uses the ABI hashes as signaturs for linkage.
 
  
 
-~~~~~~~
+---
 
 
 
@@ -3094,7 +3094,7 @@ the objective of a full ABI is to allow arbitrary mixing of object files produce
 
 
 
-~~~~~~~ 
+--- 
 
 the mcc toolchain and ABI outside of c colon:
 
@@ -3123,7 +3123,7 @@ the mcc toolchain and ABI outside of c colon:
 
       
 
-~~~~~~~
+---
 
 express colon  or "E:":
 
@@ -3459,7 +3459,7 @@ however E colon still recognizes these C colon constructs , allowing custom type
 
 
 
-~~~~~~~ 
+--- 
 
 roadmap:
 
@@ -3509,7 +3509,7 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
 
 
-~~~~~~~ 
+--- 
 
  improvments and advancements compared to cxx ( in the performance category):
   0. so maybe one day CPP can be as fast:
@@ -3574,7 +3574,7 @@ while doing so , we can spot all duplicate symbols if any and do the appropriate
 by enabling cancelation in the ABI of coroutines we can swiftly do many structural concurrency patterns, 
 std primitives such as tasks , channels,schedulers,  promises etc help here .
 
-~~~~~~~
+---
 ```
     Copyright (C) 2025 Mjz86 
 
@@ -3600,7 +3600,7 @@ std primitives such as tasks , channels,schedulers,  promises etc help here .
 ```
 
 
-~~~~~~~
+---
 
 
 
@@ -3692,5 +3692,5 @@ CppCon 2018： Matt Godbolt “The Bits Between the Bits： How We Get to main()
 
 
 
-~~~~~~~
+---
 
