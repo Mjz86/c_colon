@@ -905,8 +905,8 @@ this is because  throw is not unwind based and doesn't use globals at all , and 
  any function with these qualifiers  necessarily has to have a match expression in the call site ( or the catch site)( if throw-value  is this way , via operator catch(auto) , auto corresponding to the  `enum` entries) 
  
   * restrictions for  `enum`s specified of this use :
-   all  `enum` entries must be continuous,if not the biggest and smallest one should not be more than 255 values apart  ,( if the number is specified) ,
-   warnings or errors will be given in cases where big number of entries generate massive jump tables or missed performance, typically anything more than 32  entries gives a warning and anything more than 256 table entries ( accounting for both `enum`s of throw and return together) is ill-formed, not because of could , but should , if we need 2 lookups (only 1 if continuous) and more than 8*255+255 bytes ( non continuous max before ill-formed) ... we really aren't fast are we. 
+   all  `enum` entries must be continuous,if not the biggest and smallest one should not be more than 255( or an architect dependent value ) values apart  ,( if the number is specified) ,
+   warnings or errors will be given in cases where big number of entries generate massive jump tables or missed performance, typically anything more than 32( or an architect dependent value )   entries gives a warning and anything more than 256 ( or an architect dependent value ) table entries ( accounting for both `enum`s of throw and return together) is ill-formed, not because of could , but should , if we need 2 lookups (only 1 if continuous) and more than `8*255+255` bytes ( non continuous max before ill-formed) ( or an architect dependent value ) ... we really aren't fast are we. 
   
 
 
@@ -2956,7 +2956,7 @@ and for any cxx pointer `(memcast<uintmax_t>(byte_ptr)&~(sizeof(cxx_char_t)-1))=
 
 
 - hash sizes:
-any implementation may choose hashes with size bigger or smaller than 256 or 128 
+any implementation may choose hashes with size smaller than 256 or 128 
 
 
 
