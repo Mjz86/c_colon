@@ -1167,7 +1167,7 @@ the symbol table and dynamic loader:
 
 - c colon symbols are *not* interposition-ed by default :
 
-0. we do not want the overhead of the global offset table(GOT) by default, as it takes a toll on all calls from shared libraries even thoes thar are never interposition-ed (see the shared libraries `CppCon` video).
+0. we do not want the overhead of the global offset table(GOT) by default, as it takes a toll on all calls from shared libraries even those thar are never interposition-ed (see the shared libraries `CppCon` video).
 
 1.  it has an uneasy coexistence with the c colon ODR.
 
@@ -1175,7 +1175,7 @@ the symbol table and dynamic loader:
 
 3. GOT being writable during the execution of the program is a security  problem because of being able to change the common functions to do something malicious( glaring attack surface).
 
-4. we do not want the overhrad of the procedural lookup table by default.
+4. we do not want the overhead of the procedural lookup table by default.
 
  
 
@@ -1188,9 +1188,9 @@ the symbol table and dynamic loader:
  constant sharing :
 
  
-- in function  arguments when a stable byte B with address A is trivially relocatable within its type, if passed as a stable constant , we can trivialy copy it to address B , we know it will not get changed,  and we know the original value will not change until it gets relocated back ,
+- in function  arguments when a stable byte B with address A is trivially relocatable within its type, if passed as a stable constant , we can trivially copy it to address B , we know it will not get changed,  and we know the original value will not change until it gets relocated back ,
 
-   but, we can still use that byte B within other *constant* arguments,  thats because :
+   but, we can still use that byte B within other *constant* arguments,  that's because :
 
    1. B is within its lifetime. 
 
@@ -1208,7 +1208,7 @@ the symbol table and dynamic loader:
 
 -  immutable data structures and CoW: 
 
-  there are many benefits to such structures , especially in a value oriented language like C colon , and by extention ,E colon.
+  there are many benefits to such structures , especially in a value oriented language like C colon , and by extension ,E colon.
 
   there might be more incentive on doing these styles of data structures for data oriented designs. 
 
@@ -1220,7 +1220,7 @@ the symbol table and dynamic loader:
 
 - strings :
 
-   string types heavily benefit from both sso and cow ,
+   string types heavily benefit from both SSO and COW ,
 
    in C colon,  each string has to have an encoding, 
 
@@ -1799,7 +1799,7 @@ The caller can store values into registers that the callee has promised to not m
 
 To reduce stack spills,
 
-to reduce spills , the function signature should also require minimal usage ( thats where overlap optimization comes in) and also ,
+to reduce spills , the function signature should also require minimal usage ( that's where overlap optimization comes in) and also ,
 
 for reducing braching , most of the branches known in the callee to occur at call site have been moved to the return branch in the callee , the callees return acting like a switch statement to the caller code, but because the return is already a necessary dynamic branch , the cost of 2 branches ( return , and a check of return calue in callee) is reduced  to one.
 
@@ -2968,7 +2968,7 @@ any implementation may choose hashes with size bigger or smaller than 256 or 128
    
   with current debugger technology, if the context-type satisfied the debugging concept,  the compiler will make code much less optimized, 
   will do little use of  cache friendly reordering , and will implicitly  ( through reflection) give the context-type very granular information using implicit calls providing reflection information and dynamic information ,
-  most values will be lifted to stack for traceability,  this is extremely slow , and thats the reason that it only happens in scopes where context-type is mandating it ,
+  most values will be lifted to stack for traceability,  this is extremely slow , and that's the reason that it only happens in scopes where context-type is mandating it ,
   this can help separate the binary debug vs release building model into function by function or module by module debugging 
 
   
@@ -3441,7 +3441,7 @@ however E colon still recognizes these C colon constructs , allowing custom type
 
  because of the implicit one qualifier set per expression rule, any E: function that might modify its arguments on the throw statement,  the arguments would not be usable after that throw, 
 
- thats why all the value oriented catch blocks would not encounter unexpected states (those who were in the process of completion but couldn't because of an exception).
+ that's why all the value oriented catch blocks would not encounter unexpected states (those who were in the process of completion but couldn't because of an exception).
 
  although this means that often containers who have a single incomplete value would also get dropped or put in an empty state ,
 
@@ -3525,9 +3525,9 @@ yes , this is too ambitious to build in few years,let alone quickly,  however if
 
  2. minimal and fast stack spill :
 
- when all the registers modifted are known , we can just put values in thoes that are not modified,
+ when all the registers modifted are known , we can just put values in those that are not modified,
 
- when presssure is too high , all the registers are stored(call)/loaded(return) at once (or even have entier hot code sections that do this via a ```move ret ip; jump __mccabiv1::pop_all or jump __mccabiv1::push_all```), on architechures like x86 , cpus can parrarelize multiple stores or multiple loads but not intertwined load and stores like thoes in cxx calls.
+ when presssure is too high , all the registers are stored(call)/loaded(return) at once (or even have entier hot code sections that do this via a ```move ret ip; jump __mccabiv1::pop_all or jump __mccabiv1::push_all```), on architechures like x86 , cpus can parrarelize multiple stores or multiple loads but not intertwined load and stores like those in cxx calls.
 
  also the fastdyncaller qualifier really helps reduce the register usage.
 
