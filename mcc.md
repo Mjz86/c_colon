@@ -3361,6 +3361,7 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
  a standard node's contract is violated if  used on a graph that is not the original owener.
  the standard node's internal implementation  can be a just pointer , an array , or a vector, however because the only way a to access it is using `graph[node]` we ensure that the lifetime is valid because the graph is alive , the check is also a fast range check in the graph's allocated region, also this gives the graph very fast locality because its region is continuous,
 the library implementation may use a bit allocator to see which chunks in the region are empty , to not have to use memory movement.
+ or the implementation may choose an actual graph implementation,  and have a root node for checks
 
 4. speed :
 
