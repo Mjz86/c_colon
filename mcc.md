@@ -3353,7 +3353,14 @@ the third goal is being blazingly fast ( lower priority than simplicity though).
 
     for example , E colon can only do bitcast if and only if the type of source and dest are trivially relocatable and trivially destructable and have no pointer/references in their layouts ( to prevent memory leak via type erasure), but in C colon , we can do unsafe(bit-cast) to do any form of bit cast( or other casts) . also , beacuse making a thread is unsafe(threads) , the async scheduler is in c colon and E colon remains free of its compications.
     this makes E colon not need any garbage collector for leak prevention,  and because of the hidden thread safety qualifiers ,  e colon can use non atomic refrence counters and only use atomic ones when necessary 
-    
+    leak free graph and linked list support is also present in the library. 
+ `std::graph_t<T> ,std::node_t<T> ,  std::node_t<T[n]> , std::node_t<T[]>`
+ the standard node is a leak safe node , to be used instead of depending on unsafe abi operators, 
+ the standard node can be thought of as an index into the standard graph ,
+ the standard graph manages all lifetimes of all objects es in it ,
+ a standard node's contract is violated if  used on a graph that is not the original owener.
+ the standard node's internal implementation  can be a just pointer , an array , or a vector, however because the only way a to access it is using `graph[node]` we ensure that the lifetime is valid because the graph is alive , the check is also a fast range check in the graph's allocated region, also this gives the graph very fast locality because its region is continuous,
+the library implementation may use a bit allocator to see which chunks in the region are empty , to not have to use memory movement.
 
 4. speed :
 
@@ -3580,7 +3587,6 @@ however E colon still recognizes these C colon constructs , allowing custom type
   i think that terminations is very brutal , because of this exception handling mechanism , i think all violations are represented by an exception, 
 
   this is fast and effective , violations *can* be terminations,  and violation catching is unsafe , but generally program will be fine and exception would be lead to a  terminate in main with very sane stack trace and debug info ( if we choose).
-
 
 
 
